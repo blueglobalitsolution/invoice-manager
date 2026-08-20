@@ -1,0 +1,8 @@
+{
+  "name": "Global Industries Document System",
+  "description": "Enterprise LaTeX and ERP document system with nested Project-to-Document hierarchies (Quotations, Labour Work Orders, Material POs, Tax Invoices, Technical Specs), visual Template Builder Studio, and PDF compilation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
