@@ -120,35 +120,32 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-[#111827] border border-gray-700/80 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between bg-[#151f30]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0d3479]/18 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="glass-card rounded-[32px] w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="px-6 py-5 border-b border-[#cccccc] flex items-center justify-between bg-white/35">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <div className="w-10 h-10 rounded-[20px] bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479]">
               <FolderPlus className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Create New Project</h2>
-              <p className="text-xs text-gray-400">
+              <h2 className="text-[30px] leading-[0.95]">Create New Project</h2>
+              <p className="text-sm text-[#666666] mt-2">
                 Setup a new project workspace. All related quotations, POs, and invoices will be organized here.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800 transition-colors"
+            className="p-2 text-[#666666] hover:text-black rounded-[12px] hover:bg-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 text-xs">
-          {/* Project Title & Code */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="md:col-span-2">
-              <label className="block text-gray-300 font-semibold mb-1">
+              <label className="block text-[#666666] font-semibold mb-2">
                 Project Name <span className="text-red-400">*</span>
               </label>
               <input
@@ -157,25 +154,24 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Sanand Heavy Engineering Industrial Shed"
-                className="w-full bg-[#1e293b] border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                className="brand-input w-full px-4 py-3 text-sm"
               />
             </div>
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Project Code</label>
+              <label className="block text-[#666666] font-semibold mb-2">Project Code</label>
               <input
                 type="text"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                className="w-full bg-[#1e293b] border border-gray-700 rounded-lg px-3 py-2 text-white font-mono uppercase focus:outline-none focus:border-emerald-500"
+                className="brand-input w-full px-4 py-3 text-sm font-mono uppercase"
               />
             </div>
           </div>
 
-          {/* Client Name & Location */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-gray-300 font-semibold mb-1 flex items-center space-x-1">
-                <Building2 className="w-3.5 h-3.5 text-emerald-400" />
+              <label className="block text-[#666666] font-semibold mb-2 flex items-center space-x-1">
+                <Building2 className="w-3.5 h-3.5 text-[#0d3479]" />
                 <span>Client / Contractor Name</span>
               </label>
               <input
@@ -183,12 +179,12 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
                 placeholder="e.g. Mohammad Kamil Shaikh / Tata Motors"
-                className="w-full bg-[#1e293b] border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500"
+                className="brand-input w-full px-4 py-3 text-sm"
               />
             </div>
             <div>
-              <label className="block text-gray-300 font-semibold mb-1 flex items-center space-x-1">
-                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+              <label className="block text-[#666666] font-semibold mb-2 flex items-center space-x-1">
+                <MapPin className="w-3.5 h-3.5 text-[#0d3479]" />
                 <span>Project Location</span>
               </label>
               <input
@@ -196,22 +192,21 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g. Sevasi TP-1, Vadodara, Gujarat"
-                className="w-full bg-[#1e293b] border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500"
+                className="brand-input w-full px-4 py-3 text-sm"
               />
             </div>
           </div>
 
-          {/* Category & Budget */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-gray-300 font-semibold mb-1 flex items-center space-x-1">
-                <Tag className="w-3.5 h-3.5 text-emerald-400" />
+              <label className="block text-[#666666] font-semibold mb-2 flex items-center space-x-1">
+                <Tag className="w-3.5 h-3.5 text-[#0d3479]" />
                 <span>Category / Domain</span>
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-[#1e293b] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                className="brand-input w-full px-4 py-3 text-sm"
               >
                 {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>
@@ -221,8 +216,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
               </select>
             </div>
             <div>
-              <label className="block text-gray-300 font-semibold mb-1 flex items-center space-x-1">
-                <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+              <label className="block text-[#666666] font-semibold mb-2 flex items-center space-x-1">
+                <DollarSign className="w-3.5 h-3.5 text-[#0d3479]" />
                 <span>Estimated Contract Budget</span>
               </label>
               <input
@@ -230,18 +225,17 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
                 placeholder="e.g. ₹25,00,000.00"
-                className="w-full bg-[#1e293b] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                className="brand-input w-full px-4 py-3 text-sm"
               />
             </div>
           </div>
 
-          {/* Initial Document Selection */}
           <div className="pt-2">
             <div className="flex items-center justify-between mb-2">
-              <label className="text-gray-200 font-bold">
+              <label className="font-bold text-sm">
                 Initial Documents to Generate in this Project:
               </label>
-              <span className="text-[11px] text-gray-400">
+              <span className="text-[11px] text-[#666666]">
                 {selectedDocTypes.length} document{selectedDocTypes.length !== 1 ? 's' : ''} selected
               </span>
             </div>
@@ -253,27 +247,27 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                   <div
                     key={opt.type}
                     onClick={() => toggleDocType(opt.type)}
-                    className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-start space-x-2.5 ${
+                    className={`p-3 rounded-[20px] border transition-all cursor-pointer flex items-start space-x-2.5 ${
                       isChecked
-                        ? 'bg-emerald-950/30 border-emerald-500/50 text-white'
-                        : 'bg-[#151f2e] border-gray-800 text-gray-400 hover:border-gray-700 hover:text-gray-300'
+                        ? 'bg-[#dfe7f4] border-[#b9c7de] text-black'
+                        : 'bg-white/45 border-[#cccccc] text-[#666666] hover:bg-white/75 hover:text-black'
                     }`}
                   >
                     <div
                       className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center border transition-colors shrink-0 ${
                         isChecked
-                          ? 'bg-emerald-600 border-emerald-500 text-white'
-                          : 'border-gray-600 bg-gray-800'
+                          ? 'bg-[#0d3479] border-[#0d3479] text-white'
+                          : 'border-[#cccccc] bg-white'
                       }`}
                     >
                       {isChecked && <Check className="w-3 h-3" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-1.5">
-                        <Icon className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <Icon className="w-3.5 h-3.5 text-[#0d3479] shrink-0" />
                         <span className="font-semibold text-[11px] truncate">{opt.label}</span>
                       </div>
-                      <p className="text-[10px] text-gray-400 mt-0.5 line-clamp-1">{opt.desc}</p>
+                      <p className="text-[10px] text-[#666666] mt-0.5 line-clamp-1">{opt.desc}</p>
                     </div>
                   </div>
                 );
@@ -281,19 +275,18 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
             </div>
           </div>
 
-          {/* Footer Actions */}
-          <div className="pt-4 border-t border-gray-800 flex items-center justify-end space-x-3">
+          <div className="pt-4 border-t border-[#cccccc] flex items-center justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg font-medium transition-colors cursor-pointer"
+              className="px-4 py-3 bg-white/65 hover:bg-white text-[#666666] rounded-[12px] font-medium transition-colors cursor-pointer border border-[#cccccc]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!title.trim()}
-              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-semibold rounded-lg shadow-lg shadow-emerald-900/30 flex items-center space-x-2 transition-all cursor-pointer"
+              className="brand-button px-5 py-3 disabled:opacity-50 text-white font-semibold rounded-[12px] flex items-center space-x-2 transition-all cursor-pointer"
             >
               <FolderPlus className="w-4 h-4" />
               <span>Create Project & Dossier</span>

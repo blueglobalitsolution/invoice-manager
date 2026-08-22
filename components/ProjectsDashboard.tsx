@@ -9,7 +9,6 @@ import {
   Copy,
   User,
   ExternalLink,
-  BookOpen,
   LogIn,
   UserPlus,
   LogOut,
@@ -31,8 +30,8 @@ import {
 } from 'lucide-react';
 import { ProjectItem, ProjectDocType } from '@/types/project';
 import { LatexDocument } from '@/types/document';
-import { TemplateManagerDrawer } from '@/components/TemplateManagerDrawer';
 import { CreateProjectModal } from '@/components/CreateProjectModal';
+import { DashboardSidebar } from '@/components/DashboardSidebar';
 
 interface ProjectsDashboardProps {
   projects: ProjectItem[];
@@ -77,7 +76,6 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
   const [activeTab, setActiveTab] = useState<'all' | 'your' | 'shared' | 'archived'>('all');
   const [showNewModal, setShowNewModal] = useState(false);
   const [selectedProjectIds, setSelectedProjectIds] = useState<string[]>([]);
-  const [isTemplateManagerOpen, setIsTemplateManagerOpen] = useState(false);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
@@ -117,217 +115,88 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
   const totalDocsCount = projects.reduce((acc, p) => acc + (p.documents?.length || 1), 0);
 
   return (
-    <div className="flex h-screen w-full bg-[#0a0f18] text-gray-200 font-sans overflow-hidden select-none">
+    <div className="app-shell flex min-h-screen w-full text-black font-sans overflow-hidden select-none bg-gray-50">
       {/* Left Sidebar */}
-      <aside className="w-60 bg-[#101826] border-r border-gray-800/80 flex flex-col justify-between shrink-0 p-4 shadow-xl">
-        <div className="space-y-6">
-          {/* Overleaf / Enterprise Brand Logo Header */}
-          <div className="flex items-center space-x-2.5 px-2">
-            <div className="w-8 h-8 rounded-lg bg-[#15803d] flex items-center justify-center font-serif text-white font-bold text-2xl shadow-md">
-              6
-            </div>
-            <div>
-              <div className="font-bold text-base text-white tracking-tight leading-none flex items-center">
-                <span>GLOBAL</span>
-                <span className="text-emerald-400 font-normal ml-1">DOCS</span>
-              </div>
-              <div className="text-[10px] text-gray-400 font-medium tracking-tight mt-0.5">
-                Enterprise Project & Document Hub
-              </div>
-            </div>
-          </div>
-
-          {/* Main Navigation Links */}
-          <nav className="space-y-1">
-            <button
-              onClick={() => setActiveTab('all')}
-              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                activeTab === 'all'
-                  ? 'bg-[#15803d] text-white shadow-sm'
-                  : 'text-gray-300 hover:bg-[#1a2538]'
-              }`}
-            >
-              <Folder className="w-4 h-4" />
-              <span>All Projects</span>
-              <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] bg-black/30 text-emerald-200">
-                {projects.length}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('your')}
-              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer ${
-                activeTab === 'your'
-                  ? 'bg-[#15803d] text-white font-semibold'
-                  : 'text-gray-300 hover:bg-[#1a2538]'
-              }`}
-            >
-              <span className="w-4"></span>
-              <span>Active Projects</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('archived')}
-              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer ${
-                activeTab === 'archived'
-                  ? 'bg-[#15803d] text-white font-semibold'
-                  : 'text-gray-300 hover:bg-[#1a2538]'
-              }`}
-            >
-              <span className="w-4"></span>
-              <span>Archived Projects</span>
-            </button>
-
-            <div className="pt-2 border-t border-gray-800/80 my-2 space-y-1">
-              <button
-                onClick={() => setIsTemplateManagerOpen(true)}
-                className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs text-gray-300 hover:bg-[#1a2538] hover:text-white transition-colors cursor-pointer"
-              >
-                <BookOpen className="w-4 h-4 text-emerald-400" />
-                <span>Template Library</span>
-              </button>
-
-              {onOpenTemplateBuilder && (
-                <button
-                  onClick={onOpenTemplateBuilder}
-                  className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs text-emerald-400 hover:bg-emerald-950/40 hover:text-emerald-300 transition-colors font-medium border border-emerald-800/40 cursor-pointer"
-                >
-                  <Sparkles className="w-4 h-4 text-emerald-400" />
-                  <span>Template Builder</span>
-                </button>
-              )}
-            </div>
-          </nav>
-        </div>
-
-        {/* Footer Navigation */}
-        <div className="pt-4 border-t border-gray-800/80 space-y-1 text-xs relative">
-          {currentUser ? (
-            <div className="relative">
-              <button
-                onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
-                className="w-full flex items-center justify-between px-2 py-1.5 text-gray-200 hover:text-white rounded-lg hover:bg-[#1a2538] transition-colors cursor-pointer"
-              >
-                <div className="flex items-center space-x-2.5 truncate">
-                  <div className="w-6 h-6 rounded-full bg-emerald-700 flex items-center justify-center text-white font-bold text-xs shrink-0">
-                    {currentUser.name.charAt(0).toUpperCase()}
-                  </div>
-                  <span className="truncate font-semibold">{currentUser.name}</span>
-                </div>
-                <MoreVertical className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-              </button>
-
-              {isAccountMenuOpen && (
-                <div className="absolute bottom-full left-0 mb-2 w-full bg-[#16202f] border border-gray-700 rounded-xl shadow-2xl py-1 z-50">
-                  <div className="px-3 py-2 border-b border-gray-700/60">
-                    <p className="font-semibold text-white truncate">{currentUser.name}</p>
-                    <p className="text-[11px] text-gray-400 truncate">{currentUser.email}</p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setIsAccountMenuOpen(false);
-                      onLogout();
-                    }}
-                    className="w-full text-left px-3 py-2 hover:bg-red-950/50 text-red-300 flex items-center space-x-2 transition-colors text-xs cursor-pointer"
-                  >
-                    <LogOut className="w-3.5 h-3.5 text-red-400" />
-                    <span>Log Out</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="pt-2 space-y-1">
-              <button
-                onClick={() => onOpenAuth('login')}
-                className="w-full flex items-center space-x-2 px-2 py-1.5 text-gray-300 hover:text-white hover:bg-[#1a2538] rounded-lg transition-colors cursor-pointer"
-              >
-                <LogIn className="w-4 h-4 text-emerald-400" />
-                <span>Log In</span>
-              </button>
-              <button
-                onClick={() => onOpenAuth('signup')}
-                className="w-full flex items-center space-x-2 px-2 py-1.5 bg-[#15803d] hover:bg-[#16a34a] text-white rounded-lg font-medium transition-colors shadow cursor-pointer"
-              >
-                <UserPlus className="w-4 h-4" />
-                <span>Sign Up</span>
-              </button>
-            </div>
-          )}
-        </div>
-      </aside>
+      <DashboardSidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        projectsCount={projects.length}
+        onOpenTemplateBuilder={onOpenTemplateBuilder}
+        currentUser={currentUser}
+        onOpenAuth={onOpenAuth}
+        onLogout={onLogout}
+      />
 
       {/* Main Content Panel */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#0a0f18] relative">
-        {/* Inner Scrollable Workspace */}
-        <div className="flex-1 overflow-y-auto p-5 md:p-8 space-y-6">
-          {/* Top Header & New Project CTA */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+        <div className="flex-1 overflow-y-auto p-4 md:p-5 lg:p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-black text-white tracking-tight">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#0d3479]">
+                Projects
+              </p>
+              <h1 className="mt-3 text-[40px] leading-[1]">
                 Projects & Document Dossiers
               </h1>
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-sm text-[#666666] mt-3 max-w-2xl">
                 Create a project to organize all related quotations, purchase orders, invoices, and specs in one workspace.
               </p>
             </div>
             <button
               onClick={() => setShowNewModal(true)}
-              className="bg-[#15803d] hover:bg-[#16a34a] active:scale-95 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-2 shadow-lg shadow-emerald-950/50 transition-all cursor-pointer shrink-0 self-start sm:self-auto"
+              className="brand-button active:scale-95 text-white font-bold px-5 py-3 rounded-[12px] text-sm flex items-center space-x-2 transition-all cursor-pointer shrink-0 self-start sm:self-auto"
             >
               <Plus className="w-4 h-4" />
               <span>New Project</span>
             </button>
           </div>
 
-          {/* Quick Portfolio Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div className="p-3.5 bg-[#111c2e] border border-gray-800/80 rounded-xl shadow">
-              <span className="text-gray-400 text-[11px] block">Total Projects</span>
-              <span className="text-lg font-bold text-white mt-0.5 block">
+            <div className="surface-card rounded-[24px] p-4">
+              <span className="text-[#666666] text-[11px] block uppercase tracking-[0.16em]">Total Projects</span>
+              <span className="text-lg font-bold mt-1 block">
                 {totalProjectsCount} Active
               </span>
             </div>
-            <div className="p-3.5 bg-[#111c2e] border border-gray-800/80 rounded-xl shadow">
-              <span className="text-gray-400 text-[11px] block">Managed Documents</span>
-              <span className="text-lg font-bold text-emerald-400 mt-0.5 block">
+            <div className="surface-card rounded-[24px] p-4">
+              <span className="text-[#666666] text-[11px] block uppercase tracking-[0.16em]">Managed Documents</span>
+              <span className="text-lg font-bold text-[#0d3479] mt-1 block">
                 {totalDocsCount} Documents
               </span>
             </div>
-            <div className="p-3.5 bg-[#111c2e] border border-gray-800/80 rounded-xl shadow">
-              <span className="text-gray-400 text-[11px] block">Document Formats</span>
-              <span className="text-lg font-bold text-blue-400 mt-0.5 block">
+            <div className="surface-card rounded-[24px] p-4">
+              <span className="text-[#666666] text-[11px] block uppercase tracking-[0.16em]">Document Formats</span>
+              <span className="text-lg font-bold mt-1 block">
                 Quotes • POs • Invoices
               </span>
             </div>
-            <div className="p-3.5 bg-[#111c2e] border border-gray-800/80 rounded-xl shadow">
-              <span className="text-gray-400 text-[11px] block">Export Ready</span>
-              <span className="text-lg font-bold text-amber-400 mt-0.5 block">
+            <div className="surface-card rounded-[24px] p-4">
+              <span className="text-[#666666] text-[11px] block uppercase tracking-[0.16em]">Export Ready</span>
+              <span className="text-lg font-bold mt-1 block">
                 LaTeX & PDF A4
               </span>
             </div>
           </div>
 
-          {/* Search & View Mode Switcher */}
           <div className="flex items-center justify-between gap-3">
             <div className="relative flex-1 max-w-md">
-              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-[#8b9dbc] absolute left-4 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search projects by name, client, location, or code..."
-                className="w-full bg-[#111c2e] border border-gray-700/80 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                className="brand-input w-full pl-10 pr-4 py-3 text-sm transition-colors"
               />
             </div>
 
-            <div className="bg-[#111c2e] border border-gray-700/80 rounded-xl p-0.5 flex items-center shrink-0">
+            <div className="surface-card rounded-[20px] p-1 flex items-center shrink-0">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-lg text-xs font-medium flex items-center space-x-1 transition-colors ${
+                className={`p-2 rounded-[12px] text-sm font-medium flex items-center space-x-1 transition-colors ${
                   viewMode === 'grid'
-                    ? 'bg-gray-700 text-white shadow'
-                    : 'text-gray-400 hover:text-gray-200'
+                    ? 'bg-[#0d3479] text-white shadow'
+                    : 'text-[#666666] hover:text-black'
                 }`}
                 title="Grid Card View"
               >
@@ -336,10 +205,10 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
               </button>
               <button
                 onClick={() => setViewMode('table')}
-                className={`p-1.5 rounded-lg text-xs font-medium flex items-center space-x-1 transition-colors ${
+                className={`p-2 rounded-[12px] text-sm font-medium flex items-center space-x-1 transition-colors ${
                   viewMode === 'table'
-                    ? 'bg-gray-700 text-white shadow'
-                    : 'text-gray-400 hover:text-gray-200'
+                    ? 'bg-[#0d3479] text-white shadow'
+                    : 'text-[#666666] hover:text-black'
                 }`}
                 title="Table List View"
               >
@@ -349,21 +218,20 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
             </div>
           </div>
 
-          {/* Projects View */}
           {filteredProjects.length === 0 ? (
-            <div className="bg-[#111c2e] border border-gray-800 rounded-2xl p-12 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-gray-800 flex items-center justify-center text-gray-500 mx-auto mb-3">
+            <div className="glass-card rounded-[32px] p-12 text-center">
+              <div className="w-14 h-14 rounded-[20px] bg-[#dfe7f4] flex items-center justify-center text-[#0d3479] mx-auto mb-3">
                 <FolderOpen className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-white">No projects found</h3>
-              <p className="text-xs text-gray-400 max-w-md mx-auto mt-1 mb-4">
+              <h3 className="text-base font-bold">No projects found</h3>
+              <p className="text-sm text-[#666666] max-w-md mx-auto mt-2 mb-4">
                 {searchQuery
                   ? 'No projects match your search keywords.'
                   : 'Get started by creating your first project workspace.'}
               </p>
               <button
                 onClick={() => setShowNewModal(true)}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-lg shadow-emerald-950/40 inline-flex items-center space-x-2 cursor-pointer"
+                className="brand-button px-4 py-3 text-sm font-semibold inline-flex items-center space-x-2 cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Create New Project</span>
@@ -380,65 +248,61 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                   <div
                     key={project.id}
                     onClick={() => onOpenProjectDetail(project.id)}
-                    className="bg-[#111c2e] hover:bg-[#142238] border border-gray-800 hover:border-emerald-500/50 rounded-2xl p-5 shadow-xl transition-all flex flex-col justify-between group cursor-pointer relative overflow-hidden"
+                    className="glass-card hover:bg-white/75 border border-[#cccccc] rounded-[32px] p-5 transition-all flex flex-col justify-between group cursor-pointer relative overflow-hidden"
                   >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-xl pointer-events-none group-hover:bg-emerald-500/10 transition-all"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#8b9dbc]/15 rounded-full blur-xl pointer-events-none group-hover:bg-[#8b9dbc]/25 transition-all"></div>
 
                     <div>
                       {/* Category & Status */}
                       <div className="flex items-center justify-between gap-2 mb-2.5">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-950 text-emerald-300 border border-emerald-600/40">
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de]">
                           {project.category || 'Civil & PEB'}
                         </span>
                         {project.code && (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono text-gray-300 bg-gray-800/80 border border-gray-700">
+                          <span className="px-2 py-1 rounded text-[10px] font-mono text-[#666666] bg-white/70 border border-[#cccccc]">
                             {project.code}
                           </span>
                         )}
                       </div>
 
-                      {/* Project Title */}
-                      <h3 className="text-sm md:text-base font-bold text-white group-hover:text-emerald-300 transition-colors line-clamp-2 leading-snug">
+                      <h3 className="text-sm md:text-base font-bold group-hover:text-[#0d3479] transition-colors line-clamp-2 leading-snug">
                         {project.title}
                       </h3>
 
-                      {/* Client & Location */}
-                      <div className="mt-3 space-y-1.5 text-xs text-gray-400">
+                      <div className="mt-3 space-y-1.5 text-xs text-[#666666]">
                         <div className="flex items-center space-x-2">
-                          <Building2 className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                          <span className="truncate text-gray-200">
+                          <Building2 className="w-3.5 h-3.5 text-[#8b9dbc] shrink-0" />
+                          <span className="truncate text-black">
                             {project.clientName || 'Mohammad Kamil Shaikh'}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                          <span className="truncate text-gray-300">
+                          <MapPin className="w-3.5 h-3.5 text-[#8b9dbc] shrink-0" />
+                          <span className="truncate">
                             {project.location || 'Vadodara, Gujarat'}
                           </span>
                         </div>
                       </div>
 
-                      {/* Documents Badge Strip */}
-                      <div className="mt-4 pt-3 border-t border-gray-800/80">
+                      <div className="mt-4 pt-3 border-t border-[#cccccc]">
                         <div className="flex items-center justify-between text-[11px] mb-2">
-                          <span className="font-semibold text-gray-300 flex items-center space-x-1">
-                            <Layers className="w-3.5 h-3.5 text-emerald-400" />
+                          <span className="font-semibold text-[#666666] flex items-center space-x-1">
+                            <Layers className="w-3.5 h-3.5 text-[#0d3479]" />
                             <span>Related Documents ({docCount})</span>
                           </span>
                           {project.budget && (
-                            <span className="font-bold text-amber-400 text-xs">
+                            <span className="font-bold text-xs">
                               {project.budget}
                             </span>
                           )}
                         </div>
 
-                        {/* Document type chips */}
                         <div className="flex flex-wrap gap-1.5">
                           {docs.length > 0 ? (
                             docs.slice(0, 3).map((d) => (
                               <span
                                 key={d.id}
-                                className="px-2 py-0.5 rounded-md text-[10px] bg-[#16202f] border border-gray-700 text-gray-300 font-medium truncate max-w-[140px]"
+                                className="px-2 py-1 rounded-[12px] text-[10px] bg-white/75 border border-[#cccccc] text-[#666666] font-medium truncate max-w-[140px]"
                               >
                                 {d.docType === 'quotation' && '📄 Quote'}
                                 {d.docType === 'work_order' && '📋 PO / Work Order'}
@@ -448,10 +312,10 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                               </span>
                             ))
                           ) : (
-                            <span className="text-[10px] text-gray-500">1 Document inside</span>
+                            <span className="text-[10px] text-[#666666]">1 Document inside</span>
                           )}
                           {docs.length > 3 && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-gray-800 text-gray-400">
+                            <span className="px-1.5 py-1 rounded text-[10px] bg-[#dfe7f4] text-[#0d3479]">
                               +{docs.length - 3} more
                             </span>
                           )}
@@ -459,9 +323,8 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                       </div>
                     </div>
 
-                    {/* Bottom Actions */}
-                    <div className="mt-5 pt-3 border-t border-gray-800/80 flex items-center justify-between text-xs">
-                      <span className="text-[10px] text-gray-500">{project.lastModified}</span>
+                    <div className="mt-5 pt-3 border-t border-[#cccccc] flex items-center justify-between text-xs">
+                      <span className="text-[10px] text-[#666666]">{project.lastModified}</span>
 
                       <div
                         className="flex items-center space-x-1"
@@ -469,21 +332,21 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                       >
                         <button
                           onClick={() => onDuplicateProject(project.id)}
-                          className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors cursor-pointer"
+                          className="p-2 text-[#666666] hover:text-black hover:bg-white rounded-[12px] transition-colors cursor-pointer"
                           title="Duplicate Project"
                         >
                           <Copy className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => onDeleteProject(project.id)}
-                          className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer"
+                          className="p-2 text-[#666666] hover:text-[#8a3b2f] hover:bg-[#fff3f0] rounded-[12px] transition-colors cursor-pointer"
                           title="Delete Project"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => onOpenProjectDetail(project.id)}
-                          className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-1 shadow transition-all cursor-pointer ml-1"
+                          className="brand-button px-3 py-2 rounded-[12px] text-xs font-semibold flex items-center space-x-1 transition-all cursor-pointer ml-1"
                         >
                           <span>Open Dossier</span>
                           <ChevronRight className="w-3 h-3" />
@@ -496,10 +359,10 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
             </div>
           ) : (
             /* Table View */
-            <div className="border border-gray-800 rounded-2xl overflow-hidden bg-[#111c2e] shadow-xl text-xs">
+            <div className="glass-card rounded-[32px] overflow-hidden text-xs">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-gray-800 bg-[#0d1624] text-gray-400 uppercase text-[10px] tracking-wider font-semibold">
+                  <tr className="border-b border-[#cccccc] bg-white/40 text-[#666666] uppercase text-[10px] tracking-wider font-semibold">
                     <th className="py-3 px-4 w-10">
                       <input
                         type="checkbox"
@@ -508,7 +371,7 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                           selectedProjectIds.length === filteredProjects.length
                         }
                         onChange={handleToggleSelectAll}
-                        className="rounded accent-[#15803d] cursor-pointer"
+                        className="rounded accent-[#0d3479] cursor-pointer"
                       />
                     </th>
                     <th className="py-3 px-4">Project Name & Code</th>
@@ -519,7 +382,7 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-800/60 font-medium">
+                <tbody className="divide-y divide-[#cccccc] font-medium">
                   {filteredProjects.map((project) => {
                     const isSelected = selectedProjectIds.includes(project.id);
                     const docs = project.documents || [];
@@ -527,8 +390,8 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                       <tr
                         key={project.id}
                         onClick={() => onOpenProjectDetail(project.id)}
-                        className={`hover:bg-[#15233a] transition-colors cursor-pointer group ${
-                          isSelected ? 'bg-[#15233a]/90' : ''
+                        className={`hover:bg-white/55 transition-colors cursor-pointer group ${
+                          isSelected ? 'bg-white/65' : ''
                         }`}
                       >
                         <td
@@ -542,54 +405,54 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => handleToggleSelectOne(project.id)}
-                            className="rounded accent-[#15803d] cursor-pointer"
+                            className="rounded accent-[#0d3479] cursor-pointer"
                           />
                         </td>
                         <td className="py-3.5 px-4">
-                          <div className="font-bold text-white group-hover:text-emerald-300 transition-colors">
+                          <div className="font-bold group-hover:text-[#0d3479] transition-colors">
                             {project.title}
                           </div>
                           {project.code && (
-                            <span className="text-[10px] font-mono text-gray-400 bg-gray-800 px-1.5 py-0.5 rounded border border-gray-700 mt-0.5 inline-block">
+                            <span className="text-[10px] font-mono text-[#666666] bg-white/75 px-1.5 py-0.5 rounded border border-[#cccccc] mt-0.5 inline-block">
                               {project.code}
                             </span>
                           )}
                         </td>
-                        <td className="py-3.5 px-4 text-gray-300">
+                        <td className="py-3.5 px-4">
                           <div>{project.clientName || 'Contractor'}</div>
-                          <div className="text-[11px] text-gray-400">{project.location || 'Site'}</div>
+                          <div className="text-[11px] text-[#666666]">{project.location || 'Site'}</div>
                         </td>
                         <td className="py-3.5 px-4">
-                          <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-950 text-emerald-300 border border-emerald-600/40 inline-flex items-center space-x-1">
+                          <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de] inline-flex items-center space-x-1">
                             <Layers className="w-3 h-3" />
                             <span>{docs.length} Documents</span>
                           </span>
                         </td>
-                        <td className="py-3.5 px-4 font-semibold text-amber-400">
+                        <td className="py-3.5 px-4 font-semibold">
                           {project.budget || '—'}
                         </td>
-                        <td className="py-3.5 px-4 text-gray-400 text-[11px]">
+                        <td className="py-3.5 px-4 text-[#666666] text-[11px]">
                           {project.lastModified}
                         </td>
                         <td className="py-3.5 px-4 text-right" onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center justify-end space-x-1">
                             <button
                               onClick={() => onDuplicateProject(project.id)}
-                              className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors cursor-pointer"
+                              className="p-1.5 text-[#666666] hover:text-black hover:bg-white rounded-[12px] transition-colors cursor-pointer"
                               title="Duplicate"
                             >
                               <Copy className="w-3.5 h-3.5" />
                             </button>
                             <button
                               onClick={() => onDeleteProject(project.id)}
-                              className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer"
+                              className="p-1.5 text-[#666666] hover:text-[#8a3b2f] hover:bg-[#fff3f0] rounded-[12px] transition-colors cursor-pointer"
                               title="Delete"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                             <button
                               onClick={() => onOpenProjectDetail(project.id)}
-                              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-1 transition-all cursor-pointer"
+                              className="brand-button px-2.5 py-2 rounded-[12px] text-xs font-semibold flex items-center space-x-1 transition-all cursor-pointer"
                             >
                               <span>Open</span>
                               <ChevronRight className="w-3 h-3" />
@@ -613,14 +476,7 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
         onCreate={onCreateProject}
       />
 
-      {/* Template Manager Drawer */}
-      <TemplateManagerDrawer
-        isOpen={isTemplateManagerOpen}
-        onClose={() => setIsTemplateManagerOpen(false)}
-        currentDocument={currentDocument}
-        onLoadTemplate={onLoadTemplate}
-        onCreateProjectFromTemplate={onCreateProjectFromTemplate}
-      />
+
     </div>
   );
 };

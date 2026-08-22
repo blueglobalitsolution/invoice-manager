@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import {
   Sparkles,
   ArrowLeft,
+  ArrowRight,
   Save,
   Download,
   Upload,
@@ -22,7 +23,7 @@ import {
   PenTool,
 } from 'lucide-react';
 import { LatexDocument, CustomPageDef, CustomSectionItem, PurchaseOrderData, SectionContentType } from '@/types/document';
-import { LABOUR_PO_TEMPLATE } from '@/lib/templates';
+import { LABOUR_PO_TEMPLATE, SAMPLE_TEMPLATES } from '@/lib/templates';
 import { PREDEFINED_SECTION_TYPES, createSectionFromPreset } from '@/lib/section-presets';
 import { DocumentPreview } from '@/components/DocumentPreview';
 
@@ -58,6 +59,7 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
   onCreateProjectFromTemplate,
   initialDocument,
 }) => {
+  const [isSelectingBase, setIsSelectingBase] = useState<boolean>(true);
   const [templateDoc, setTemplateDoc] = useState<LatexDocument>(() => {
     return initialDocument ? JSON.parse(JSON.stringify(initialDocument)) : JSON.parse(JSON.stringify(LABOUR_PO_TEMPLATE));
   });
@@ -74,6 +76,7 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
   const [previewZoom, setPreviewZoom] = useState<number>(90);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [copiedVariable, setCopiedVariable] = useState<string | null>(null);
+
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -261,6 +264,92 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
     setCopiedVariable(varText);
     setTimeout(() => setCopiedVariable(null), 2000);
   };
+
+  if (isSelectingBase) {
+    return (
+      <div className="flex flex-col h-screen w-full bg-[#0e1724] text-gray-100 font-sans overflow-hidden">
+        {/* Header */}
+        <header className="h-14 bg-[#161f2e] border-b border-gray-800 px-6 flex items-center justify-between shrink-0 shadow-md">
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={onBack}
+              className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-1.5 cursor-pointer text-xs font-medium"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Dashboard</span>
+            </button>
+            <div className="h-4 w-px bg-gray-700"></div>
+            <span className="text-sm font-bold text-white uppercase tracking-wider">Template Builder Studio</span>
+          </div>
+        </header>
+
+        {/* Blueprint Selector Panel */}
+        <div className="flex-1 overflow-y-auto p-8 flex flex-col items-center justify-center max-w-4xl mx-auto space-y-6">
+          <div className="text-center space-y-2 max-w-xl">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-700/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto shadow-lg">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <h1 className="text-2xl font-black text-white tracking-tight">Choose a Template Blueprint to Customize</h1>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              Select one of the standard business layouts below as a baseline layout. You can customize branding, colors, variables, pages, and sections.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full pt-4">
+            {Object.entries(SAMPLE_TEMPLATES).map(([key, tmpl]) => {
+              const normalTitle = 
+                key === 'tax_invoice' 
+                  ? 'Invoice' 
+                  : key === 'quotation' 
+                  ? 'Quotation' 
+                  : key === 'labour_po' 
+                  ? 'Work Order' 
+                  : 'Blank Template';
+
+              return (
+                <button
+                  key={key}
+                  onClick={() => {
+                    setTemplateDoc(JSON.parse(JSON.stringify(tmpl)));
+                    setTemplateName(`Customized ${normalTitle}`);
+                    setTemplateDesc(`Custom template based on the standard ${normalTitle} layout.`);
+                    setIsSelectingBase(false);
+                  }}
+                  className="bg-[#131d2d]/80 border border-gray-800 rounded-xl p-5 text-left hover:border-emerald-500/50 hover:bg-[#152338]/60 transition-all shadow-md group/card cursor-pointer flex flex-col justify-between h-44"
+                >
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] uppercase font-mono tracking-wider bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded border border-emerald-800/60">
+                        {key === 'quotation' ? 'Quotation Layout' : key === 'tax_invoice' ? 'Invoice Layout' : key === 'labour_po' ? 'Labour PO Layout' : 'Blank Layout'}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-bold text-white mt-3 group-hover/card:text-emerald-400 transition-colors">
+                      {normalTitle}
+                    </h3>
+                    <p className="text-xs text-gray-400 mt-2 line-clamp-2 leading-relaxed">
+                      {key === 'quotation' 
+                        ? '10-page commercial quotation with specifications, pricing BOQ, vendor listing table, and standard terms.'
+                        : key === 'tax_invoice'
+                        ? 'GST-compliant tax invoice template with item descriptions, HSN rates, EPF options, and statutory columns.'
+                        : key === 'labour_po'
+                        ? 'Labour PO Work Order with scope description, rate items, and completion criteria.'
+                        : 'Create a customized document blueprint from scratch.'}
+                    </p>
+                  </div>
+                  <div className="flex items-center text-xs text-emerald-400 font-semibold group-hover/card:translate-x-1.5 transition-transform mt-3">
+                    <span>Start Customizing</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen w-full bg-[#111827] text-gray-100 font-sans overflow-hidden select-none">

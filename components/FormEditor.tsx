@@ -292,30 +292,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         )}
       </div>
 
-      {/* Page Assignment / Move to Page Selector Bar */}
-      {!isGlobalHeader && (
-        <div className="px-4 py-2 bg-[#0d1522] border-b border-gray-800 flex items-center justify-between text-xs">
-          <span className="text-gray-400 font-semibold text-[11px] flex items-center space-x-1">
-            <span>Assigned Page / Group:</span>
-          </span>
-          <select
-            value={currentSectionPage}
-            onChange={(e) => {
-              const targetPage = Number(e.target.value);
-              const updatedPO = moveSectionToPage(po, activeSectionId, targetPage);
-              updatePO(updatedPO);
-            }}
-            className="bg-[#172334] border border-emerald-700/60 rounded px-2.5 py-1 text-emerald-300 font-bold text-xs focus:outline-none focus:ring-1 focus:ring-emerald-400 cursor-pointer shadow-xs"
-            title="Change the page where this section appears"
-          >
-            {outlineGroups.map((g) => (
-              <option key={g.pageNum} value={g.pageNum}>
-                Page {g.pageNum}: {g.groupTitle}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+
 
       {/* Dynamic Configuration Form based on Active Section */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs scrollbar-thin">

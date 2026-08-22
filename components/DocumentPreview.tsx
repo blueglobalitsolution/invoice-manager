@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo, useState } from 'react';
 import { ZoomIn, ZoomOut, FileCode } from 'lucide-react';
 import {
   LatexDocument,
@@ -79,8 +79,10 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     }
   }, [activeSectionId]);
 
+
+
   return (
-    <div className="flex-1 flex flex-col bg-[#4B5563] overflow-hidden relative">
+    <div className="flex-1 flex flex-col bg-[#4B5563] overflow-hidden relative h-full min-h-0">
       {/* Top Preview Toolbar */}
       <div className="h-10 bg-[#374151] flex items-center justify-between px-4 border-b border-gray-600 shrink-0 z-10 select-none">
         <div className="flex items-center space-x-3">
@@ -134,15 +136,18 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
       {/* Main Canvas Scroll Area */}
       <div
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto p-6 md:p-10 flex justify-center bg-[#52525B] scrollbar-thin scroll-smooth"
+        className="flex-1 overflow-y-auto p-6 md:p-10 bg-[#52525B] scrollbar-thin scroll-smooth text-center"
       >
+        {/* Centered preview container scaled natively using CSS zoom */}
         <div
           style={{
-            transform: `scale(${zoomLevel / 100})`,
-            transformOrigin: 'top center',
-            transition: 'transform 0.15s ease-out',
+            zoom: zoomLevel / 100,
+            transition: 'zoom 0.15s ease-out',
+            display: 'inline-block',
+            margin: '0 auto',
+            textAlign: 'left',
           }}
-          className="shrink-0 mb-20 space-y-12"
+          className="mb-20 space-y-12"
         >
           {doc.quotation ? (
             <QuotationPreview

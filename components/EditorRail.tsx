@@ -97,16 +97,6 @@ export const EditorRail: React.FC<EditorRailProps> = ({
           <FileCode className="w-4 h-4" />
         </button>
 
-        {/* Template Manager */}
-        <button
-          onClick={() => {
-            if (onOpenTemplates) onOpenTemplates();
-          }}
-          className="w-9 h-9 rounded flex items-center justify-center transition-colors cursor-pointer text-gray-400 hover:text-gray-200 hover:bg-gray-800"
-          title="Template Manager"
-        >
-          <BookOpen className="w-4 h-4" />
-        </button>
 
         {/* Media / Figures */}
         <button

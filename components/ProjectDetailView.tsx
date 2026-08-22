@@ -41,6 +41,7 @@ import {
   ProjectStatus,
 } from '@/types/project';
 import { CreateDocumentModal } from '@/components/CreateDocumentModal';
+import { DashboardSidebar } from '@/components/DashboardSidebar';
 
 interface ProjectDetailViewProps {
   project: ProjectItem;
@@ -57,6 +58,8 @@ interface ProjectDetailViewProps {
   onUpdateDocumentStatus: (documentId: string, status: ProjectDocStatus) => void;
   onUpdateProjectStatus: (status: ProjectStatus) => void;
   onDeleteProject: () => void;
+  currentUser?: { name: string; email: string } | null;
+  onLogout?: () => void;
 }
 
 export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
@@ -69,6 +72,8 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
   onUpdateDocumentStatus,
   onUpdateProjectStatus,
   onDeleteProject,
+  currentUser,
+  onLogout,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | ProjectDocType>('all');
@@ -108,7 +113,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
       case 'contract':
         return <FileText className="w-4 h-4 text-purple-400" />;
       default:
-        return <FileText className="w-4 h-4 text-gray-400" />;
+        return <FileText className="w-4 h-4 text-gray-500" />;
     }
   };
 
@@ -127,7 +132,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
       case 'contract':
         return 'bg-purple-500/15 text-purple-300 border-purple-500/30';
       default:
-        return 'bg-gray-500/15 text-gray-300 border-gray-500/30';
+        return 'bg-gray-500/15 text-gray-600 border-gray-500/30';
     }
   };
 
@@ -145,7 +150,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
         return { label: 'Under Review', color: 'bg-amber-950 text-amber-300 border-amber-600/40', icon: Clock };
       case 'draft':
       default:
-        return { label: 'Draft', color: 'bg-gray-800 text-gray-300 border-gray-700', icon: Clock };
+        return { label: 'Draft', color: 'bg-gray-100 text-gray-600 border-gray-200', icon: Clock };
     }
   };
 
@@ -158,56 +163,62 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
   };
 
   return (
-    <div className="h-screen w-full bg-[#0a0f18] text-gray-200 flex flex-col overflow-hidden select-none">
-      {/* Top Bar Navigation */}
-      <header className="h-14 bg-[#101826] border-b border-gray-800/80 px-4 md:px-6 flex items-center justify-between shrink-0 shadow-md">
-        <div className="flex items-center space-x-3">
-          <button
-            onClick={onBack}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-800/80 hover:bg-gray-700 text-gray-200 hover:text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>All Projects</span>
-          </button>
-          <div className="h-4 w-px bg-gray-700 hidden sm:block"></div>
-          <div className="flex items-center space-x-2">
-            <span className="text-xs text-gray-400">Project /</span>
-            <span className="text-sm font-bold text-white truncate max-w-[200px] md:max-w-md">
-              {project.title}
-            </span>
-            {project.code && (
-              <span className="px-2 py-0.5 rounded bg-gray-800 text-gray-300 font-mono text-[11px] border border-gray-700 hidden md:inline">
-                {project.code}
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setIsCreateDocModalOpen(true)}
-            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-semibold text-xs flex items-center space-x-1.5 shadow-lg shadow-emerald-950/40 transition-all cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Document</span>
-          </button>
-        </div>
-      </header>
-
+    <div className="app-shell flex min-h-screen w-full bg-gray-50 text-gray-900 overflow-hidden select-none">
+      <DashboardSidebar
+        currentUser={currentUser || null}
+        onOpenAuth={() => {}}
+        onLogout={onLogout || (() => {})}
+      />
+      
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+      <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+        {/* Top Bar Navigation (Simplified) */}
+        <header className="h-14 bg-white border-b border-gray-200 px-4 md:px-6 flex items-center justify-between shrink-0">
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={onBack}
+              className="flex lg:hidden items-center space-x-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-xs font-semibold transition-colors cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back</span>
+            </button>
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-gray-500">Project /</span>
+              <span className="text-sm font-bold text-gray-900 truncate max-w-[200px] md:max-w-md">
+                {project.title}
+              </span>
+              {project.code && (
+                <span className="px-2 py-0.5 rounded bg-gray-100 text-gray-600 font-mono text-[11px] border border-gray-200 hidden md:inline">
+                  {project.code}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setIsCreateDocModalOpen(true)}
+              className="brand-button active:scale-95 px-3.5 py-1.5 text-white rounded-md font-medium text-sm flex items-center space-x-1.5 transition-all cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Document</span>
+            </button>
+          </div>
+        </header>
+
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
         {/* Project Header Banner & Overview */}
-        <div className="bg-[#111c2e] border border-gray-800 rounded-2xl p-5 md:p-6 shadow-xl relative overflow-hidden">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 md:p-6 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-emerald-500/5 via-blue-500/5 to-transparent pointer-events-none rounded-full blur-2xl"></div>
 
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-gray-800/80">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-gray-200">
             <div>
               <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                 <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-600/40">
                   {project.category || 'Civil & PEB Construction'}
                 </span>
                 {project.code && (
-                  <span className="px-2.5 py-1 rounded-full text-[11px] font-mono text-gray-300 bg-gray-800 border border-gray-700">
+                  <span className="px-2.5 py-1 rounded-full text-[11px] font-mono text-gray-600 bg-gray-100 border border-gray-200">
                     {project.code}
                   </span>
                 )}
@@ -215,72 +226,45 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                   {project.status || 'Active'}
                 </span>
               </div>
-              <h1 className="text-xl md:text-2xl font-black text-white mt-2 tracking-tight">
+              <h1 className="text-xl md:text-2xl font-black text-gray-900 mt-2 tracking-tight">
                 {project.title}
               </h1>
             </div>
 
-            {/* Quick action badges */}
-            <div className="flex items-center space-x-2 shrink-0">
-              <button
-                onClick={() => onCreateDocument('quotation')}
-                className="px-2.5 py-1.5 bg-blue-950/50 hover:bg-blue-900/60 border border-blue-600/40 text-blue-300 text-xs font-semibold rounded-lg flex items-center space-x-1.5 transition-colors cursor-pointer"
-                title="Create Quotation inside this project"
-              >
-                <FileSpreadsheet className="w-3.5 h-3.5" />
-                <span>+ Quote</span>
-              </button>
-              <button
-                onClick={() => onCreateDocument('work_order')}
-                className="px-2.5 py-1.5 bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-600/40 text-emerald-300 text-xs font-semibold rounded-lg flex items-center space-x-1.5 transition-colors cursor-pointer"
-                title="Create Labour Work Order inside this project"
-              >
-                <FileCheck className="w-3.5 h-3.5" />
-                <span>+ Work Order</span>
-              </button>
-              <button
-                onClick={() => onCreateDocument('invoice')}
-                className="px-2.5 py-1.5 bg-rose-950/50 hover:bg-rose-900/60 border border-rose-600/40 text-rose-300 text-xs font-semibold rounded-lg flex items-center space-x-1.5 transition-colors cursor-pointer"
-                title="Create Tax Invoice inside this project"
-              >
-                <Receipt className="w-3.5 h-3.5" />
-                <span>+ Invoice</span>
-              </button>
-            </div>
           </div>
 
           {/* Project Details Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-5 text-xs">
             <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-gray-800/80 border border-gray-700/80 flex items-center justify-center text-emerald-400 shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-emerald-400 shrink-0">
                 <Building2 className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <div className="text-gray-400 text-[11px]">Client / Contractor</div>
-                <div className="font-semibold text-white truncate">
+                <div className="text-gray-500 text-[11px]">Client / Contractor</div>
+                <div className="font-semibold text-gray-900 truncate">
                   {project.clientName || 'Mohammad Kamil Shaikh'}
                 </div>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-gray-800/80 border border-gray-700/80 flex items-center justify-center text-blue-400 shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-blue-400 shrink-0">
                 <MapPin className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <div className="text-gray-400 text-[11px]">Project Location</div>
-                <div className="font-semibold text-white truncate">
+                <div className="text-gray-500 text-[11px]">Project Location</div>
+                <div className="font-semibold text-gray-900 truncate">
                   {project.location || 'Vadodara, Gujarat'}
                 </div>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-gray-800/80 border border-gray-700/80 flex items-center justify-center text-amber-400 shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-amber-400 shrink-0">
                 <DollarSign className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <div className="text-gray-400 text-[11px]">Contract Budget</div>
+                <div className="text-gray-500 text-[11px]">Contract Budget</div>
                 <div className="font-semibold text-amber-300 truncate">
                   {project.budget || '₹35,00,000.00'}
                 </div>
@@ -288,12 +272,12 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             </div>
 
             <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-gray-800/80 border border-gray-700/80 flex items-center justify-center text-teal-400 shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-teal-400 shrink-0">
                 <Layers className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <div className="text-gray-400 text-[11px]">Total Documents</div>
-                <div className="font-semibold text-white">
+                <div className="text-gray-500 text-[11px]">Total Documents</div>
+                <div className="font-semibold text-gray-900">
                   {documents.length} Related Document{documents.length !== 1 ? 's' : ''}
                 </div>
               </div>
@@ -305,13 +289,13 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
         <div className="space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h2 className="text-base font-bold text-white flex items-center space-x-2">
+              <h2 className="text-base font-bold text-gray-900 flex items-center space-x-2">
                 <span>Project Documents & Dossier</span>
-                <span className="px-2 py-0.5 rounded-full bg-gray-800 text-emerald-400 text-xs font-semibold border border-gray-700">
+                <span className="px-2 py-0.5 rounded-full bg-gray-100 text-emerald-400 text-xs font-semibold border border-gray-200">
                   {filteredDocs.length}
                 </span>
               </h2>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-500">
                 All quotes, purchase orders, invoices, and specs linked to this project
               </p>
             </div>
@@ -319,23 +303,23 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             {/* View Mode & Search */}
             <div className="flex items-center space-x-2">
               <div className="relative">
-                <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <Search className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search in project..."
-                  className="bg-[#111c2e] border border-gray-700/80 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 w-44 md:w-56"
+                  className="bg-white border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-900 placeholder-gray-500 focus:outline-none focus:border-emerald-500 w-44 md:w-56"
                 />
               </div>
 
-              <div className="bg-[#111c2e] border border-gray-700/80 rounded-lg p-0.5 flex items-center">
+              <div className="bg-white border border-gray-200 rounded-lg p-0.5 flex items-center">
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`p-1.5 rounded ${
                     viewMode === 'grid'
-                      ? 'bg-gray-700 text-white'
-                      : 'text-gray-400 hover:text-gray-200'
+                      ? 'bg-gray-200 text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
                   }`}
                   title="Grid View"
                 >
@@ -345,8 +329,8 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                   onClick={() => setViewMode('table')}
                   className={`p-1.5 rounded ${
                     viewMode === 'table'
-                      ? 'bg-gray-700 text-white'
-                      : 'text-gray-400 hover:text-gray-200'
+                      ? 'bg-gray-200 text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
                   }`}
                   title="Table View"
                 >
@@ -363,7 +347,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
               className={`px-3 py-1 rounded-lg font-medium transition-colors whitespace-nowrap cursor-pointer ${
                 typeFilter === 'all'
                   ? 'bg-emerald-600 text-white shadow'
-                  : 'bg-[#111c2e] text-gray-400 hover:text-gray-200 border border-gray-800'
+                  : 'bg-white text-gray-500 hover:text-gray-700 border border-gray-200'
               }`}
             >
               All Documents ({documents.length})
@@ -373,7 +357,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
               className={`px-3 py-1 rounded-lg font-medium transition-colors whitespace-nowrap cursor-pointer flex items-center space-x-1.5 ${
                 typeFilter === 'quotation'
                   ? 'bg-blue-600 text-white shadow'
-                  : 'bg-[#111c2e] text-gray-400 hover:text-gray-200 border border-gray-800'
+                  : 'bg-white text-gray-500 hover:text-gray-700 border border-gray-200'
               }`}
             >
               <FileSpreadsheet className="w-3 h-3 text-blue-400" />
@@ -383,8 +367,8 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
               onClick={() => setTypeFilter('work_order')}
               className={`px-3 py-1 rounded-lg font-medium transition-colors whitespace-nowrap cursor-pointer flex items-center space-x-1.5 ${
                 typeFilter === 'work_order'
-                  ? 'bg-emerald-700 text-white shadow'
-                  : 'bg-[#111c2e] text-gray-400 hover:text-gray-200 border border-gray-800'
+                  ? 'bg-emerald-600 text-white shadow'
+                  : 'bg-white text-gray-500 hover:text-gray-700 border border-gray-200'
               }`}
             >
               <FileCheck className="w-3 h-3 text-emerald-400" />
@@ -394,8 +378,8 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
               onClick={() => setTypeFilter('purchase_order')}
               className={`px-3 py-1 rounded-lg font-medium transition-colors whitespace-nowrap cursor-pointer flex items-center space-x-1.5 ${
                 typeFilter === 'purchase_order'
-                  ? 'bg-amber-600 text-white shadow'
-                  : 'bg-[#111c2e] text-gray-400 hover:text-gray-200 border border-gray-800'
+                  ? 'bg-amber-500 text-white shadow'
+                  : 'bg-white text-gray-500 hover:text-gray-700 border border-gray-200'
               }`}
             >
               <Package className="w-3 h-3 text-amber-400" />
@@ -405,8 +389,8 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
               onClick={() => setTypeFilter('invoice')}
               className={`px-3 py-1 rounded-lg font-medium transition-colors whitespace-nowrap cursor-pointer flex items-center space-x-1.5 ${
                 typeFilter === 'invoice'
-                  ? 'bg-rose-700 text-white shadow'
-                  : 'bg-[#111c2e] text-gray-400 hover:text-gray-200 border border-gray-800'
+                  ? 'bg-rose-600 text-white shadow'
+                  : 'bg-white text-gray-500 hover:text-gray-700 border border-gray-200'
               }`}
             >
               <Receipt className="w-3 h-3 text-rose-400" />
@@ -416,8 +400,8 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
               onClick={() => setTypeFilter('technical_specs')}
               className={`px-3 py-1 rounded-lg font-medium transition-colors whitespace-nowrap cursor-pointer flex items-center space-x-1.5 ${
                 typeFilter === 'technical_specs'
-                  ? 'bg-teal-700 text-white shadow'
-                  : 'bg-[#111c2e] text-gray-400 hover:text-gray-200 border border-gray-800'
+                  ? 'bg-teal-600 text-white shadow'
+                  : 'bg-white text-gray-500 hover:text-gray-700 border border-gray-200'
               }`}
             >
               <Layers className="w-3 h-3 text-teal-400" />
@@ -428,19 +412,19 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
 
         {/* Documents Grid / Table View */}
         {filteredDocs.length === 0 ? (
-          <div className="bg-[#111c2e] border border-gray-800 rounded-2xl p-12 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-gray-800 flex items-center justify-center text-gray-500 mx-auto mb-3">
+          <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center">
+            <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-500 mx-auto mb-3">
               <FilePlus className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-bold text-white">No documents found</h3>
-            <p className="text-xs text-gray-400 max-w-md mx-auto mt-1 mb-4">
+            <h3 className="text-base font-bold text-gray-900">No documents found</h3>
+            <p className="text-xs text-gray-500 max-w-md mx-auto mt-1 mb-4">
               {searchQuery
                 ? 'Try adjusting your search query or filter criteria.'
                 : 'Get started by creating a commercial quotation, labour work order, or tax invoice for this project.'}
             </p>
             <button
               onClick={() => setIsCreateDocModalOpen(true)}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-lg shadow-emerald-950/40 inline-flex items-center space-x-2 cursor-pointer"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-sm inline-flex items-center space-x-2 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Create First Document</span>
@@ -454,7 +438,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
               return (
                 <div
                   key={doc.id}
-                  className="bg-[#111c2e] hover:bg-[#142238] border border-gray-800 hover:border-emerald-500/40 rounded-2xl p-5 transition-all shadow-lg flex flex-col justify-between group"
+                  className="bg-white hover:bg-gray-50 border border-gray-200 hover:border-emerald-500/40 rounded-2xl p-5 transition-all shadow-sm hover:shadow-lg flex flex-col justify-between group"
                 >
                   <div>
                     {/* Top Row: Type Tag & Status */}
@@ -487,7 +471,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                         {/* Status change dropdown */}
                         {activeStatusMenuDocId === doc.id && (
                           <div
-                            className="absolute right-0 mt-1 w-36 bg-[#16202f] border border-gray-700 rounded-xl shadow-2xl py-1 z-30 text-[11px]"
+                            className="absolute right-0 mt-1 w-36 bg-[#16202f] border border-gray-200 rounded-xl shadow-2xl py-1 z-30 text-[11px]"
                             onClick={(e) => e.stopPropagation()}
                           >
                             {(
@@ -506,7 +490,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                                   onUpdateDocumentStatus(doc.id, st);
                                   setActiveStatusMenuDocId(null);
                                 }}
-                                className="w-full text-left px-3 py-1.5 hover:bg-gray-800 text-gray-200 capitalize flex items-center justify-between"
+                                className="w-full text-left px-3 py-1.5 hover:bg-gray-100 text-gray-700 capitalize flex items-center justify-between"
                               >
                                 <span>{st.replace('_', ' ')}</span>
                                 {doc.status === st && (
@@ -522,20 +506,20 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                     {/* Document Title & Reference Number */}
                     <h3
                       onClick={() => onOpenDocument(doc.id)}
-                      className="font-bold text-white text-sm group-hover:text-emerald-300 transition-colors line-clamp-2 cursor-pointer"
+                      className="font-bold text-gray-900 text-sm group-hover:text-emerald-300 transition-colors line-clamp-2 cursor-pointer"
                     >
                       {doc.title}
                     </h3>
-                    <div className="mt-1 flex items-center space-x-2 text-[11px] font-mono text-gray-400">
-                      <span className="bg-gray-800/80 px-1.5 py-0.5 rounded border border-gray-700/60">
+                    <div className="mt-1 flex items-center space-x-2 text-[11px] font-mono text-gray-500">
+                      <span className="bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200/60">
                         {doc.docNumber}
                       </span>
                     </div>
 
                     {/* Valuation / Amount */}
                     {doc.amount && doc.amount !== 'N/A' && (
-                      <div className="mt-3 p-2 rounded-xl bg-gray-900/60 border border-gray-800/60 flex items-center justify-between">
-                        <span className="text-[11px] text-gray-400">Document Value:</span>
+                      <div className="mt-3 p-2 rounded-xl bg-gray-900/60 border border-gray-200/60 flex items-center justify-between">
+                        <span className="text-[11px] text-gray-500">Document Value:</span>
                         <span className="font-bold text-emerald-400 text-xs">
                           {doc.amount}
                         </span>
@@ -544,22 +528,22 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                   </div>
 
                   {/* Bottom Footer Actions */}
-                  <div className="mt-4 pt-3 border-t border-gray-800/80 flex items-center justify-between text-xs">
-                    <span className="text-[10px] text-gray-400">
+                  <div className="mt-4 pt-3 border-t border-gray-200 flex items-center justify-between text-xs">
+                    <span className="text-[10px] text-gray-500">
                       Updated {doc.lastModified}
                     </span>
 
                     <div className="flex items-center space-x-1">
                       <button
                         onClick={() => onDuplicateDocument(doc.id)}
-                        className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors cursor-pointer"
+                        className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
                         title="Duplicate Document"
                       >
                         <Copy className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => onDeleteDocument(doc.id)}
-                        className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer"
+                        className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
                         title="Delete Document"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -579,11 +563,11 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
           </div>
         ) : (
           /* Table View */
-          <div className="bg-[#111c2e] border border-gray-800 rounded-2xl overflow-hidden shadow-xl text-xs">
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm text-xs">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-gray-800 bg-[#0d1624] text-gray-400 uppercase text-[10px] tracking-wider font-semibold">
+                  <tr className="border-b border-gray-200 bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wider font-semibold">
                     <th className="py-3 px-4">Document Title & Ref</th>
                     <th className="py-3 px-4">Type</th>
                     <th className="py-3 px-4">Amount</th>
@@ -592,20 +576,20 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-800/80 text-gray-300">
+                <tbody className="divide-y divide-gray-200 text-gray-600">
                   {filteredDocs.map((doc) => {
                     const statusInfo = getStatusBadge(doc.status);
                     return (
                       <tr
                         key={doc.id}
                         onClick={() => onOpenDocument(doc.id)}
-                        className="hover:bg-[#15233a] transition-colors cursor-pointer group"
+                        className="hover:bg-gray-50 transition-colors cursor-pointer group"
                       >
                         <td className="py-3.5 px-4">
-                          <div className="font-semibold text-white group-hover:text-emerald-300 transition-colors">
+                          <div className="font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors">
                             {doc.title}
                           </div>
-                          <div className="text-[11px] font-mono text-gray-400">
+                          <div className="text-[11px] font-mono text-gray-500">
                             {doc.docNumber}
                           </div>
                         </td>
@@ -619,7 +603,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                             <span className="capitalize">{doc.docType.replace('_', ' ')}</span>
                           </span>
                         </td>
-                        <td className="py-3.5 px-4 font-semibold text-emerald-400">
+                        <td className="py-3.5 px-4 font-semibold text-emerald-600">
                           {doc.amount || '—'}
                         </td>
                         <td className="py-3.5 px-4">
@@ -629,21 +613,21 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                             <span>{statusInfo.label}</span>
                           </span>
                         </td>
-                        <td className="py-3.5 px-4 text-gray-400 text-[11px]">
+                        <td className="py-3.5 px-4 text-gray-500 text-[11px]">
                           {doc.lastModified}
                         </td>
                         <td className="py-3.5 px-4 text-right" onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center justify-end space-x-1">
                             <button
                               onClick={() => onDuplicateDocument(doc.id)}
-                              className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors cursor-pointer"
+                              className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
                               title="Duplicate"
                             >
                               <Copy className="w-3.5 h-3.5" />
                             </button>
                             <button
                               onClick={() => onDeleteDocument(doc.id)}
-                              className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer"
+                              className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
                               title="Delete"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -674,6 +658,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
         project={project}
         onCreateDocument={onCreateDocument}
       />
+      </div>
     </div>
   );
 };

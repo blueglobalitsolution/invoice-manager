@@ -288,30 +288,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
         )}
       </div>
 
-      {/* Page Assignment / Move to Page Selector Bar */}
-      {!isGlobalHeader && (
-        <div className="px-4 py-2 bg-[#0d1522] border-b border-gray-800 flex items-center justify-between text-xs">
-          <span className="text-gray-400 font-semibold text-[11px] flex items-center space-x-1">
-            <span>Assigned Page:</span>
-          </span>
-          <select
-            value={currentSectionPage}
-            onChange={(e) => {
-              const targetPage = Number(e.target.value);
-              const updatedQ = moveQuotationSectionToPage(q, activeSectionId, targetPage);
-              updateQuotation(updatedQ);
-            }}
-            className="bg-[#172334] border border-blue-700/60 rounded px-2.5 py-1 text-blue-300 font-bold text-xs focus:outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer shadow-xs"
-            title="Change the page where this section appears"
-          >
-            {outlineGroups.map((g) => (
-              <option key={g.pageNum} value={g.pageNum}>
-                Page {g.pageNum}: {g.groupTitle}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+
 
       {/* Main Section Content Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs select-text">
@@ -352,6 +329,51 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   value={q.companyGstNo}
                   onChange={(e) => updateQuotation({ companyGstNo: e.target.value })}
                   className="w-full mt-1 px-2.5 py-1.5 bg-[#0b101b] border border-gray-700 rounded text-xs text-white focus:border-blue-500 focus:outline-none font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="bg-[#152033] p-3.5 rounded-lg border border-gray-800 space-y-3">
+              <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
+                <MapPin className="w-3.5 h-3.5" />
+                <span>Footer Details</span>
+              </h3>
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-400">Address (Footer)</label>
+                <textarea
+                  value={q.companyAddressFooter || ''}
+                  onChange={(e) => updateQuotation({ companyAddressFooter: e.target.value })}
+                  className="w-full mt-1 px-2.5 py-1.5 bg-[#0b101b] border border-gray-700 rounded text-xs text-white focus:border-blue-500 focus:outline-none"
+                  rows={2}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[11px] font-semibold text-gray-400">Phone</label>
+                  <input
+                    type="text"
+                    value={q.companyPhone || ''}
+                    onChange={(e) => updateQuotation({ companyPhone: e.target.value })}
+                    className="w-full mt-1 px-2.5 py-1.5 bg-[#0b101b] border border-gray-700 rounded text-xs text-white focus:border-blue-500 focus:outline-none font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-gray-400">Email</label>
+                  <input
+                    type="text"
+                    value={q.companyEmail || ''}
+                    onChange={(e) => updateQuotation({ companyEmail: e.target.value })}
+                    className="w-full mt-1 px-2.5 py-1.5 bg-[#0b101b] border border-gray-700 rounded text-xs text-white focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-400">Website</label>
+                <input
+                  type="text"
+                  value={q.companyWebsite || ''}
+                  onChange={(e) => updateQuotation({ companyWebsite: e.target.value })}
+                  className="w-full mt-1 px-2.5 py-1.5 bg-[#0b101b] border border-gray-700 rounded text-xs text-white focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>

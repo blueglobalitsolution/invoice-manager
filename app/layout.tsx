@@ -4,17 +4,17 @@ import './globals.css'; // Global styles
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'My Google AI Studio App',
-  description: 'An application built with Google AI Studio.',
+  title: 'Contracti',
+  description: 'Enterprise Collaborative Contract & LaTeX Builder.',
   openGraph: {
-    title: 'My Google AI Studio App',
-    description: 'An application built with Google AI Studio.',
+    title: 'Contracti',
+    description: 'Enterprise Collaborative Contract & LaTeX Builder.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'My Google AI Studio App',
-    description: 'An application built with Google AI Studio.',
+    title: 'Contracti',
+    description: 'Enterprise Collaborative Contract & LaTeX Builder.',
   },
 };
 

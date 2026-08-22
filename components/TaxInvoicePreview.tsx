@@ -322,7 +322,24 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
       </div>
 
       {/* ================= FOOTER ================= */}
-      <div className="mt-auto pt-4 border-t-[0.8pt] border-black text-[10px] leading-tight text-black">
+      <div
+        onClick={() => onSelectSection?.('header_footer')}
+        onMouseEnter={() => onHoverSection?.('header_footer')}
+        onMouseLeave={() => onHoverSection?.(null)}
+        className={`mt-auto pt-4 border-t-[0.8pt] border-black text-[10px] leading-tight text-black p-1 rounded relative cursor-pointer transition-all duration-200 ${
+          isHeaderActive
+            ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+            : isHeaderHovered
+            ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
+            : 'hover:ring-1 hover:ring-emerald-300/40'
+        }`}
+        title="Header & Footer (Click to edit)"
+      >
+        {isHeaderHovered && !isHeaderActive && (
+          <span className="absolute -top-6 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+            Header & Footer
+          </span>
+        )}
         <div className="font-medium">{inv.companyPhone || '+91 97254 45370'}</div>
         <div className="font-medium mt-0.5">
           {inv.companyAddressFooter || 'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243'}

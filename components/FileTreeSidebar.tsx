@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   ChevronDown,
   ChevronRight,
@@ -11,6 +12,16 @@ import {
   Sparkles,
   ArrowRightLeft,
   Check,
+  Bell,
+  Columns2,
+  Home,
+  Package,
+  Layers,
+  Settings,
+  FileText,
+  Clock,
+  Layout,
+  FileCheck,
 } from 'lucide-react';
 import { LatexDocument, CustomSectionItem, SectionContentType } from '@/types/document';
 import { PREDEFINED_SECTION_TYPES, createSectionFromPreset } from '@/lib/section-presets';
@@ -52,21 +63,8 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
   onReorderSections,
   onMoveSectionToPage,
 }) => {
-  const [isOutlineOpen, setIsOutlineOpen] = useState(true);
-  const [openGroups, setOpenGroups] = useState<Record<number, boolean>>({
-    1: true,
-    2: true,
-    3: true,
-    4: true,
-    5: true,
-    6: true,
-    7: true,
-    8: true,
-    9: true,
-    10: true,
-  });
-
-  // Dropdown & Modal state for Add Section
+  const router = useRouter();
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<number, boolean>>({});
   const [dropdownPageNum, setDropdownPageNum] = useState<number | null>(null);
   const [modalTargetPageNum, setModalTargetPageNum] = useState<number | null>(null);
   const [modalTargetGroupTitle, setModalTargetGroupTitle] = useState<string>('');
@@ -99,10 +97,6 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
     };
   }, []);
 
-  const toggleGroup = (groupNum: number) => {
-    setOpenGroups((prev) => ({ ...prev, [groupNum]: !prev[groupNum] }));
-  };
-
   const po = document.purchaseOrder;
   const q = document.quotation;
   const inv = document.taxInvoice;
@@ -117,76 +111,82 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
       {
         pageNum: 1,
         groupId: 'page_1',
-        groupTitle: 'Tax Invoice (GST Format)',
+        groupTitle: 'Tax Invoice Details',
         isCustomGroup: false,
         sections: [
-          { id: 'header_footer', label: 'Company Header & Footer', icon: FilePlus, isCustom: false, pageNumber: 1 },
-          { id: 'client_info', label: 'Client & Invoice Info', icon: FilePlus, isCustom: false, pageNumber: 1 },
-          { id: 'items', label: 'Bill of Items & HSN Rates', icon: FilePlus, isCustom: false, pageNumber: 1 },
-          { id: 'statutory', label: 'Bank Details & Terms', icon: FilePlus, isCustom: false, pageNumber: 1 },
+          { id: 'letterhead', label: 'Letterhead Config', icon: Layers, isCustom: false, pageNumber: 1 },
+          { id: 'invoice_meta', label: 'Invoice Summary', icon: FileText, isCustom: false, pageNumber: 1 },
+          { id: 'invoice_items', label: 'Line Items Table', icon: Package, isCustom: false, pageNumber: 1 },
+          { id: 'signatures', label: 'Execution Blocks', icon: FileCheck, isCustom: false, pageNumber: 1 },
         ],
       },
     ];
   }
 
-  // Drag and drop handlers
-  const handleDragStart = (e: React.DragEvent, secId: string) => {
-    e.dataTransfer.setData('text/plain', secId);
+  const toggleGroup = (pageNum: number) => {
+    setCollapsedGroups((prev) => ({
+      ...prev,
+      [pageNum]: !prev[pageNum],
+    }));
+  };
+
+  const handleDragStart = (e: React.DragEvent, id: string) => {
+    setDraggedSecId(id);
+    e.dataTransfer.setData('text/plain', id);
     e.dataTransfer.effectAllowed = 'move';
-    setDraggedSecId(secId);
   };
 
   const handleGroupDragOver = (e: React.DragEvent, pageNum: number) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    if (dragOverGroupId !== pageNum) {
-      setDragOverGroupId(pageNum);
-    }
+    if (draggedSecId === null) return;
+    setDragOverGroupId(pageNum);
+    setDragOverSecId(null);
   };
 
-  const handleSectionDragOver = (e: React.DragEvent, secId: string, pageNum: number) => {
+  const handleDropOnGroup = (e: React.DragEvent, pageNum: number) => {
     e.preventDefault();
-    e.stopPropagation();
-    e.dataTransfer.dropEffect = 'move';
+    const sourceId = e.dataTransfer.getData('text/plain') || draggedSecId;
+    if (!sourceId) return;
 
-    const rect = e.currentTarget.getBoundingClientRect();
-    const midY = rect.top + rect.height / 2;
-    const isAbove = e.clientY < midY;
+    if (onMoveSectionToPage) {
+      onMoveSectionToPage(sourceId, pageNum);
+    } else if (onReorderSections) {
+      onReorderSections(sourceId, '', pageNum);
+    }
 
-    setDropPosition(isAbove ? 'before' : 'after');
-    setDragOverSecId(secId);
+    handleDragEnd();
+  };
+
+  const handleSectionDragOver = (e: React.DragEvent, targetId: string, pageNum: number) => {
+    e.preventDefault();
+    if (draggedSecId === null || draggedSecId === targetId) return;
+
+    setDragOverSecId(targetId);
     setDragOverGroupId(pageNum);
+
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    if (y < rect.height / 2) {
+      setDropPosition('before');
+    } else {
+      setDropPosition('after');
+    }
   };
 
   const handleDragLeave = () => {
     setDragOverSecId(null);
   };
 
-  const handleDropOnSection = (e: React.DragEvent, targetSecId: string, targetPageNum: number) => {
+  const handleDropOnSection = (e: React.DragEvent, targetId: string, pageNum: number) => {
     e.preventDefault();
-    e.stopPropagation();
     const sourceId = e.dataTransfer.getData('text/plain') || draggedSecId;
-    if (sourceId && onReorderSections) {
-      onReorderSections(sourceId, targetSecId, targetPageNum);
-    }
-    setDraggedSecId(null);
-    setDragOverSecId(null);
-    setDragOverGroupId(null);
-  };
+    if (!sourceId || sourceId === targetId) return;
 
-  const handleDropOnGroup = (e: React.DragEvent, targetPageNum: number) => {
-    e.preventDefault();
-    const sourceId = e.dataTransfer.getData('text/plain') || draggedSecId;
-    if (sourceId) {
-      if (onMoveSectionToPage) {
-        onMoveSectionToPage(sourceId, targetPageNum);
-      } else if (onReorderSections) {
-        onReorderSections(sourceId, '', targetPageNum);
-      }
+    if (onReorderSections) {
+      onReorderSections(sourceId, targetId, pageNum);
     }
-    setDraggedSecId(null);
-    setDragOverSecId(null);
-    setDragOverGroupId(null);
+
+    handleDragEnd();
   };
 
   const handleDragEnd = () => {
@@ -211,180 +211,194 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
     setDropdownPageNum(null);
   };
 
-  return (
-    <aside className="w-64 bg-[#16202c] border-r border-gray-800 flex flex-col justify-between shrink-0 select-none text-xs text-gray-200 overflow-hidden relative">
-      {/* Sections Tree Outline */}
-      <div className="flex-1 flex flex-col overflow-hidden bg-[#16202c]">
-        {/* Header with "+ Group" Button */}
-        <div className="h-10 px-2.5 flex items-center justify-between border-b border-gray-800/80 bg-[#121924] shrink-0 text-gray-200">
-          <button
-            onClick={() => setIsOutlineOpen(!isOutlineOpen)}
-            className="flex items-center space-x-1.5 font-semibold hover:text-white cursor-pointer"
-          >
-            {isOutlineOpen ? (
-              <ChevronDown className="w-3.5 h-3.5 text-emerald-400" />
-            ) : (
-              <ChevronRight className="w-3.5 h-3.5 text-emerald-400" />
-            )}
-            <span className="text-xs tracking-wide">Document Outline</span>
-          </button>
+  const SUBSECTION_MAP: Record<string, string[]> = {
+    'info': ['Parties Details', 'Project Details', 'Letterhead Config'],
+    'scope': ['Scope of Work Checklist'],
+    'rates': ['Billing Items & Totals'],
+    'scope_contractor': ['Contractor Obligations'],
+    'payment_terms': ['Milestones & Payment Clauses'],
+    'measurement': ['Quality, Materials & Safety'],
+    'terms': ['Labour Compliance & Completion'],
+    'page3_terms': ['Warranty, Termination & Rules'],
+    'signatures': ['Dual Authorization Blocks'],
+    'q_cover_info': ['Recipient Address', 'Reference & Date'],
+    'q_cover_intro': ['Enquiry Subject', 'Intro Paragraphs', 'Signatory Profile'],
+    'q_tech_details': ['Technical Specification Grid'],
+    'q_mat_specs': ['Material Quality Matrix'],
+    'q_boq_items': ['Pricing BOQ Items', 'Subtotal & Tax Calculations'],
+    'q_payment_terms_fab': ['Fabrication Milestones'],
+    'q_payment_terms_civil': ['Civil Milestones'],
+    'q_delivery_schedule': ['Timeline Milestones', 'Prerequisites Check'],
+    'q_vendors_part1': ['Vendor Registrations (1-14)'],
+    'q_vendors_part2': ['Hardware & Primer (15-25)'],
+    'q_taxes_notes': ['Tax Clauses', 'General Covenants', 'Site Conditions'],
+    'q_terms_part1': ['Commercial Covenants (1-7)'],
+    'q_terms_part2': ['Commercial Covenants (8-13)'],
+    'q_terms_part3': ['Commercial Covenants (14-17)'],
+    'q_exclusions': ['Scope of Exclusions Checklist'],
+    'q_signatures': ['Special Disclaimers', 'Authorization Blocks'],
+  };
 
-          <button
-            onClick={onAddPage}
-            className="px-2 py-1 bg-[#15803d] hover:bg-[#16a34a] text-white rounded text-[10.5px] font-bold flex items-center space-x-1 shadow-xs transition-colors cursor-pointer"
-            title="Add a new Page Group / Annexure"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>+ Group</span>
-          </button>
+  const getSubsections = (sec: OutlineSectionItem): string[] => {
+    if (sec.isCustom && sec.customData) {
+      const type = sec.customData.contentType;
+      if (type === 'bullet_list') return [`Bullet Items (${sec.customData.bullets?.length || 0})`];
+      if (type === 'paragraphs') return [`Paragraph Blocks (${sec.customData.paragraphs?.length || 0})`];
+      if (type === 'table') return [`Table Rows (${sec.customData.tableRows?.length || 0})`];
+      if (type === 'key_value') return [`Key-Value Pairs (${sec.customData.keyValuePairs?.length || 0})`];
+      if (type === 'callout') return ['Callout Block Content'];
+      return ['Section Inputs'];
+    }
+    return SUBSECTION_MAP[sec.id] || ['Section Content'];
+  };
+
+  const getGroupIcon = (pageNum: number) => {
+    return FileText;
+  };
+
+  return (
+    <aside className="w-64 bg-[#f9fafb] border-r border-gray-200 flex flex-col justify-between shrink-0 select-none text-xs text-gray-700 overflow-hidden relative h-full min-h-0">
+      
+      {/* Sections Tree Outline */}
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+        
+        {/* Brand Header */}
+        <div className="h-14 px-4 flex items-center justify-between border-b border-gray-200 bg-white shrink-0">
+          <div className="flex items-center space-x-2.5">
+            <svg className="w-5 h-5 text-[#0d3479]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+            </svg>
+            <span className="font-bold text-sm text-gray-900 tracking-tight">Contracti</span>
+          </div>
+          
+          <div className="flex items-center space-x-1 shrink-0">
+          </div>
         </div>
 
-        {/* Sections Tree List with Drag & Drop */}
-        {isOutlineOpen && (
-          <div className="p-2 overflow-y-auto flex-1 text-xs space-y-2.5 scrollbar-thin">
-            {groups.map((grp) => {
-              const isOpen = openGroups[grp.pageNum] ?? true;
-              const isDropdownOpen = dropdownPageNum === grp.pageNum;
-              const hasOpenMoveMenu = grp.sections.some((s) => s.id === moveMenuSecId);
-              const isGroupTargeted =
-                dragOverGroupId === grp.pageNum && draggedSecId !== null && !dragOverSecId;
 
-              return (
+
+        {/* Logical Flow List */}
+        <div className="p-3 overflow-y-auto flex-1 text-xs space-y-1.5 scrollbar-thin">
+          {groups.map((grp) => {
+            const isDropdownOpen = dropdownPageNum === grp.pageNum;
+            const hasOpenMoveMenu = grp.sections.some((s) => s.id === moveMenuSecId);
+            const isGroupTargeted =
+              dragOverGroupId === grp.pageNum && draggedSecId !== null && !dragOverSecId;
+            const isCollapsed = collapsedGroups[grp.pageNum] || false;
+            const GroupIcon = getGroupIcon(grp.pageNum);
+
+            return (
+              <div
+                key={grp.pageNum}
+                onDragOver={(e) => handleGroupDragOver(e, grp.pageNum)}
+                onDrop={(e) => handleDropOnGroup(e, grp.pageNum)}
+                className={`space-y-1 relative ${
+                  isDropdownOpen || hasOpenMoveMenu ? 'z-30' : 'z-0'
+                }`}
+              >
+                {/* Collapsible Group Header Row */}
                 <div
-                  key={grp.pageNum}
-                  onDragOver={(e) => handleGroupDragOver(e, grp.pageNum)}
-                  onDrop={(e) => handleDropOnGroup(e, grp.pageNum)}
-                  className={`space-y-1 bg-[#131c28]/80 p-1.5 rounded border transition-all duration-150 relative ${
-                    isDropdownOpen || hasOpenMoveMenu ? 'z-30' : 'z-0'
-                  } ${
+                  onClick={() => toggleGroup(grp.pageNum)}
+                  className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors cursor-pointer ${
                     isGroupTargeted
-                      ? 'border-emerald-400 bg-emerald-950/40 ring-2 ring-emerald-500/50 shadow-md'
-                      : 'border-gray-800/80'
+                      ? 'border border-emerald-400 bg-emerald-50/50'
+                      : 'hover:bg-gray-100/70 text-gray-800'
                   }`}
                 >
-                  {/* Group Header */}
-                  <div className="flex items-center justify-between relative">
+                  <div className="flex items-center space-x-2.5 min-w-0">
+                    <GroupIcon className="w-4 h-4 text-gray-500 shrink-0" />
+                    <span className="text-xs font-bold text-gray-900 truncate">
+                      Page {grp.pageNum}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center space-x-1 shrink-0 ml-1">
+                    {/* Add Section Action trigger */}
                     <button
-                      onClick={() => toggleGroup(grp.pageNum)}
-                      className="flex-1 flex items-center space-x-1.5 text-left text-gray-200 font-semibold text-[11px] truncate hover:text-white cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDropdownPageNum(isDropdownOpen ? null : grp.pageNum);
+                      }}
+                      className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-gray-700 transition-colors"
+                      title="Add Section"
                     >
-                      {isOpen ? (
-                        <ChevronDown className="w-3 h-3 text-emerald-400 shrink-0" />
-                      ) : (
-                        <ChevronRight className="w-3 h-3 text-emerald-400 shrink-0" />
-                      )}
-                      <span className="truncate">{grp.groupTitle}</span>
+                      <Plus className="w-3.5 h-3.5" />
                     </button>
 
-                    <div className="flex items-center space-x-1 shrink-0 ml-1">
-                      {/* Section Add Dropdown Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setDropdownPageNum(isDropdownOpen ? null : grp.pageNum);
-                        }}
-                        className={`px-1.5 py-0.5 rounded text-[10px] font-semibold flex items-center space-x-0.5 border transition-colors cursor-pointer ${
-                          isDropdownOpen
-                            ? 'bg-emerald-600 text-white border-emerald-400'
-                            : 'bg-emerald-950/90 hover:bg-emerald-800 text-emerald-300 hover:text-white border-emerald-700/60'
-                        }`}
-                        title="Add section to this page"
-                      >
-                        <FilePlus className="w-3 h-3 text-emerald-300" />
-                        <span>+ Sec</span>
-                        <ChevronDown className="w-2.5 h-2.5 ml-0.5 opacity-80" />
-                      </button>
-
-                      {onDeletePage && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDeletePage(grp.pageNum, grp.groupId);
-                          }}
-                          className="p-1 text-gray-400 hover:text-red-400 hover:bg-red-950/60 rounded cursor-pointer transition-colors"
-                          title={`Delete Page ${grp.pageNum} (Can be undone)`}
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Pre-defined Section Types Dropdown Menu */}
-                    {isDropdownOpen && (
-                      <div
-                        ref={dropdownRef}
-                        onClick={(e) => e.stopPropagation()}
-                        className="absolute right-0 top-7 w-56 bg-[#111927] border border-emerald-700/80 rounded-lg shadow-2xl z-40 p-1.5 text-xs text-gray-200 animate-in fade-in zoom-in-95 duration-100"
-                      >
-                        <div className="px-2 py-1 text-[10px] font-bold uppercase text-emerald-400 border-b border-gray-800/80 flex items-center justify-between">
-                          <span>Add Section Type</span>
-                          <span className="text-[9px] text-gray-400 font-mono">
-                            Page {grp.pageNum}
-                          </span>
-                        </div>
-
-                        <div className="py-1 space-y-0.5">
-                          {PREDEFINED_SECTION_TYPES.map((typeOption) => {
-                            const Icon = typeOption.icon;
-                            return (
-                              <button
-                                key={typeOption.type}
-                                onClick={() => handleQuickAddType(typeOption.type, grp.pageNum)}
-                                className="w-full text-left px-2 py-1.5 rounded hover:bg-emerald-950/70 hover:text-white flex items-center space-x-2 text-gray-300 transition-colors cursor-pointer group/item"
-                              >
-                                <div className="p-1 bg-gray-800 group-hover/item:bg-emerald-800 text-emerald-400 group-hover/item:text-white rounded">
-                                  <Icon className="w-3.5 h-3.5" />
-                                </div>
-                                <div className="flex-1 truncate">
-                                  <div className="font-semibold text-[11px] leading-tight">
-                                    {typeOption.shortLabel}
-                                  </div>
-                                  <div className="text-[9.5px] text-gray-400 truncate">
-                                    {typeOption.badge}
-                                  </div>
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
-
-                        <div className="pt-1 border-t border-gray-800/80 mt-1">
-                          <button
-                            onClick={() => handleOpenCustomizer(grp.pageNum, grp.groupTitle)}
-                            className="w-full px-2 py-1.5 bg-[#182333] hover:bg-emerald-900/60 text-emerald-300 hover:text-white rounded text-[10.5px] font-bold flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
-                          >
-                            <Sparkles className="w-3 h-3 text-emerald-400" />
-                            <span>More Presets & Options...</span>
-                          </button>
-                        </div>
-                      </div>
+                    {isCollapsed ? (
+                      <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+                    ) : (
+                      <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
                     )}
                   </div>
 
-                  {/* Section Items with Drag & Drop Reordering and Cross-Page Movement */}
-                  {isOpen && (
-                    <div className="pl-1 space-y-1 border-l-2 border-emerald-900/50 ml-1 mt-1 min-h-[24px]">
-                      {grp.sections.length === 0 && (
-                        <div
-                          onDragOver={(e) => handleGroupDragOver(e, grp.pageNum)}
-                          onDrop={(e) => handleDropOnGroup(e, grp.pageNum)}
-                          className="text-[10px] italic text-gray-500 py-2 text-center border border-dashed border-gray-700/60 rounded"
-                        >
-                          Drop sections here
+                  {/* Pre-defined Section Types Dropdown Menu */}
+                  {isDropdownOpen && (
+                    <div
+                      ref={dropdownRef}
+                      onClick={(e) => e.stopPropagation()}
+                      className="absolute right-0 top-9 w-56 bg-white border border-gray-200 rounded-xl shadow-2xl z-40 p-1.5 text-xs text-gray-700 animate-in fade-in zoom-in-95 duration-100"
+                    >
+                      <div className="px-2 py-1.5 text-[10px] font-bold uppercase text-gray-500 border-b border-gray-100 flex items-center justify-between">
+                        <span>Add Section Type</span>
+                        <span className="text-[9px] text-[#0d3479] font-mono">
+                          Page {grp.pageNum}
+                        </span>
+                      </div>
+
+                      <div className="py-1 space-y-0.5 max-h-64 overflow-y-auto">
+                        {PREDEFINED_SECTION_TYPES.map((typeOption) => {
+                          const Icon = typeOption.icon;
+                          return (
+                            <button
+                              key={typeOption.type}
+                              onClick={() => handleQuickAddType(typeOption.type, grp.pageNum)}
+                              className="w-full text-left px-2 py-1.5 hover:bg-gray-100 rounded-lg flex items-center space-x-2 text-xs text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
+                            >
+                              <Icon className="w-3.5 h-3.5 text-gray-400" />
+                              <span>{typeOption.label}</span>
+                            </button>
+                          );
+                        })}
+                        <div className="border-t border-gray-100 my-1 pt-1">
+                          <button
+                            onClick={() => handleOpenCustomizer(grp.pageNum, grp.groupTitle)}
+                            className="w-full text-left px-2 py-1.5 hover:bg-[#0d3479]/10 text-[#0d3479] rounded-lg flex items-center space-x-2 text-xs font-semibold transition-colors cursor-pointer"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>Add Custom Section...</span>
+                          </button>
                         </div>
-                      )}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-                      {grp.sections.map((sec) => {
-                        const isSecActive = activeSectionId === sec.id;
-                        const isSecHovered = hoveredSectionId === sec.id && !isSecActive;
-                        const isDraggingThis = draggedSecId === sec.id;
-                        const isDragOverThis = dragOverSecId === sec.id;
-                        const isMoveMenuOpen = moveMenuSecId === sec.id;
-                        const SecIcon = sec.icon;
+                {/* Subsections List (Show when group is NOT collapsed) */}
+                {!isCollapsed && (
+                  <div className="border-l border-gray-200 ml-4.5 pl-3.5 py-1 space-y-1">
+                    {grp.sections.length === 0 && (
+                      <div
+                        onDragOver={(e) => handleGroupDragOver(e, grp.pageNum)}
+                        onDrop={(e) => handleDropOnGroup(e, grp.pageNum)}
+                        className="text-[10px] italic text-gray-400 py-3 text-center border border-dashed border-gray-200 rounded-lg bg-gray-50/50"
+                      >
+                        Drop sections here
+                      </div>
+                    )}
 
-                        return (
+                    {grp.sections.map((sec) => {
+                      const isSecActive = activeSectionId === sec.id;
+                      const isSecHovered = hoveredSectionId === sec.id && !isSecActive;
+                      const isDraggingThis = draggedSecId === sec.id;
+                      const isDragOverThis = dragOverSecId === sec.id;
+                      const isMoveMenuOpen = moveMenuSecId === sec.id;
+                      const subsections = getSubsections(sec);
+
+                      return (
+                        <div key={sec.id} className="space-y-0.5">
+                          {/* Section Card Row */}
                           <div
-                            key={sec.id}
                             draggable
                             onDragStart={(e) => handleDragStart(e, sec.id)}
                             onDragOver={(e) => handleSectionDragOver(e, sec.id, grp.pageNum)}
@@ -394,67 +408,33 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                             onClick={() => onSelectSection(sec.id)}
                             onMouseEnter={() => onHoverSection?.(sec.id)}
                             onMouseLeave={() => onHoverSection?.(null)}
-                            className={`group/sec relative flex items-center justify-between px-1.5 py-1.5 rounded-md cursor-pointer transition-all duration-150 select-none ${
+                            className={`group/sec relative flex items-center justify-between px-2.5 py-2 rounded-lg transition-all duration-150 cursor-pointer select-none ${
                               isMoveMenuOpen ? 'z-40' : 'z-0'
                             } ${
                               isDraggingThis
-                                ? 'opacity-40 scale-95 border-dashed border-2 border-emerald-400 bg-emerald-950/40 shadow-inner'
+                                ? 'opacity-40 scale-95 border-dashed border-2 border-[#0d3479] bg-[#0d3479]/5 shadow-inner'
                                 : ''
                             } ${
                               isDragOverThis
                                 ? dropPosition === 'before'
-                                  ? 'border-t-2 border-emerald-400 bg-emerald-950/60 shadow-xs'
-                                  : 'border-b-2 border-emerald-400 bg-emerald-950/60 shadow-xs'
+                                  ? 'border-t-2 border-[#0d3479] bg-[#0d3479]/5'
+                                  : 'border-b-2 border-[#0d3479] bg-[#0d3479]/5'
                                 : ''
                             } ${
                               isSecActive
-                                ? 'bg-[#15803d] text-white font-semibold shadow-sm'
+                                ? 'bg-gray-100 text-gray-900 font-semibold'
                                 : isSecHovered
-                                ? 'bg-[#1e2d42] text-white ring-1 ring-emerald-400/80 shadow-xs translate-x-0.5'
-                                : 'text-gray-300 hover:bg-[#1b2535] hover:text-white'
+                                ? 'bg-gray-50 text-gray-900'
+                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                             }`}
-                            title="Drag to move across pages, or click to edit"
                           >
-                            <div className="flex items-center space-x-1.5 truncate flex-1 min-w-0">
-                              {/* Drag Handle */}
-                              <div
-                                className={`p-0.5 rounded flex items-center justify-center cursor-grab active:cursor-grabbing transition-colors shrink-0 ${
-                                  isDraggingThis
-                                    ? 'text-emerald-300 bg-emerald-900/80'
-                                    : isSecActive
-                                    ? 'text-emerald-200 hover:text-white hover:bg-emerald-700/60'
-                                    : isSecHovered
-                                    ? 'text-emerald-400 bg-emerald-950/60'
-                                    : 'text-gray-500 group-hover/sec:text-emerald-400 group-hover/sec:bg-gray-800/80'
-                                }`}
-                                title="Drag handle to reorder or move across pages"
-                              >
-                                <GripVertical className="w-3.5 h-3.5" />
-                              </div>
-
-                              <SecIcon
-                                className={`w-3.5 h-3.5 shrink-0 transition-colors ${
-                                  isSecActive
-                                    ? 'text-white'
-                                    : isSecHovered
-                                    ? 'text-emerald-300 scale-110'
-                                    : 'text-emerald-400'
-                                }`}
-                              />
-                              <span className="truncate text-[11px] flex-1">{sec.label}</span>
-
-                              {/* Sync Indicator when Hovered */}
-                              {isSecHovered && (
-                                <span
-                                  className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 animate-pulse mr-0.5"
-                                  title="Synchronized with Document Preview"
-                                />
-                              )}
+                            <div className="flex items-center space-x-2 truncate flex-1 min-w-0">
+                              <span className="truncate text-xs flex-1">{sec.label}</span>
                             </div>
 
-                            {/* Section Action Controls: Quick Move Page & Delete */}
+                            {/* Section Actions: Reorder & Delete */}
                             <div className="flex items-center space-x-1 shrink-0 ml-1">
-                              {/* Move to Page Popover Button */}
+                              {/* Move Popover Trigger */}
                               <div className={`relative ${isMoveMenuOpen ? 'z-50' : 'z-auto'}`}>
                                 <button
                                   onClick={(e) => {
@@ -463,10 +443,10 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                                   }}
                                   className={`p-1 rounded cursor-pointer transition-opacity ${
                                     isMoveMenuOpen
-                                      ? 'opacity-100 bg-emerald-700 text-white shadow-xs'
-                                      : 'opacity-0 group-hover/sec:opacity-100 text-gray-400 hover:text-emerald-300 hover:bg-gray-800'
+                                      ? 'opacity-100 bg-[#0d3479] text-white'
+                                      : 'opacity-0 group-hover/sec:opacity-100 text-gray-400 hover:text-gray-700 hover:bg-gray-100'
                                   }`}
-                                  title="Move to another page"
+                                  title="Move section"
                                 >
                                   <ArrowRightLeft className="w-2.5 h-2.5" />
                                 </button>
@@ -475,13 +455,10 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                                   <div
                                     ref={moveMenuRef}
                                     onClick={(e) => e.stopPropagation()}
-                                    className="absolute right-0 top-7 w-48 bg-[#0c1420] border border-emerald-500/90 rounded-md shadow-2xl z-50 p-1.5 text-xs text-gray-200 ring-1 ring-black/80 animate-in fade-in zoom-in-95 duration-100"
+                                    className="absolute right-0 top-7 w-48 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 p-1.5 text-xs text-gray-700 animate-in fade-in zoom-in-95 duration-100"
                                   >
-                                    <div className="text-[9.5px] uppercase font-bold text-emerald-400 px-1.5 py-1 border-b border-gray-800 mb-1 flex items-center justify-between">
+                                    <div className="text-[9px] uppercase font-bold text-gray-500 px-1.5 py-1 border-b border-gray-100 mb-1 flex items-center justify-between">
                                       <span className="truncate">Move &quot;{sec.label}&quot;</span>
-                                      <span className="text-[9px] text-gray-400 font-mono shrink-0 ml-1">
-                                        P{sec.pageNumber}
-                                      </span>
                                     </div>
                                     <div className="space-y-0.5 max-h-48 overflow-y-auto">
                                       {groups.map((targetGrp) => (
@@ -496,17 +473,17 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                                             }
                                             setMoveMenuSecId(null);
                                           }}
-                                          className={`w-full text-left px-2 py-1.5 rounded text-[10.5px] flex items-center justify-between transition-colors cursor-pointer ${
+                                          className={`w-full text-left px-2 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors cursor-pointer ${
                                             targetGrp.pageNum === grp.pageNum
-                                              ? 'bg-emerald-900/70 text-emerald-300 font-bold border border-emerald-700/50'
-                                              : 'hover:bg-[#1a2638] text-gray-300 hover:text-white'
+                                              ? 'bg-[#0d3479]/10 text-[#0d3479] font-bold'
+                                              : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
                                           }`}
                                         >
                                           <span className="truncate">
                                             Page {targetGrp.pageNum}: {targetGrp.groupTitle}
                                           </span>
                                           {targetGrp.pageNum === grp.pageNum && (
-                                            <Check className="w-3 h-3 text-emerald-400 shrink-0 ml-1" />
+                                            <Check className="w-3 h-3 text-[#0d3479] shrink-0 ml-1" />
                                           )}
                                         </button>
                                       ))}
@@ -521,26 +498,41 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                                     e.stopPropagation();
                                     onDeleteSection(sec.id);
                                   }}
-                                  className="p-1 text-gray-400 hover:text-red-400 hover:bg-red-950/60 rounded cursor-pointer opacity-0 group-hover/sec:opacity-100 transition-opacity"
-                                  title={`Delete ${sec.label} (Can be undone)`}
+                                  className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded cursor-pointer opacity-0 group-hover/sec:opacity-100 transition-opacity"
+                                  title={`Delete ${sec.label}`}
                                 >
                                   <Trash2 className="w-2.5 h-2.5" />
                                 </button>
                               )}
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
+
+                          {/* Subsections Flow Display */}
+                          {isSecActive && subsections.length > 0 && (
+                            <div className="border-l border-gray-200 ml-4.5 pl-3.5 py-0.5 space-y-0.5 animate-in fade-in duration-150">
+                              {subsections.map((sub, idx) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center space-x-1.5 py-0.5 text-gray-400"
+                                >
+                                  <span className="w-1 h-1 rounded-full bg-gray-300" />
+                                  <span className="text-[10px] truncate">{sub}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Add Section Modal with Full Presets & Live Preview */}
+      {/* Add Section Modal Wrapper */}
       {modalTargetPageNum !== null && (
         <AddSectionModal
           isOpen={true}

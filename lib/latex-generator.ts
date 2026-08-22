@@ -300,7 +300,7 @@ ${customPagesLatex}
       ? '1.25in'
       : '1.0in';
 
-  let tex = `% Created with LaTeX Form Document Builder (Overleaf-Style)
+  let tex = `% Created with Contracti
 \\documentclass[${settings.fontSize}, ${settings.paperSize}, ${settings.columns}]{article}
 
 \\usepackage[utf8]{inputenc}
