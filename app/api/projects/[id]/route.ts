@@ -46,6 +46,7 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
       tags: row.tags ? JSON.parse(row.tags) : [],
       companyProfile: row.companyProfile ? JSON.parse(row.companyProfile) : undefined,
       isArchived: row.isArchived === 1,
+      isFavourite: row.isFavourite === 1,
       documents: documents,
       document: activeDoc ? activeDoc.document : null,
     };
@@ -121,6 +122,11 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
       }
     }
 
+    if (body.isFavourite !== undefined) {
+      fieldsToUpdate.push('isFavourite = ?');
+      values.push(body.isFavourite ? 1 : 0);
+    }
+
     if (fieldsToUpdate.length > 0) {
       values.push(id);
       const updateProjStmt = db.prepare(`
@@ -132,6 +138,33 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
     }
 
     // Update linked Document JSON state if document payload is provided
+    // Save version snapshots before updating
+    const saveVersionSnapshot = (docId: string, projectId: string) => {
+      try {
+        const existingDoc = db.prepare('SELECT document FROM documents WHERE id = ?').get(docId) as { document: string } | undefined;
+        if (existingDoc?.document) {
+          const maxVersion = db.prepare('SELECT MAX(versionNumber) as maxV FROM document_versions WHERE documentId = ?').get(docId) as { maxV: number | null } | undefined;
+          const nextVersion = (maxVersion?.maxV || 0) + 1;
+          db.prepare(`
+            INSERT INTO document_versions (documentId, projectId, versionNumber, savedAt, savedBy, document)
+            VALUES (?, ?, ?, ?, ?, ?)
+          `).run(docId, projectId, nextVersion, new Date().toISOString(), body.savedBy || 'User', existingDoc.document);
+          
+          // Keep only last 50 versions per document
+          const countResult = db.prepare('SELECT COUNT(*) as cnt FROM document_versions WHERE documentId = ?').get(docId) as { cnt: number };
+          if (countResult.cnt > 50) {
+            db.prepare(`
+              DELETE FROM document_versions WHERE documentId = ? AND id NOT IN (
+                SELECT id FROM document_versions WHERE documentId = ? ORDER BY versionNumber DESC LIMIT 50
+              )
+            `).run(docId, docId);
+          }
+        }
+      } catch (err) {
+        console.error('Error saving version snapshot:', err);
+      }
+    };
+
     if (body.documents && Array.isArray(body.documents)) {
       const upsertDocStmt = db.prepare(`
         INSERT INTO documents (id, projectId, title, docType, docNumber, status, lastModified, document)
@@ -157,6 +190,7 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
          }
 
          for (const doc of body.documents) {
+            if (doc.document) saveVersionSnapshot(doc.id, id);
             upsertDocStmt.run(
               doc.id,
               id,
@@ -175,6 +209,7 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
       const docRecord = docCheckStmt.get(id) as { id: string } | undefined;
 
       if (docRecord) {
+        saveVersionSnapshot(docRecord.id, id);
         const updateDocStmt = db.prepare(`
           UPDATE documents
           SET document = ?, lastModified = ?, title = ?

@@ -13,11 +13,15 @@ import { SettingsModal } from '@/components/SettingsModal';
 import { GlobalVariablesModal } from '@/components/GlobalVariablesModal';
 import { TexCodeModal } from '@/components/TexCodeModal';
 import { CreateDocumentModal } from '@/components/CreateDocumentModal';
+import { VersionHistoryPanel } from '@/components/VersionHistoryPanel';
+import { KeyboardShortcutsModal } from '@/components/KeyboardShortcutsModal';
 import { Loader } from '@/components/ui/loader';
 import { LatexDocument, DocumentSettings } from '@/types/document';
 import { ProjectItem, ProjectDocumentItem, ProjectDocStatus, ProjectDocType } from '@/types/project';
 import { LABOUR_PO_TEMPLATE, SAMPLE_TEMPLATES } from '@/lib/templates';
 import { moveQuotationSectionToPage, moveSectionToPage, getQuotationSectionPageNumber } from '@/lib/document-sections';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 export default function EditorPage() {
   const router = useRouter();
@@ -39,6 +43,9 @@ export default function EditorPage() {
   const [isRecompiling, setIsRecompiling] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState('info');
   const [hoveredSectionId, setHoveredSectionId] = useState<string | null>(null);
+  const [isVersionHistoryOpen, setIsVersionHistoryOpen] = useState(false);
+  const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+  const [saveToast, setSaveToast] = useState(false);
 
   // Resize split panel states
   const [editorWidth, setEditorWidth] = useState<number>(45); // percentage
@@ -164,10 +171,13 @@ export default function EditorPage() {
     setDocState(nextDoc, false);
   };
 
-  // Keyboard shortcut Ctrl+Z / Ctrl+Y
+  // Keyboard shortcut Ctrl+Z / Ctrl+Y / Ctrl+S / Ctrl+P / Ctrl+Shift+L / Ctrl+B / Ctrl+Shift+H / Ctrl+/
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
+      const mod = e.metaKey || e.ctrlKey;
+      const key = e.key.toLowerCase();
+
+      if (mod && key === 'z') {
         if (e.shiftKey) {
           e.preventDefault();
           handleRedo();
@@ -175,22 +185,88 @@ export default function EditorPage() {
           e.preventDefault();
           handleUndo();
         }
-      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'y') {
+      } else if (mod && key === 'y') {
         e.preventDefault();
         handleRedo();
+      } else if (mod && key === 's') {
+        e.preventDefault();
+        // Force save
+        if (project) {
+          fetch(`/api/projects/${projectId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              document: project.document,
+              title: project.document?.title || project.title,
+              lastModified: 'Just now by You',
+            }),
+          }).then(() => {
+            setSaveToast(true);
+            setTimeout(() => setSaveToast(false), 2000);
+          }).catch((err) => console.error('Save error:', err));
+        }
+      } else if (mod && key === 'p') {
+        e.preventDefault();
+        handleExportPdf();
+      } else if (mod && e.shiftKey && key === 'l') {
+        e.preventDefault();
+        setIsLatexCodeModalOpen((prev) => !prev);
+      } else if (mod && key === 'b') {
+        e.preventDefault();
+        setRailTab((prev) => prev === 'filetree' ? 'settings' : 'filetree');
+      } else if (mod && e.shiftKey && key === 'h') {
+        e.preventDefault();
+        setIsVersionHistoryOpen((prev) => !prev);
+      } else if (mod && key === '/') {
+        e.preventDefault();
+        setIsShortcutsModalOpen((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undoStack, redoStack, docState]);
+  }, [undoStack, redoStack, docState, project, projectId]);
 
   const handleRecompile = () => {
     setIsRecompiling(true);
     setTimeout(() => setIsRecompiling(false), 900);
   };
 
-  const handleExportPdf = () => {
-    window.print();
+  const handleExportPdf = async () => {
+    try {
+      const element = document.getElementById('pdf-preview-container');
+      if (!element) {
+        alert('Preview container not found!');
+        return;
+      }
+
+      // Temporarily remove transform for accurate PDF generation
+      const originalTransform = element.style.transform;
+      element.style.transform = 'none';
+
+      // We might need to wait for a tick so the browser applies the transform change
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const html2canvas = (await import('html2canvas')).default;
+      const { jsPDF } = await import('jspdf');
+
+      const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+
+      const pdf = new jsPDF({
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait'
+      });
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+      pdf.save(`${docState.title || 'Document'}.pdf`);
+
+      // Restore transform
+      element.style.transform = originalTransform;
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+      alert('Failed to generate PDF. Check console for details.');
+    }
   };
 
   // Section & Page Handlers
@@ -332,75 +408,81 @@ export default function EditorPage() {
 
   return (
     <div className="app-shell flex flex-col h-screen w-full text-[#334155] font-sans overflow-hidden">
-      <Header
-        document={docState}
-        project={project}
-        activeDocumentId={project.id}
-        onSelectDocument={() => {}}
-        onOpenProjectDetail={() => router.push(`/project/${projectId}`)}
-        onOpenAddDocumentModal={() => setIsCreateDocModalOpen(true)}
-        onOpenLatexCode={() => setIsLatexCodeModalOpen(true)}
-        onExportPdf={handleExportPdf}
-        isRecompiling={isRecompiling}
-        onRecompile={handleRecompile}
-        onGoBackToDashboard={() => router.push(`/project/${projectId}`)}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        currentUser={currentUser}
-        onOpenAuth={() => {}}
-        onLogout={() => {
-          localStorage.removeItem('latex_user');
-          router.push('/login');
-        }}
-        canUndo={undoStack.length > 0}
-        canRedo={redoStack.length > 0}
-        onUndo={handleUndo}
-        onRedo={handleRedo}
-      />
-
-      <main className="flex flex-1 overflow-hidden relative">
-        <EditorRail
-          activeTab={activeSectionId === 'header_footer' ? 'header_footer' : railTab}
-          setActiveTab={(tab) => {
-            setRailTab(tab);
-            if (tab === 'header_footer') {
-              setActiveSectionId('header_footer');
-            } else if (tab === 'variables') {
-              setIsGlobalVarsOpen(true);
-            } else if (tab === 'filetree') {
-              if (activeSectionId === 'header_footer') {
-                setActiveSectionId('info');
-              }
-            }
-            if (tab === 'settings') setIsSettingsOpen(true);
-          }}
-          onOpenSettings={() => setIsSettingsOpen(true)}
-          onOpenGlobalVariables={() => setIsGlobalVarsOpen(true)}
+      <div className="print:hidden w-full shrink-0">
+        <Header
+          document={docState}
+          project={project}
+          activeDocumentId={project.id}
+          onSelectDocument={() => {}}
+          onOpenProjectDetail={() => router.push(`/project/${projectId}`)}
+          onOpenAddDocumentModal={() => setIsCreateDocModalOpen(true)}
           onOpenLatexCode={() => setIsLatexCodeModalOpen(true)}
+          onExportPdf={handleExportPdf}
+          isRecompiling={isRecompiling}
+          onRecompile={handleRecompile}
           onGoBackToDashboard={() => router.push(`/project/${projectId}`)}
+          onOpenSettings={() => setIsSettingsOpen(true)}
+          currentUser={currentUser}
+          onOpenAuth={() => {}}
+          onLogout={() => {
+            localStorage.removeItem('latex_user');
+            router.push('/login');
+          }}
+          canUndo={undoStack.length > 0}
+          canRedo={redoStack.length > 0}
+          onUndo={handleUndo}
+          onRedo={handleRedo}
         />
+      </div>
 
-        <div className="flex flex-1 overflow-hidden">
+      <main className="flex flex-1 overflow-hidden relative print:overflow-visible">
+        <div className="print:hidden h-full flex shrink-0">
+          <EditorRail
+            activeTab={activeSectionId === 'header_footer' ? 'header_footer' : railTab}
+            setActiveTab={(tab) => {
+              setRailTab(tab);
+              if (tab === 'header_footer') {
+                setActiveSectionId('header_footer');
+              } else if (tab === 'variables') {
+                setIsGlobalVarsOpen(true);
+              } else if (tab === 'filetree') {
+                if (activeSectionId === 'header_footer') {
+                  setActiveSectionId('info');
+                }
+              }
+              if (tab === 'settings') setIsSettingsOpen(true);
+            }}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+            onOpenGlobalVariables={() => setIsGlobalVarsOpen(true)}
+            onOpenLatexCode={() => setIsLatexCodeModalOpen(true)}
+            onGoBackToDashboard={() => router.push(`/project/${projectId}`)}
+          />
+        </div>
+
+        <div className="flex flex-1 overflow-hidden print:overflow-visible">
           {railTab === 'filetree' && (
-            <FileTreeSidebar
-              document={docState}
-              activeSectionId={activeSectionId}
-              onSelectSection={(id) => {
-                setActiveSectionId(id);
-                setRailTab('filetree');
-              }}
-              onAddPage={handleAddPage}
-              onDeletePage={handleDeletePage}
-              onReorderSections={handleReorderSections}
-              onMoveSectionToPage={handleMoveSectionToPage}
-            />
+            <div className="print:hidden shrink-0 h-full">
+              <FileTreeSidebar
+                document={docState}
+                activeSectionId={activeSectionId}
+                onSelectSection={(id) => {
+                  setActiveSectionId(id);
+                  setRailTab('filetree');
+                }}
+                onAddPage={handleAddPage}
+                onDeletePage={handleDeletePage}
+                onReorderSections={handleReorderSections}
+                onMoveSectionToPage={handleMoveSectionToPage}
+              />
+            </div>
           )}
 
-          <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+          <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative print:overflow-visible print:block">
             
             {/* Form Inputs Sidebar (Resizable width) */}
             <div 
               style={{ width: `${editorWidth}%` }} 
-              className="h-full flex flex-col shrink-0 min-w-[300px] overflow-hidden"
+              className="h-full flex flex-col shrink-0 min-w-[300px] overflow-hidden print:hidden"
             >
               <FormEditor
                 document={docState}
@@ -416,27 +498,46 @@ export default function EditorPage() {
                 e.preventDefault();
                 setIsDragging(true);
               }}
-              className={`hidden md:block w-1.5 hover:w-2 hover:bg-emerald-500 bg-gray-800 cursor-col-resize h-full shrink-0 transition-all z-20 ${
+              className={`hidden md:block w-1.5 hover:w-2 hover:bg-emerald-500 bg-gray-800 cursor-col-resize h-full shrink-0 transition-all z-20 print:hidden ${
                 isDragging ? 'bg-emerald-500 w-2' : ''
               }`}
             />
 
             {/* PDF Live compilation Preview Panel */}
-            <div className="flex-1 h-full min-w-[320px] overflow-hidden relative">
-              <DocumentPreview
-                document={docState}
-                companyProfile={project?.companyProfile}
-                zoomLevel={zoomLevel}
-                setZoomLevel={setZoomLevel}
-                activeSectionId={activeSectionId}
-                hoveredSectionId={hoveredSectionId}
-                onHoverSection={setHoveredSectionId}
-                onSelectSection={(id) => {
-                  setActiveSectionId(id);
-                  setRailTab('filetree');
+            <div className="flex-1 h-full min-w-[320px] overflow-hidden relative print:overflow-visible print:w-full print:absolute print:inset-0 print:z-50 print:bg-white">
+              <div
+                className="flex-1 overflow-y-auto w-full h-full flex justify-center py-8 relative scroll-smooth print:py-0 print:bg-white print:overflow-visible"
+                style={{
+                  backgroundColor: '#1e293b',
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#475569 #1e293b',
                 }}
-                onOpenLatexCode={() => setIsLatexCodeModalOpen(true)}
-              />
+              >
+                <div
+                  id="pdf-preview-container"
+                  className="bg-white shadow-2xl transition-transform duration-200 origin-top print:shadow-none print:transform-none print:w-full print:max-w-none print:min-h-0 print:h-auto"
+                  style={{
+                    width: '210mm',
+                    minHeight: '297mm',
+                    transform: `scale(${zoomLevel / 100})`,
+                  }}
+                >
+                  <DocumentPreview
+                    document={docState}
+                    companyProfile={project?.companyProfile}
+                    zoomLevel={zoomLevel}
+                    setZoomLevel={setZoomLevel}
+                    activeSectionId={activeSectionId}
+                    hoveredSectionId={hoveredSectionId}
+                    onHoverSection={setHoveredSectionId}
+                    onSelectSection={(id) => {
+                      setActiveSectionId(id);
+                      setRailTab('filetree');
+                    }}
+                    onOpenLatexCode={() => setIsLatexCodeModalOpen(true)}
+                  />
+                </div>
+              </div>
             </div>
 
           </div>
@@ -516,6 +617,38 @@ export default function EditorPage() {
       )}
 
       <FooterStatus document={docState} />
+
+      {/* Save Toast */}
+      {saveToast && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 bg-[#0d3479] text-white text-sm font-semibold rounded-2xl shadow-xl animate-in fade-in zoom-in-95 flex items-center space-x-2">
+          <svg className="w-4 h-4 text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>Saved successfully</span>
+        </div>
+      )}
+
+      {/* Version History Panel */}
+      <VersionHistoryPanel
+        isOpen={isVersionHistoryOpen}
+        onClose={() => setIsVersionHistoryOpen(false)}
+        projectId={projectId}
+        documentId={project?.documents?.[0]?.id || ''}
+        onRestore={() => {
+          setIsVersionHistoryOpen(false);
+          // Reload project from API
+          fetch(`/api/projects/${projectId}`)
+            .then((res) => res.json())
+            .then((data) => setProject(data))
+            .catch(console.error);
+        }}
+      />
+
+      {/* Keyboard Shortcuts Modal */}
+      <KeyboardShortcutsModal
+        isOpen={isShortcutsModalOpen}
+        onClose={() => setIsShortcutsModalOpen(false)}
+      />
     </div>
   );
 }

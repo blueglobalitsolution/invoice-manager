@@ -45,6 +45,7 @@ export async function GET(request: Request) {
         tags: row.tags ? JSON.parse(row.tags) : [],
         companyProfile: row.companyProfile ? JSON.parse(row.companyProfile) : undefined,
         isArchived: row.isArchived === 1,
+        isFavourite: row.isFavourite === 1,
         documents: documents,
         document: activeDoc ? activeDoc.document : null,
       };

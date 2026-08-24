@@ -42,6 +42,7 @@ import {
   getQuotationOutlineGroups,
   moveQuotationSectionToPage,
 } from '@/lib/document-sections';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 
 interface QuotationFormEditorProps {
   document: LatexDocument;
@@ -57,6 +58,11 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
   onOpenGlobalVariables,
 }) => {
   const q = doc.quotation!;
+  const [collapsedSections, setCollapsedSections] = React.useState<Record<string, boolean>>({});
+
+  const toggleSection = (id: string) => {
+    setCollapsedSections((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const cleanDisplayValue = (val: string | undefined): string => {
     if (!val) return '';
@@ -1068,9 +1074,13 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
           <div className="space-y-4">
             <div id="form-sec-q_delivery_schedule" className="bg-[#0b1426] p-3.5 rounded-2xl border border-[#141f33] space-y-3">
               <div className="flex justify-between items-center">
-                <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
+                <h3 
+                  onClick={() => toggleSection('q_delivery_schedule')}
+                  className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5 cursor-pointer hover:text-blue-300 transition-colors select-none"
+                >
                   <Truck className="w-3.5 h-3.5" />
                   <span>Delivery Schedule & Timeline (Page 5)</span>
+                  {collapsedSections['q_delivery_schedule'] ? <ChevronDown className="w-4 h-4 text-blue-500" /> : <ChevronUp className="w-4 h-4 text-blue-500" />}
                 </h3>
                 <button
                   onClick={() => {
@@ -1087,34 +1097,36 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                 </button>
               </div>
 
-              <div className="space-y-2.5">
-                {q.deliverySchedule.map((ds, idx) => (
-                  <div key={idx} className="bg-[#070c18] p-2 rounded border border-[#16233a] space-y-1.5">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-mono text-gray-400">Milestone #{idx + 1}</span>
-                      <button
-                        onClick={() => {
-                          const updated = q.deliverySchedule.filter((_, i) => i !== idx);
+              {!collapsedSections['q_delivery_schedule'] && (
+                <div className="space-y-2.5">
+                  {q.deliverySchedule.map((ds, idx) => (
+                    <div key={idx} className="bg-[#070c18] p-2 rounded border border-[#16233a] space-y-1.5">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-mono text-gray-400">Milestone #{idx + 1}</span>
+                        <button
+                          onClick={() => {
+                            const updated = q.deliverySchedule.filter((_, i) => i !== idx);
+                            updateQuotation({ deliverySchedule: updated });
+                          }}
+                          className="text-red-400 hover:text-red-300 p-0.5 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <textarea
+                        rows={2}
+                        value={ds}
+                        onChange={(e) => {
+                          const updated = [...q.deliverySchedule];
+                          updated[idx] = e.target.value;
                           updateQuotation({ deliverySchedule: updated });
                         }}
-                        className="text-red-400 hover:text-red-300 p-0.5 cursor-pointer"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                        className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                      />
                     </div>
-                    <textarea
-                      rows={2}
-                      value={ds}
-                      onChange={(e) => {
-                        const updated = [...q.deliverySchedule];
-                        updated[idx] = e.target.value;
-                        updateQuotation({ deliverySchedule: updated });
-                      }}
-                      className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
-                    />
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

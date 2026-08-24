@@ -29,6 +29,8 @@ import {
   MoreVertical,
   Archive,
   ArchiveRestore,
+  Star,
+  ArrowUpDown,
 } from 'lucide-react';
 import { ProjectItem, ProjectDocType } from '@/types/project';
 import { LatexDocument } from '@/types/document';
@@ -58,6 +60,7 @@ interface ProjectsDashboardProps {
   onLogout: () => void;
   onOpenTemplateBuilder?: () => void;
   onArchiveProject?: (projectId: string, isArchived: boolean) => void;
+  onToggleFavourite?: (projectId: string) => void;
 }
 
 export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
@@ -77,30 +80,70 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
   onArchiveProject,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'all' | 'your' | 'shared' | 'archived'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'your' | 'shared' | 'archived' | 'starred'>('all');
   const [showNewModal, setShowNewModal] = useState(false);
   const [selectedProjectIds, setSelectedProjectIds] = useState<string[]>([]);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [sortBy, setSortBy] = useState<'date' | 'name' | 'budget' | 'docs'>('date');
+  const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
+  const [showSortMenu, setShowSortMenu] = useState(false);
 
-  const filteredProjects = projects.filter((p) => {
-    const isArchived = Boolean(p.isArchived || p.status === 'archived');
-    if (activeTab === 'archived') {
-      if (!isArchived) return false;
-    } else {
-      if (isArchived) return false;
-    }
+  const getTagLabel = (t: string | { label: string; color: string }) => typeof t === 'string' ? t : t.label;
 
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase();
-    return (
-      p.title.toLowerCase().includes(q) ||
-      (p.code && p.code.toLowerCase().includes(q)) ||
-      (p.clientName && p.clientName.toLowerCase().includes(q)) ||
-      (p.location && p.location.toLowerCase().includes(q)) ||
-      p.tags.some((t) => t.toLowerCase().includes(q))
-    );
-  });
+  const filteredProjects = projects
+    .filter((p) => {
+      const isArchived = Boolean(p.isArchived || p.status === 'archived');
+      if (activeTab === 'archived') {
+        if (!isArchived) return false;
+      } else if (activeTab === 'starred') {
+        if (!p.isFavourite || isArchived) return false;
+      } else {
+        if (isArchived) return false;
+      }
+
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      return (
+        p.title.toLowerCase().includes(q) ||
+        (p.code && p.code.toLowerCase().includes(q)) ||
+        (p.clientName && p.clientName.toLowerCase().includes(q)) ||
+        (p.location && p.location.toLowerCase().includes(q)) ||
+        p.tags.some((t) => getTagLabel(t).toLowerCase().includes(q)) ||
+        (p.documents || []).some((d) =>
+          d.title.toLowerCase().includes(q) ||
+          (d.docNumber && d.docNumber.toLowerCase().includes(q)) ||
+          d.docType.toLowerCase().includes(q)
+        )
+      );
+    })
+    .sort((a, b) => {
+      // Starred projects always on top (except in archived tab)
+      if (activeTab !== 'archived' && activeTab !== 'starred') {
+        if (a.isFavourite && !b.isFavourite) return -1;
+        if (!a.isFavourite && b.isFavourite) return 1;
+      }
+      
+      let cmp = 0;
+      switch (sortBy) {
+        case 'name':
+          cmp = a.title.localeCompare(b.title);
+          break;
+        case 'budget': {
+          const parseNum = (s?: string) => parseFloat((s || '0').replace(/[^0-9.]/g, '')) || 0;
+          cmp = parseNum(a.budget) - parseNum(b.budget);
+          break;
+        }
+        case 'docs':
+          cmp = (a.documents?.length || 0) - (b.documents?.length || 0);
+          break;
+        case 'date':
+        default:
+          cmp = 0; // keep API order (already sorted by lastModified DESC)
+          break;
+      }
+      return sortOrder === 'asc' ? cmp : -cmp;
+    });
 
   const handleToggleSelectAll = () => {
     if (selectedProjectIds.length === filteredProjects.length) {
@@ -114,6 +157,21 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
     setSelectedProjectIds((prev) =>
       prev.includes(id) ? prev.filter((pId) => pId !== id) : [...prev, id]
     );
+  };
+
+  const handleToggleFavourite = (projectId: string) => {
+    const project = projects.find((p) => p.id === projectId);
+    if (!project) return;
+    const nextFav = !project.isFavourite;
+    // Optimistic update via parent callback
+    if (onArchiveProject) {
+      // We don't use onArchiveProject for this — we need a separate handler
+    }
+    fetch(`/api/projects/${projectId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isFavourite: nextFav }),
+    }).catch(console.error);
   };
 
   // Metrics

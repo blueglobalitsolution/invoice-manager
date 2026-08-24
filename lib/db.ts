@@ -52,6 +52,24 @@ function initDb() {
       document TEXT, -- JSON object string of LatexDocument
       FOREIGN KEY (userId) REFERENCES users(email) ON DELETE CASCADE
     );
+
+    CREATE TABLE IF NOT EXISTS document_versions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      documentId TEXT NOT NULL,
+      projectId TEXT NOT NULL,
+      versionNumber INTEGER NOT NULL,
+      savedAt TEXT NOT NULL,
+      savedBy TEXT,
+      document TEXT NOT NULL,
+      FOREIGN KEY (documentId) REFERENCES documents(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS doc_counters (
+      id TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      docType TEXT NOT NULL,
+      lastNumber INTEGER DEFAULT 0
+    );
   `);
 
   // Seed default admin and guest users for quick testing
@@ -66,10 +84,16 @@ function initDb() {
   }
 
   // Handle schema migrations safely
-  try {
-    db.exec("ALTER TABLE projects ADD COLUMN companyProfile TEXT;");
-  } catch (error) {
-    // Ignore error if column already exists
+  const migrations = [
+    "ALTER TABLE projects ADD COLUMN companyProfile TEXT;",
+    "ALTER TABLE projects ADD COLUMN isFavourite INTEGER DEFAULT 0;",
+  ];
+  for (const migration of migrations) {
+    try {
+      db.exec(migration);
+    } catch (error) {
+      // Ignore error if column already exists
+    }
   }
 }
 

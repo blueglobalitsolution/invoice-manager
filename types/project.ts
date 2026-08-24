@@ -53,6 +53,11 @@ export interface ProjectDocumentItem {
   document: LatexDocument;
 }
 
+export interface ProjectTag {
+  label: string;
+  color: string; // hex color like '#ef4444'
+}
+
 export interface ProjectItem {
   id: string;
   title: string;
@@ -64,8 +69,9 @@ export interface ProjectItem {
   budget?: string;
   owner: string;
   lastModified: string;
-  tags: string[];
+  tags: (string | ProjectTag)[];
   isArchived?: boolean;
+  isFavourite?: boolean;
   documents?: ProjectDocumentItem[];
   document?: LatexDocument;
   companyProfile?: CompanyProfile;
