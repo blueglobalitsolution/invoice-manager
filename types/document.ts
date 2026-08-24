@@ -183,6 +183,7 @@ export interface TaxInvoiceData {
   companyEmail: string;
   companyWebsite: string;
   companyGstNo: string;
+  companyAddressHeader: string;
   companyPanNo?: string;
   companyEpfNo?: string;
   leftServices: string[];
@@ -261,6 +262,7 @@ export interface QuotationData {
   companyEmail: string;
   companyWebsite: string;
   companyGstNo: string;
+  companyAddressHeader: string;
   leftServices: string[];
   rightServices: string[];
 

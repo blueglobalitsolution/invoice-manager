@@ -220,6 +220,7 @@ export const TAX_INVOICE_TEMPLATE: LatexDocument = {
     companyPanNo: 'CLNPS9550H',
     companyEpfNo: 'VDBRD18741500',
     companyPhone: '+91 97254 45370',
+    companyAddressHeader: 'Regd. Off. : SO7B / 2nd floor, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara, Gujarat - 391243',
     companyAddressFooter: 'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243',
     companyEmail: 'info@globalindustries.co',
     companyWebsite: 'www.globalindustries.co',
@@ -319,6 +320,7 @@ export const QUOTATION_TEMPLATE: LatexDocument = {
     companySubtitle: 'INDUSTRIES',
     companyGstNo: '24CLNPS9550H1ZI',
     companyPhone: '+91 97254 45370',
+    companyAddressHeader: 'Regd. Off. : SO7B / 2nd floor, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara, Gujarat - 391243',
     companyAddressFooter: 'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243',
     companyEmail: 'info@globalindustries.co',
     companyWebsite: 'www.globalindustries.co',
@@ -376,19 +378,19 @@ export const QUOTATION_TEMPLATE: LatexDocument = {
     specifications: [
       {
         title: 'TMT Steel Bar Specification',
-        details: '\\textbf{Grade:} Fe-500/Fe-500D/Fe-550 (as per client requirement) \\newline\n\\textbf{Standard:} IS 1786:2008 compliant \\newline\n\\textbf{Type:} Thermo-Mechanically Treated (TMT) Rebars \\newline\n\\textbf{Diameter Range:} 8 mm, 10 mm, 12 mm, 16 mm, 20 mm, 25 mm \\newline\n\\textbf{Yield Strength:} As per grade selected \\newline\n\\textbf{Rib Pattern:} Continuous CNC-rolled ribs for superior bonding with concrete \\newline\n\\textbf{Elongation:} Higher ductility for better seismic \\& bending performance \\newline\n\\textbf{Corrosion Resistance:} Low carbon content and controlled chemistry \\newline\n\\textbf{Usage:} Suitable for footing, column, beam, slab \\& all RCC works',
+        details: 'Grade: Fe-500/Fe-500D/Fe-550 (as per client requirement) \nStandard: IS 1786:2008 compliant \nType: Thermo-Mechanically Treated (TMT) Rebars \nDiameter Range: 8 mm, 10 mm, 12 mm, 16 mm, 20 mm, 25 mm \nYield Strength: As per grade selected \nRib Pattern: Continuous CNC-rolled ribs for superior bonding with concrete \nElongation: Higher ductility for better seismic & bending performance \nCorrosion Resistance: Low carbon content and controlled chemistry \nUsage: Suitable for footing, column, beam, slab & all RCC works',
       },
       {
-        title: 'foundation works \\newline Cement Specification',
+        title: 'foundation works \n Cement Specification',
         details: 'For the foundation works, we will use OPC (Ordinary Portland Cement) to ensure maximum strength and durability.',
       },
       {
-        title: 'Chhantar (slab work) and \\newline Plastering \\newline Cement Specification',
+        title: 'Chhantar (slab work) and \n Plastering \n Cement Specification',
         details: 'We will use PPC (Portland Pozzolana Cement) as it provides better finish, workability, and long-term performance for these applications.',
       },
       {
         title: 'Self-Drilling Screws Specification',
-        details: '\\textbf{Self-drilling roofing fasteners} \\newline\n\\textbf{Size:} 12 $\\times$ 55 mm / 12 $\\times$ 50 mm (as per sheet profile \\& purlin thickness) \\newline\n\\textbf{Material:} High-tensile carbon steel \\newline\n\\textbf{Coating:} Ruspert/Zinc Coating for corrosion resistance \\newline\n\\textbf{Washer:} Hex head with EPDM sealing washer \\newline\n\\textbf{Head Type:} Hexagonal head (5/16") \\newline\n\\textbf{Drill Point:} No. 5 / No. 3 self-drill point \\newline\n\\textbf{Application:} Suitable for fixing roofing and cladding sheets \\newline\n\\textbf{Standard:} As per AS3566 / equivalent quality standard',
+        details: 'Self-drilling roofing fasteners \nSize: 12 $\\times$ 55 mm / 12 $\\times$ 50 mm (as per sheet profile & purlin thickness) \nMaterial: High-tensile carbon steel \nCoating: Ruspert/Zinc Coating for corrosion resistance \nWasher: Hex head with EPDM sealing washer \nHead Type: Hexagonal head (5/16") \nDrill Point: No. 5 / No. 3 self-drill point \nApplication: Suitable for fixing roofing and cladding sheets \nStandard: As per AS3566 / equivalent quality standard',
       },
     ],
 
@@ -396,7 +398,7 @@ export const QUOTATION_TEMPLATE: LatexDocument = {
     commercialSubtitle: 'For PRE-FAB BUILDING',
     commercialItems: [
       {
-        description: '\\textbf{Execution of Works Contract for Self Supporting Roof SAC: 9954 Bay1-:} \\newline\n(a) Span: 20 mtrs \\newline\n(b) Arch Rise: 4.57 mtrs \\newline\n(c) Length: 41 mtrs \\newline\n(d) Arch Length: 24.57 mtrs \\newline\n(e) No of Bays: 1 No. \\newline\n(f) Area Per Bay: 952.00 SQM \\newline\n(g) Height: 9.15 mtrs \\newline\n\\textbf{Material Specification:} COLOUR COATED GALVALUME BMT: 1.10 mm APT: 1.15 mm Tolerance: +/-0.02 MM Coil Width: 912 mm Tolerance: +/- 4 mm \\newline\nTotal Round Roof sq ft. 10243/- sqft. X 235 \\newline\n8559/- kgs approx \\newline\nSteel column and Purlin Fabrication supply approx 15000 \\newline\nSteel column eriction work 13000 kgs. \\newline\nRoofing sheet jsw make 600 SQM \\newline\nRoofing sheet Fixing charges 600 SQM \\newline\nAir Bubble Insulation 8mm sheet 600 SQM',
+        description: 'Execution of Works Contract for Self Supporting Roof SAC: 9954 Bay1-: \n(a) Span: 20 mtrs \n(b) Arch Rise: 4.57 mtrs \n(c) Length: 41 mtrs \n(d) Arch Length: 24.57 mtrs \n(e) No of Bays: 1 No. \n(f) Area Per Bay: 952.00 SQM \n(g) Height: 9.15 mtrs \nMaterial Specification: COLOUR COATED GALVALUME BMT: 1.10 mm APT: 1.15 mm Tolerance: +/-0.02 MM Coil Width: 912 mm Tolerance: +/- 4 mm \nTotal Round Roof sq ft. 10243/- sqft. X 235 \n8559/- kgs approx \nSteel column and Purlin Fabrication supply approx 15000 \nSteel column eriction work 13000 kgs. \nRoofing sheet jsw make 600 SQM \nRoofing sheet Fixing charges 600 SQM \nAir Bubble Insulation 8mm sheet 600 SQM',
         price: '24,07,227.20',
       },
       {
@@ -441,7 +443,7 @@ export const QUOTATION_TEMPLATE: LatexDocument = {
       { srNo: '4', description: 'GI Coil (for Purlin)', brand: 'Essar Steel (Arcelor Mittal Nippon) / JSW / Apollo / Good luck india' },
       { srNo: '5', description: 'HR Coil (for Purlin)', brand: 'Essar Steel (Arcelor Mittal Nippon) / JSW / Tata Steel' },
       { srNo: '6', description: 'Deck Sheeting', brand: 'JSW / Essar Steel (Arcelor Mittal Nippon)' },
-      { srNo: '7', description: 'Hot Rolled Items', brand: '\\textbf{Angle, Channel \\& Round Bar: -} Ambica / Khandelwal steel / Shree Balram Industries / Varsana \\newline\n\\textbf{ISMB: -} Vandana / Topworth / Sujana / SKS Ispat / Varsana \\newline\n\\textbf{UB/UC: -} JSPL \\newline\n\\textbf{CHS/SHS/RHS: -} Riddhi Steel / Asian / Apollo / Surya' },
+      { srNo: '7', description: 'Hot Rolled Items', brand: 'Angle, Channel & Round Bar: - Ambica / Khandelwal steel / Shree Balram Industries / Varsana \nISMB: - Vandana / Topworth / Sujana / SKS Ispat / Varsana \nUB/UC: - JSPL \nCHS/SHS/RHS: - Riddhi Steel / Asian / Apollo / Surya' },
       { srNo: '8', description: 'Paint', brand: 'Hempel / Asian / Berger / Asian Sigma / Chroma / Akzonobel Paint / Omkar industries' },
       { srNo: '9', description: 'GI Sheet', brand: 'Essar Steel (Arcelor Mittal Nippon) / JSW / Asian' },
       { srNo: '10', description: 'Stitch Screw / SDTS', brand: 'Corro-shield / Real Fastner' },
@@ -493,12 +495,12 @@ export const QUOTATION_TEMPLATE: LatexDocument = {
       {
         number: 3,
         title: 'SPECIFICATION CHANGES:',
-        content: "Seller reserve the right to modify the design of his standard buildings and to substitute material equal to or superior to that originally specified (to permit incorporation of changes and improvements, in the continued development of the Seller's product). \\newline\nIf any modification is made by the Buyer after giving drawing approval, the same shall have time and cost implication which would be borne by the Buyer. In such a case, a new purchase order/contract (incorporating the revised order value) shall be given to the Seller before which the seller is in no obligation to commence any project related activities.",
+        content: "Seller reserve the right to modify the design of his standard buildings and to substitute material equal to or superior to that originally specified (to permit incorporation of changes and improvements, in the continued development of the Seller's product). \nIf any modification is made by the Buyer after giving drawing approval, the same shall have time and cost implication which would be borne by the Buyer. In such a case, a new purchase order/contract (incorporating the revised order value) shall be given to the Seller before which the seller is in no obligation to commence any project related activities.",
       },
       {
         number: 4,
         title: 'CANCELLATION:',
-        content: 'Agreement and orders cannot be cancelled or modified by Buyer under any circumstances without Buyer first reaching an agreement in writing with Seller covering all damages. \\newline\nIf the buyer cancels the order, then the Buyer shall be subjected to order cancellation charges as hereunder:',
+        content: 'Agreement and orders cannot be cancelled or modified by Buyer under any circumstances without Buyer first reaching an agreement in writing with Seller covering all damages. \nIf the buyer cancels the order, then the Buyer shall be subjected to order cancellation charges as hereunder:',
         subItems: [
           "10% of the total order value, if the production hasn't started and would be considered as engineering cost OR",
           '10% of the total order value plus the cost of material procured and or manufactured (based on tonnage) till the date of intimidation to the Seller in writing by the Buyer.',
@@ -513,7 +515,7 @@ export const QUOTATION_TEMPLATE: LatexDocument = {
       {
         number: 6,
         title: 'SHIPMENT:',
-        content: 'Material of 1\\textsuperscript{st} Lot, that is shipped within 40 Days from date of Contract / Purchase Order could be subject to a price increase in accordance with Current Market prices (Material + Labor + 15\\% profit \\& overhead) posted at the end of the above noted period unless a longer delivery period is mutually agreed by Seller and Buyer. Unloading at jobsite is the responsibility of the Buyer / Builder.',
+        content: 'Material of 1\\textsuperscript{st} Lot, that is shipped within 40 Days from date of Contract / Purchase Order could be subject to a price increase in accordance with Current Market prices (Material + Labor + 15\\% profit & overhead) posted at the end of the above noted period unless a longer delivery period is mutually agreed by Seller and Buyer. Unloading at jobsite is the responsibility of the Buyer / Builder.',
       },
       {
         number: 7,
@@ -528,7 +530,7 @@ export const QUOTATION_TEMPLATE: LatexDocument = {
       {
         number: 9,
         title: 'VARIATION ORDERS:',
-        content: '\\textbf{Lumpsum Order:} Any change and / or revision to the above stated scope of supply shall lead to a variation in the price and the delivery period which shall be communicated to the buyer basing the nature of change/revision. \\newline\n\\textbf{BOQ Order:} Any change and or revision if in a BOQ shall leads to variation in the price \\& the delivery period if each item decreases by 25\\% in Qty \\& Overall contract value decreases by 2.5\\% then the revised rates shall be communicated.',
+        content: 'Lumpsum Order: Any change and / or revision to the above stated scope of supply shall lead to a variation in the price and the delivery period which shall be communicated to the buyer basing the nature of change/revision. \nBOQ Order: Any change and or revision if in a BOQ shall leads to variation in the price & the delivery period if each item decreases by 25\\% in Qty & Overall contract value decreases by 2.5\\% then the revised rates shall be communicated.',
       },
       {
         number: 10,
@@ -538,12 +540,12 @@ export const QUOTATION_TEMPLATE: LatexDocument = {
       {
         number: 11,
         title: 'PERMITS:',
-        content: '\\textbf{DCC:} Client should give Delivery Clearance Certificate on time to achieve the timeline / completion of project. The delay in DCC shall be considered for timeline extensions. \\newline\n\\textbf{Road Permits:} Buyer shall be responsible or liable to provide necessary permits on time to the Seller for transport (Road permits), erect or install any product. Any delays arising shall be to the account of the buyer.',
+        content: 'DCC: Client should give Delivery Clearance Certificate on time to achieve the timeline / completion of project. The delay in DCC shall be considered for timeline extensions. \nRoad Permits: Buyer shall be responsible or liable to provide necessary permits on time to the Seller for transport (Road permits), erect or install any product. Any delays arising shall be to the account of the buyer.',
       },
       {
         number: 12,
         title: 'INSPECTION OF PRODUCT:',
-        content: "\\textbf{Raw Material Inspection:} Buyer agrees to inspect upon arrival of all articles shipped. Claims for shortages or defective material, if not packaged, must be made in writing to the Seller's Local Sales Office within five days after receipt of the shipment, and if packaged within 30 days after receipt of shipment Seller shall have a reasonable time to investigate all claims made by Buyer. Any claims for shortages or defects made after the above periods shall be refused and finally dismissed. \\newline\n\\textbf{Before Dispatch:} Finished good material's, inspection should be done by Buyer or his representative or his Third Party on readiness of material but before dispatch.",
+        content: "Raw Material Inspection: Buyer agrees to inspect upon arrival of all articles shipped. Claims for shortages or defective material, if not packaged, must be made in writing to the Seller's Local Sales Office within five days after receipt of the shipment, and if packaged within 30 days after receipt of shipment Seller shall have a reasonable time to investigate all claims made by Buyer. Any claims for shortages or defects made after the above periods shall be refused and finally dismissed. \nBefore Dispatch: Finished good material's, inspection should be done by Buyer or his representative or his Third Party on readiness of material but before dispatch.",
       },
       {
         number: 13,

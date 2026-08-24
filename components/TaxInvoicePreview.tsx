@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { LatexDocument, TaxInvoiceData } from '@/types/document';
+import { CompanyProfile } from '@/types/project';
 import { applyVariables } from '@/lib/variables';
 
 interface TaxInvoicePreviewProps {
@@ -14,6 +15,7 @@ interface TaxInvoicePreviewProps {
   onHoverSection?: (sectionId: string | null) => void;
   onSelectSection?: (sectionId: string) => void;
   globalVars?: Record<string, string>;
+  companyProfile?: CompanyProfile;
 }
 
 export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
@@ -26,19 +28,21 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
   onHoverSection,
   onSelectSection,
   globalVars,
+  companyProfile,
 }) => {
-  const leftServices = inv.leftServices || [
-    '• Pre Engineering Building',
-    '• Roofing Solution',
-    '• Engineering Project & Designing',
-    '• "Z" & "C" Purlins',
-  ];
-  const rightServices = inv.rightServices || [
-    '• Infra Materials',
-    '• Puf Panels & Insulation Roofing',
-    '• Skylight Sheets',
-    '• Air Ventilators',
-  ];
+  const pProfile = companyProfile || ({} as Partial<CompanyProfile>);
+  
+  const companyName = applyVariables(pProfile.companyName || inv.companyName || 'GLOBAL', globalVars);
+  const companySubtitle = applyVariables(pProfile.companySubtitle || inv.companySubtitle || 'INDUSTRIES', globalVars);
+  const leftServices = pProfile.leftServices || inv.leftServices || [];
+  const rightServices = pProfile.rightServices || inv.rightServices || [];
+
+  const companyAddressHeader = pProfile.companyAddressHeader || inv.companyAddressHeader || '';
+  const companyGstNo = pProfile.companyGstNo || inv.companyGstNo || '24CLNPS9550H1ZI';
+  const companyPhone = pProfile.companyPhone || inv.companyPhone || '+91 97254 45370';
+  const companyAddressFooter = pProfile.companyAddressFooter || inv.companyAddressFooter || 'Block No. 1068/99...';
+  const companyEmail = pProfile.companyEmail || inv.companyEmail || 'info@globalindustries.co';
+  const companyWebsite = pProfile.companyWebsite || inv.companyWebsite || 'www.globalindustries.co';
 
   const clientName = applyVariables(inv.clientName, globalVars);
   const clientAddr1 = applyVariables(inv.clientAddressLine1, globalVars);
@@ -92,10 +96,10 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
             {/* Left Brand */}
             <div className="w-[35%] pr-2">
               <div className="text-[26px] font-black tracking-tight leading-none text-black">
-                {inv.companyName || 'GLOBAL'}
+                {companyName}
               </div>
               <div className="text-[17px] font-extrabold tracking-wider leading-tight text-black mt-0.5">
-                {inv.companySubtitle || 'INDUSTRIES'}
+                {companySubtitle}
               </div>
             </div>
 
@@ -125,8 +129,9 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
 
           {/* Divider and GST */}
           <div className="h-[0.8pt] bg-black w-full my-1.5" />
-          <div className="text-right text-[10.5px] font-bold text-black tracking-wide">
-            GST NO. : {inv.companyGstNo || '24CLNPS9550H1ZI'}
+          <div className="flex justify-between items-center text-[10px] font-bold text-black tracking-wide">
+            <div>{applyVariables(companyAddressHeader, globalVars)}</div>
+            <div>GST NO. : {applyVariables(companyGstNo, globalVars)}</div>
           </div>
         </div>
 
@@ -340,13 +345,13 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
             Header & Footer
           </span>
         )}
-        <div className="font-medium">{inv.companyPhone || '+91 97254 45370'}</div>
+        <div className="font-medium">Phone: {applyVariables(companyPhone, globalVars)}</div>
         <div className="font-medium mt-0.5">
-          {inv.companyAddressFooter || 'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243'}
+          {applyVariables(companyAddressFooter, globalVars)}
         </div>
         <div className="font-medium mt-0.5 flex space-x-6">
-          <span>{inv.companyEmail || 'info@globalindustries.co'}</span>
-          <span>{inv.companyWebsite || 'www.globalindustries.co'}</span>
+          <span>Email: {applyVariables(companyEmail, globalVars)}</span>
+          <span>Website: {applyVariables(companyWebsite, globalVars)}</span>
         </div>
       </div>
     </div>

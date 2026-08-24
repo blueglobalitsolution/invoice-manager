@@ -116,11 +116,11 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
   };
 
   return (
-    <aside className="w-full bg-[#111927] text-gray-200 flex flex-col h-full shrink-0 select-none overflow-hidden text-xs">
+    <aside className="w-full bg-[#080d1a] text-gray-200 flex flex-col h-full shrink-0 select-none overflow-hidden text-xs">
       {/* Header Tabs */}
-      <div className="px-3 py-2 border-b border-gray-800 bg-[#0c131f] flex justify-between items-center shrink-0">
+      <div className="px-3 py-2 border-b border-[#141f33] bg-[#0a1120] flex justify-between items-center shrink-0">
         <div className="flex items-center space-x-1">
-          <Receipt className="w-4 h-4 text-emerald-400" />
+          <Receipt className="w-4 h-4 text-blue-300" />
           <span className="font-bold text-xs uppercase tracking-wider text-gray-200">
             Tax Invoice Editor
           </span>
@@ -128,21 +128,21 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
         {onOpenGlobalVariables && (
           <button
             onClick={onOpenGlobalVariables}
-            className="px-2 py-0.5 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 text-emerald-300 rounded text-[11px] font-semibold transition-colors cursor-pointer flex items-center space-x-1"
+            className="px-2 py-0.5 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 border border-[#0d3479] text-blue-200 rounded text-[11px] font-semibold transition-colors cursor-pointer flex items-center space-x-1"
           >
-            <Sparkles className="w-3 h-3 text-emerald-400" />
+            <Sparkles className="w-3 h-3 text-blue-300" />
             <span>Variables</span>
           </button>
         )}
       </div>
 
       {/* Navigation Sub-Tabs */}
-      <div className="grid grid-cols-4 bg-[#0a101a] border-b border-gray-800 text-[11px] shrink-0 font-medium">
+      <div className="grid grid-cols-4 bg-[#080d1a] border-b border-[#141f33] text-[11px] shrink-0 font-medium">
         <button
           onClick={() => setActiveTab('client')}
           className={`py-2 px-1 text-center transition-colors cursor-pointer border-b-2 ${
             activeTab === 'client'
-              ? 'border-emerald-500 text-emerald-400 font-bold bg-[#131f33]'
+              ? 'border-[#2563eb] text-blue-300 font-bold bg-[#0b1426]'
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
@@ -152,7 +152,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
           onClick={() => setActiveTab('items')}
           className={`py-2 px-1 text-center transition-colors cursor-pointer border-b-2 ${
             activeTab === 'items'
-              ? 'border-emerald-500 text-emerald-400 font-bold bg-[#131f33]'
+              ? 'border-[#2563eb] text-blue-300 font-bold bg-[#0b1426]'
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
@@ -162,7 +162,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
           onClick={() => setActiveTab('bank')}
           className={`py-2 px-1 text-center transition-colors cursor-pointer border-b-2 ${
             activeTab === 'bank'
-              ? 'border-emerald-500 text-emerald-400 font-bold bg-[#131f33]'
+              ? 'border-[#2563eb] text-blue-300 font-bold bg-[#0b1426]'
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
@@ -172,7 +172,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
           onClick={() => setActiveTab('company')}
           className={`py-2 px-1 text-center transition-colors cursor-pointer border-b-2 ${
             activeTab === 'company'
-              ? 'border-emerald-500 text-emerald-400 font-bold bg-[#131f33]'
+              ? 'border-[#2563eb] text-blue-300 font-bold bg-[#0b1426]'
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
@@ -185,8 +185,8 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
         {/* ================= TAB 1: CLIENT & INVOICE META ================= */}
         {activeTab === 'client' && (
           <div className="space-y-4">
-            <div className="bg-[#152238] border border-gray-800 rounded p-3 space-y-3">
-              <h3 className="font-bold text-emerald-400 text-xs flex items-center space-x-1.5">
+            <div className="bg-[#152238] border border-[#141f33] rounded p-3 space-y-3">
+              <h3 className="font-bold text-blue-300 text-xs flex items-center space-x-1.5">
                 <Building className="w-3.5 h-3.5" />
                 <span>Client / Customer Particulars</span>
               </h3>
@@ -197,7 +197,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   type="text"
                   value={inv.clientName}
                   onChange={(e) => updateInv({ clientName: e.target.value })}
-                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-100 font-semibold focus:border-emerald-500 focus:outline-none"
+                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-100 font-semibold focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
                   placeholder="M/s. ALEMBIC LTD,"
                 />
               </div>
@@ -208,7 +208,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   type="text"
                   value={inv.clientAddressLine1}
                   onChange={(e) => updateInv({ clientAddressLine1: e.target.value })}
-                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-200 focus:border-emerald-500 focus:outline-none"
+                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
                   placeholder="Alembic Road, Gorwa,"
                 />
               </div>
@@ -219,7 +219,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   type="text"
                   value={inv.clientAddressLine2}
                   onChange={(e) => updateInv({ clientAddressLine2: e.target.value })}
-                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-200 focus:border-emerald-500 focus:outline-none"
+                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
                   placeholder="Vadodara. Gujarat"
                 />
               </div>
@@ -230,13 +230,13 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   type="text"
                   value={inv.clientGstNo}
                   onChange={(e) => updateInv({ clientGstNo: e.target.value })}
-                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-emerald-300 font-mono focus:border-emerald-500 focus:outline-none"
+                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-blue-200 font-mono focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
                   placeholder="24AABCA7950P1ZB"
                 />
               </div>
             </div>
 
-            <div className="bg-[#152238] border border-gray-800 rounded p-3 space-y-3">
+            <div className="bg-[#152238] border border-[#141f33] rounded p-3 space-y-3">
               <h3 className="font-bold text-sky-400 text-xs flex items-center space-x-1.5">
                 <FileText className="w-3.5 h-3.5" />
                 <span>Invoice Numbers & References</span>
@@ -249,7 +249,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.invoiceNo}
                     onChange={(e) => updateInv({ invoiceNo: e.target.value })}
-                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-mono font-bold focus:border-emerald-500 focus:outline-none"
+                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono font-bold focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -258,7 +258,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.invoiceDate}
                     onChange={(e) => updateInv({ invoiceDate: e.target.value })}
-                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-mono focus:border-emerald-500 focus:outline-none"
+                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
                   />
                 </div>
               </div>
@@ -270,7 +270,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.poNo}
                     onChange={(e) => updateInv({ poNo: e.target.value })}
-                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-mono focus:border-emerald-500 focus:outline-none"
+                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -279,7 +279,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.poDate}
                     onChange={(e) => updateInv({ poDate: e.target.value })}
-                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-mono focus:border-emerald-500 focus:outline-none"
+                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
                   />
                 </div>
               </div>
@@ -290,7 +290,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   type="text"
                   value={inv.projectName}
                   onChange={(e) => updateInv({ projectName: e.target.value })}
-                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-amber-300 font-semibold focus:border-emerald-500 focus:outline-none"
+                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-amber-300 font-semibold focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
                   placeholder="Tadpole Academy"
                 />
               </div>
@@ -305,7 +305,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
               <span className="font-bold text-xs text-gray-300">Goods & Work Items</span>
               <button
                 onClick={handleAddItem}
-                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[11px] font-bold flex items-center space-x-1 cursor-pointer transition-colors"
+                className="px-2.5 py-1 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[11px] font-bold flex items-center space-x-1 cursor-pointer transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Item</span>
@@ -315,10 +315,10 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
             {inv.items.map((item, idx) => (
               <div
                 key={item.id || idx}
-                className="bg-[#152238] border border-gray-800 rounded p-3 space-y-2.5 relative group"
+                className="bg-[#152238] border border-[#141f33] rounded p-3 space-y-2.5 relative group"
               >
-                <div className="flex justify-between items-center border-b border-gray-800/80 pb-1.5">
-                  <span className="font-bold text-emerald-400 text-xs">Item #{idx + 1}</span>
+                <div className="flex justify-between items-center border-b border-[#141f33]/80 pb-1.5">
+                  <span className="font-bold text-blue-300 text-xs">Item #{idx + 1}</span>
                   {inv.items.length > 1 && (
                     <button
                       onClick={() => handleDeleteItem(idx)}
@@ -336,7 +336,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     rows={2}
                     value={item.description}
                     onChange={(e) => handleUpdateItem(idx, 'description', e.target.value)}
-                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-200 text-xs focus:border-emerald-500 focus:outline-none"
+                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 text-xs focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
                   />
                 </div>
 
@@ -347,7 +347,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                       type="text"
                       value={item.hsn}
                       onChange={(e) => handleUpdateItem(idx, 'hsn', e.target.value)}
-                      className="w-full px-1.5 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200 text-center font-mono"
+                      className="w-full px-1.5 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 text-center font-mono"
                     />
                   </div>
                   <div>
@@ -356,7 +356,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                       type="text"
                       value={item.qty}
                       onChange={(e) => handleUpdateItem(idx, 'qty', e.target.value)}
-                      className="w-full px-1.5 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200 text-center font-mono"
+                      className="w-full px-1.5 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 text-center font-mono"
                     />
                   </div>
                   <div>
@@ -365,7 +365,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                       type="text"
                       value={item.rate}
                       onChange={(e) => handleUpdateItem(idx, 'rate', e.target.value)}
-                      className="w-full px-1.5 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200 text-center font-mono"
+                      className="w-full px-1.5 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 text-center font-mono"
                     />
                   </div>
                   <div>
@@ -374,7 +374,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                       type="text"
                       value={item.total}
                       onChange={(e) => handleUpdateItem(idx, 'total', e.target.value)}
-                      className="w-full px-1.5 py-1 bg-[#0e1624] border border-gray-700 rounded text-emerald-300 text-right font-mono font-bold"
+                      className="w-full px-1.5 py-1 bg-[#0e1624] border border-[#16233a] rounded text-blue-200 text-right font-mono font-bold"
                     />
                   </div>
                 </div>
@@ -382,8 +382,8 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
             ))}
 
             {/* Calculations & GST */}
-            <div className="bg-[#152238] border border-gray-800 rounded p-3 space-y-3">
-              <div className="flex justify-between items-center border-b border-gray-800 pb-2">
+            <div className="bg-[#152238] border border-[#141f33] rounded p-3 space-y-3">
+              <div className="flex justify-between items-center border-b border-[#141f33] pb-2">
                 <span className="font-bold text-xs text-amber-300 flex items-center space-x-1.5">
                   <Calculator className="w-3.5 h-3.5" />
                   <span>GST & Net Calculations</span>
@@ -403,7 +403,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.totalAmount}
                     onChange={(e) => updateInv({ totalAmount: e.target.value })}
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-mono text-right"
+                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono text-right"
                   />
                 </div>
                 <div>
@@ -412,7 +412,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.netAmount}
                     onChange={(e) => updateInv({ netAmount: e.target.value })}
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-mono text-right font-bold"
+                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono text-right font-bold"
                   />
                 </div>
               </div>
@@ -424,7 +424,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.sgstRate}
                     onChange={(e) => handleRecalculateTotals(undefined, e.target.value, undefined)}
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-mono"
+                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono"
                     placeholder="9%"
                   />
                 </div>
@@ -434,7 +434,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.sgstAmount}
                     onChange={(e) => updateInv({ sgstAmount: e.target.value })}
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-mono text-right"
+                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono text-right"
                   />
                 </div>
               </div>
@@ -446,7 +446,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.cgstRate}
                     onChange={(e) => handleRecalculateTotals(undefined, undefined, e.target.value)}
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-mono"
+                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono"
                     placeholder="9%"
                   />
                 </div>
@@ -456,7 +456,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.cgstAmount}
                     onChange={(e) => updateInv({ cgstAmount: e.target.value })}
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-mono text-right"
+                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono text-right"
                   />
                 </div>
               </div>
@@ -467,7 +467,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   type="text"
                   value={inv.finalAmount}
                   onChange={(e) => updateInv({ finalAmount: e.target.value })}
-                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-emerald-600 rounded text-emerald-400 font-mono font-bold text-sm text-right"
+                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-emerald-600 rounded text-blue-300 font-mono font-bold text-sm text-right"
                 />
               </div>
 
@@ -477,7 +477,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   rows={2}
                   value={inv.amountInWords}
                   onChange={(e) => updateInv({ amountInWords: e.target.value })}
-                  className="w-full px-2 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-medium text-[11px]"
+                  className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-medium text-[11px]"
                 />
               </div>
             </div>
@@ -487,7 +487,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
         {/* ================= TAB 3: BANK & TERMS ================= */}
         {activeTab === 'bank' && (
           <div className="space-y-4">
-            <div className="bg-[#152238] border border-gray-800 rounded p-3 space-y-3">
+            <div className="bg-[#152238] border border-[#141f33] rounded p-3 space-y-3">
               <h3 className="font-bold text-amber-400 text-xs flex items-center space-x-1.5">
                 <Landmark className="w-3.5 h-3.5" />
                 <span>Company Bank Details</span>
@@ -506,7 +506,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                       },
                     })
                   }
-                  className="w-full px-2 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-semibold"
+                  className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-semibold"
                   placeholder="BANK OF BARODA"
                 />
               </div>
@@ -525,7 +525,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                         },
                       })
                     }
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-mono"
+                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono"
                     placeholder="BARB0INDMAK"
                   />
                 </div>
@@ -542,7 +542,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                         },
                       })
                     }
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-emerald-300 font-mono font-bold"
+                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-blue-200 font-mono font-bold"
                     placeholder="05730400000392"
                   />
                 </div>
@@ -561,13 +561,13 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                       },
                     })
                   }
-                  className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200"
+                  className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200"
                   placeholder="MAKARPURA GIDC."
                 />
               </div>
             </div>
 
-            <div className="bg-[#152238] border border-gray-800 rounded p-3 space-y-3">
+            <div className="bg-[#152238] border border-[#141f33] rounded p-3 space-y-3">
               <h3 className="font-bold text-gray-300 text-xs">Statutory Numbers & Signatory</h3>
 
               <div className="grid grid-cols-2 gap-2">
@@ -577,7 +577,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.companyPanNo || ''}
                     onChange={(e) => updateInv({ companyPanNo: e.target.value })}
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-mono"
+                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono"
                   />
                 </div>
                 <div>
@@ -586,7 +586,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.companyEpfNo || ''}
                     onChange={(e) => updateInv({ companyEpfNo: e.target.value })}
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-mono"
+                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono"
                   />
                 </div>
               </div>
@@ -597,7 +597,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   type="text"
                   value={inv.signatoryCompany || ''}
                   onChange={(e) => updateInv({ signatoryCompany: e.target.value })}
-                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-semibold"
+                  className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-semibold"
                   placeholder="For, GLOBAL INDUSTRIES"
                 />
               </div>
@@ -608,8 +608,8 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
         {/* ================= TAB 4: COMPANY HEADER & FOOTER ================= */}
         {activeTab === 'company' && (
           <div className="space-y-4">
-            <div className="bg-[#152238] border border-gray-800 rounded p-3 space-y-3">
-              <h3 className="font-bold text-emerald-400 text-xs flex items-center space-x-1.5">
+            <div className="bg-[#152238] border border-[#141f33] rounded p-3 space-y-3">
+              <h3 className="font-bold text-blue-300 text-xs flex items-center space-x-1.5">
                 <Building className="w-3.5 h-3.5" />
                 <span>Company Letterhead</span>
               </h3>
@@ -621,7 +621,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.companyName}
                     onChange={(e) => updateInv({ companyName: e.target.value })}
-                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-bold"
+                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-bold"
                   />
                 </div>
                 <div>
@@ -630,7 +630,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.companySubtitle}
                     onChange={(e) => updateInv({ companySubtitle: e.target.value })}
-                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-200 font-bold"
+                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-bold"
                   />
                 </div>
               </div>
@@ -641,8 +641,109 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   type="text"
                   value={inv.companyGstNo}
                   onChange={(e) => updateInv({ companyGstNo: e.target.value })}
-                  className="w-full px-2 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-emerald-300 font-mono"
+                  className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-blue-200 font-mono"
                 />
+              </div>
+              <div>
+                <label className="block text-[10px] text-gray-400 mb-1">Header Address</label>
+                <input
+                  type="text"
+                  value={inv.companyAddressHeader || ''}
+                  onChange={(e) => updateInv({ companyAddressHeader: e.target.value })}
+                  className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200"
+                  placeholder="Regd. Off. : SO7B / 2nd floor..."
+                />
+              </div>
+
+              {/* 2-Column Services / Offerings */}
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#141f33]/80">
+                {/* Left Services */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-gray-400 text-[10px] uppercase">
+                      Left Services ({(inv.leftServices || []).length})
+                    </span>
+                    <button
+                      onClick={() =>
+                        updateInv({ leftServices: [...(inv.leftServices || []), '• NEW SERVICE'] })
+                      }
+                      className="p-0.5 text-blue-400 hover:text-blue-300 rounded cursor-pointer"
+                      title="Add Left Service"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                  </div>
+                  {(inv.leftServices || []).map((svc, idx) => (
+                    <div key={idx} className="flex items-center space-x-1">
+                      <input
+                        type="text"
+                        value={svc}
+                        onChange={(e) => {
+                          const updated = [...(inv.leftServices || [])];
+                          updated[idx] = e.target.value;
+                          updateInv({ leftServices: updated });
+                        }}
+                        className="w-full bg-[#0e1624] border border-[#16233a] rounded px-2 py-1 text-[10.5px] text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                      />
+                      {(inv.leftServices || []).length > 1 && (
+                        <button
+                          onClick={() =>
+                            updateInv({
+                              leftServices: (inv.leftServices || []).filter((_, i) => i !== idx),
+                            })
+                          }
+                          className="p-1 text-gray-500 hover:text-red-400 cursor-pointer"
+                        >
+                          <Trash2 className="w-2.5 h-2.5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Right Services */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-gray-400 text-[10px] uppercase">
+                      Right Services ({(inv.rightServices || []).length})
+                    </span>
+                    <button
+                      onClick={() =>
+                        updateInv({ rightServices: [...(inv.rightServices || []), '• NEW SERVICE'] })
+                      }
+                      className="p-0.5 text-blue-400 hover:text-blue-300 rounded cursor-pointer"
+                      title="Add Right Service"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                  </div>
+                  {(inv.rightServices || []).map((svc, idx) => (
+                    <div key={idx} className="flex items-center space-x-1">
+                      <input
+                        type="text"
+                        value={svc}
+                        onChange={(e) => {
+                          const updated = [...(inv.rightServices || [])];
+                          updated[idx] = e.target.value;
+                          updateInv({ rightServices: updated });
+                        }}
+                        className="w-full bg-[#0e1624] border border-[#16233a] rounded px-2 py-1 text-[10.5px] text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                      />
+                      {(inv.rightServices || []).length > 1 && (
+                        <button
+                          onClick={() =>
+                            updateInv({
+                              rightServices: (inv.rightServices || []).filter((_, i) => i !== idx),
+                            })
+                          }
+                          className="p-1 text-gray-500 hover:text-red-400 cursor-pointer"
+                        >
+                          <Trash2 className="w-2.5 h-2.5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div>
@@ -651,7 +752,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   type="text"
                   value={inv.companyPhone}
                   onChange={(e) => updateInv({ companyPhone: e.target.value })}
-                  className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200"
+                  className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200"
                 />
               </div>
 
@@ -661,7 +762,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   rows={2}
                   value={inv.companyAddressFooter}
                   onChange={(e) => updateInv({ companyAddressFooter: e.target.value })}
-                  className="w-full px-2 py-1.5 bg-[#0e1624] border border-gray-700 rounded text-gray-200"
+                  className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200"
                 />
               </div>
 
@@ -672,7 +773,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.companyEmail}
                     onChange={(e) => updateInv({ companyEmail: e.target.value })}
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200"
+                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200"
                   />
                 </div>
                 <div>
@@ -681,7 +782,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                     type="text"
                     value={inv.companyWebsite}
                     onChange={(e) => updateInv({ companyWebsite: e.target.value })}
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-gray-700 rounded text-gray-200"
+                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200"
                   />
                 </div>
               </div>

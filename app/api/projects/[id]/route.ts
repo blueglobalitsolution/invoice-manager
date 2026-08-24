@@ -44,6 +44,7 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
       owner: row.owner,
       lastModified: row.lastModified,
       tags: row.tags ? JSON.parse(row.tags) : [],
+      companyProfile: row.companyProfile ? JSON.parse(row.companyProfile) : undefined,
       isArchived: row.isArchived === 1,
       documents: documents,
       document: activeDoc ? activeDoc.document : null,
@@ -81,7 +82,6 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
       'location',
       'category',
       'budget',
-      'status',
       'owner',
       'lastModified',
     ];
@@ -98,9 +98,27 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
       values.push(JSON.stringify(body.tags));
     }
 
+    if (body.companyProfile !== undefined) {
+      fieldsToUpdate.push('companyProfile = ?');
+      values.push(body.companyProfile ? JSON.stringify(body.companyProfile) : null);
+    }
+
+    if (body.status !== undefined) {
+      fieldsToUpdate.push('status = ?');
+      values.push(body.status);
+      if (body.isArchived === undefined) {
+        fieldsToUpdate.push('isArchived = ?');
+        values.push(body.status === 'archived' ? 1 : 0);
+      }
+    }
+
     if (body.isArchived !== undefined) {
       fieldsToUpdate.push('isArchived = ?');
       values.push(body.isArchived ? 1 : 0);
+      if (body.status === undefined) {
+        fieldsToUpdate.push('status = ?');
+        values.push(body.isArchived ? 'archived' : 'active');
+      }
     }
 
     if (fieldsToUpdate.length > 0) {

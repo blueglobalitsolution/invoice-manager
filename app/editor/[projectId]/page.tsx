@@ -13,6 +13,7 @@ import { SettingsModal } from '@/components/SettingsModal';
 import { GlobalVariablesModal } from '@/components/GlobalVariablesModal';
 import { TexCodeModal } from '@/components/TexCodeModal';
 import { CreateDocumentModal } from '@/components/CreateDocumentModal';
+import { Loader } from '@/components/ui/loader';
 import { LatexDocument, DocumentSettings } from '@/types/document';
 import { ProjectItem, ProjectDocumentItem, ProjectDocStatus, ProjectDocType } from '@/types/project';
 import { LABOUR_PO_TEMPLATE, SAMPLE_TEMPLATES } from '@/lib/templates';
@@ -323,18 +324,8 @@ export default function EditorPage() {
 
   if (loading || !project) {
     return (
-      <div className="app-shell min-h-screen flex items-center justify-center px-4">
-        <div className="glass-card rounded-[32px] px-8 py-7 text-center">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#0d3479]">
-            Contracti
-          </p>
-          <h1 className="mt-3 text-[30px] leading-[1]">
-            {error ? 'Project Not Found' : 'Opening document workspace'}
-          </h1>
-          <p className="mt-3 text-sm text-[#666666]">
-            {error || 'Syncing your project layout, sections, and export settings.'}
-          </p>
-        </div>
+      <div className="app-shell min-h-screen flex items-center justify-center">
+        <Loader size={48} className="text-[#0d3479]" />
       </div>
     );
   }
@@ -434,6 +425,7 @@ export default function EditorPage() {
             <div className="flex-1 h-full min-w-[320px] overflow-hidden relative">
               <DocumentPreview
                 document={docState}
+                companyProfile={project?.companyProfile}
                 zoomLevel={zoomLevel}
                 setZoomLevel={setZoomLevel}
                 activeSectionId={activeSectionId}
@@ -473,6 +465,7 @@ export default function EditorPage() {
         isOpen={isLatexCodeModalOpen}
         onClose={() => setIsLatexCodeModalOpen(false)}
         document={docState}
+        companyProfile={project?.companyProfile}
       />
 
       {project && (

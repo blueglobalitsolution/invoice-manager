@@ -31,15 +31,7 @@ export const PROJECT_DOC_TEMPLATES: DocTemplateDefinition[] = [
     defaultPrefix: 'GI/WORK',
     defaultAmount: '₹4,70,000.00',
   },
-  {
-    type: 'purchase_order',
-    name: 'PEB & Material Purchase Order',
-    badge: 'Material PO',
-    description: 'Procurement order for structural steel, roofing sheets, purlins, fasteners, and insulation.',
-    iconName: 'Package',
-    defaultPrefix: 'GI/PO',
-    defaultAmount: '₹14,20,000.00',
-  },
+
   {
     type: 'invoice',
     name: 'Tax Invoice & RA Billing Summary',
@@ -50,23 +42,14 @@ export const PROJECT_DOC_TEMPLATES: DocTemplateDefinition[] = [
     defaultAmount: '₹3,50,000.00',
   },
   {
-    type: 'technical_specs',
-    name: 'Technical Specifications & Scope Annexure',
-    badge: 'Tech Specs',
-    description: 'Multi-page technical compliance annexure, IS code tolerances, and QA/QC inspection plans.',
-    iconName: 'Layers',
-    defaultPrefix: 'GI/SPEC',
-    defaultAmount: 'N/A',
-  },
-  {
-    type: 'contract',
-    name: 'Subcontractor SLA & Master Agreement',
-    badge: 'Agreement',
-    description: 'Statutory contract with indemnification, safety liability, warranty, and dispute arbitration.',
+    type: 'custom',
+    name: 'Blank Document (Global)',
+    badge: 'Blank',
+    description: 'A global blank document template for general-purpose use.',
     iconName: 'FileText',
-    defaultPrefix: 'GI/AGR',
-    defaultAmount: '₹22,00,000.00',
-  },
+    defaultPrefix: 'GI/DOC',
+    defaultAmount: '₹0.00',
+  }
 ];
 
 /**

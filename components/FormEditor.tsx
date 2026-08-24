@@ -90,8 +90,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({
 
   if (!doc.purchaseOrder) {
     return (
-      <aside className="w-full bg-[#111927] text-gray-200 flex flex-col h-full shrink-0 select-none overflow-hidden">
-        <div className="px-4 py-3 border-b border-gray-800 bg-[#0c131f] flex justify-between items-center shrink-0">
+      <aside className="w-full bg-[#080d1a] text-gray-200 flex flex-col h-full shrink-0 select-none overflow-hidden">
+        <div className="px-4 py-3 border-b border-[#141f33] bg-[#0a1120] flex justify-between items-center shrink-0">
           <h2 className="font-bold text-xs uppercase tracking-wider text-gray-300">
             Document Settings
           </h2>
@@ -105,7 +105,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               type="text"
               value={doc.title}
               onChange={(e) => updateDoc({ title: e.target.value })}
-              className="w-full bg-[#1b2535] border border-gray-700 rounded px-3 py-2 text-sm text-white font-medium"
+              className="w-full bg-[#070c18] border border-[#16233a] rounded px-3 py-2 text-sm text-white font-medium"
             />
           </div>
         </div>
@@ -255,44 +255,34 @@ export const FormEditor: React.FC<FormEditorProps> = ({
   };
 
   return (
-    <aside className="w-full bg-[#111927] text-gray-200 flex flex-col h-full shrink-0 select-none overflow-hidden">
-      {/* Top Header */}
-      <div className="px-4 py-3 border-b border-gray-800 bg-[#0c131f] flex items-center justify-between shrink-0">
-        <div className="flex items-center space-x-2">
-          <Settings2 className="w-4 h-4 text-emerald-400" />
-          <h2 className="font-bold text-xs uppercase tracking-wider text-gray-200">
-            PURCHASE ORDER INPUTS
-          </h2>
-        </div>
-        <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 rounded">
-          {typeof currentSectionPage === 'number' ? `Page ${currentSectionPage}` : currentSectionPage}
-        </span>
-      </div>
-
-      {/* Active Section Banner */}
-      <div className="px-4 py-2 bg-[#162234] border-b border-gray-800 flex items-center justify-between shrink-0">
+    <aside className="w-full bg-[#080d1a] text-gray-200 flex flex-col h-full shrink-0 select-none overflow-hidden">
+      {/* Single Unified Header */}
+      <div className="px-4 py-3 border-b border-[#141f33] bg-[#0a1120] flex items-center justify-between shrink-0">
         <div className="flex items-center space-x-2.5 min-w-0">
-          <div className="p-1.5 bg-emerald-900/60 rounded border border-emerald-700/50 text-emerald-300 shrink-0">
+          <div className="p-2 bg-[#0d3479]/30 rounded-xl border border-[#0d3479]/50 text-blue-300 shrink-0">
             <CurrentIcon className="w-4 h-4" />
           </div>
           <div className="truncate">
             <div className="text-xs font-bold text-white truncate">{currentMeta.title}</div>
-            <div className="text-[10px] text-gray-400 truncate">{currentMeta.subtitle}</div>
+            <div className="text-[10px] text-slate-400 truncate">{currentMeta.subtitle}</div>
           </div>
         </div>
 
-        {onOpenGlobalVariables && (
-          <button
-            onClick={onOpenGlobalVariables}
-            className="px-2 py-1 bg-[#1e2a3b] hover:bg-emerald-900/50 text-emerald-400 hover:text-white border border-gray-700 hover:border-emerald-700 rounded text-[10px] font-mono font-bold flex items-center space-x-1 shrink-0 transition-colors cursor-pointer"
-            title="Open Global Variables panel"
-          >
-            <span>{`{{Vars}}`}</span>
-          </button>
-        )}
+        <div className="flex items-center space-x-2 shrink-0">
+          {onOpenGlobalVariables && (
+            <button
+              onClick={onOpenGlobalVariables}
+              className="px-2.5 py-1 bg-[#0d3479]/20 hover:bg-[#0d3479]/50 text-blue-300 hover:text-white border border-[#0d3479]/40 rounded-lg text-[10px] font-mono font-bold flex items-center space-x-1 transition-colors cursor-pointer"
+              title="Open Global Variables panel"
+            >
+              <span>{`{{Vars}}`}</span>
+            </button>
+          )}
+          <span className="text-[10px] font-mono uppercase px-2.5 py-1 bg-[#0d3479]/40 text-blue-200 border border-[#0d3479] rounded-lg font-semibold">
+            {typeof currentSectionPage === 'number' ? `Page ${currentSectionPage}` : currentSectionPage}
+          </span>
+        </div>
       </div>
-
-
 
       {/* Dynamic Configuration Form based on Active Section */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs scrollbar-thin">
@@ -303,9 +293,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({
           <div className="space-y-5">
             {/* Header Letterhead Box */}
             <div className="p-3 bg-[#15202f] border border-emerald-900/60 rounded-lg space-y-3 shadow-sm">
-              <div className="flex items-center space-x-2 border-b border-gray-800 pb-2">
-                <LayoutTemplate className="w-4 h-4 text-emerald-400" />
-                <span className="font-bold text-emerald-400 uppercase text-[11px] tracking-wide">
+              <div className="flex items-center space-x-2 border-b border-[#141f33] pb-2">
+                <LayoutTemplate className="w-4 h-4 text-blue-300" />
+                <span className="font-bold text-blue-300 uppercase text-[11px] tracking-wide">
                   Top Letterhead Header
                 </span>
               </div>
@@ -320,7 +310,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     type="text"
                     value={po.companyName}
                     onChange={(e) => updatePO({ companyName: e.target.value })}
-                    className="w-full bg-[#1e2a3c] border border-gray-700 rounded px-2.5 py-1.5 text-white font-bold"
+                    className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white font-bold"
                   />
                 </div>
 
@@ -332,7 +322,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     type="text"
                     value={po.companySubtitle}
                     onChange={(e) => updatePO({ companySubtitle: e.target.value })}
-                    className="w-full bg-[#1e2a3c] border border-gray-700 rounded px-2.5 py-1.5 text-white font-semibold"
+                    className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white font-semibold"
                   />
                 </div>
               </div>
@@ -347,14 +337,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   value={po.gstNo}
                   onChange={(e) => updatePO({ gstNo: e.target.value })}
                   placeholder="e.g. 24AABCA1234F1Z5"
-                  className="w-full bg-[#1e2a3c] border border-gray-700 rounded px-2.5 py-1.5 text-white font-mono font-bold"
+                  className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white font-mono font-bold"
                 />
               </div>
 
               {/* Company Registered Address in Header */}
               <div className="space-y-1.5">
                 <label className="block font-medium text-gray-300 text-[10.5px] flex items-center space-x-1">
-                  <MapPin className="w-3 h-3 text-emerald-400" />
+                  <MapPin className="w-3 h-3 text-blue-300" />
                   <span>Company Address (Header / PO Box)</span>
                 </label>
                 {po.companyAddress.map((addr, idx) => (
@@ -367,13 +357,13 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                       newAddr[idx] = e.target.value;
                       updatePO({ companyAddress: newAddr });
                     }}
-                    className="w-full bg-[#1e2a3c] border border-gray-700 rounded px-2.5 py-1 text-white text-[11px]"
+                    className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1 text-white text-[11px]"
                   />
                 ))}
               </div>
 
               {/* 2-Column Services / Offerings */}
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-800/80">
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#141f33]/80">
                 {/* Left Services */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
@@ -384,7 +374,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                       onClick={() =>
                         updatePO({ leftServices: [...po.leftServices, 'NEW SERVICE'] })
                       }
-                      className="p-0.5 text-emerald-400 hover:text-emerald-300 rounded cursor-pointer"
+                      className="p-0.5 text-blue-300 hover:text-blue-200 rounded cursor-pointer"
                       title="Add Left Service"
                     >
                       <Plus className="w-3 h-3" />
@@ -400,7 +390,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                           updated[idx] = e.target.value;
                           updatePO({ leftServices: updated });
                         }}
-                        className="w-full bg-[#1e2a3c] border border-gray-700 rounded px-2 py-1 text-[10.5px] text-white"
+                        className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2 py-1 text-[10.5px] text-white"
                       />
                       {po.leftServices.length > 1 && (
                         <button
@@ -428,7 +418,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                       onClick={() =>
                         updatePO({ rightServices: [...po.rightServices, 'NEW SERVICE'] })
                       }
-                      className="p-0.5 text-emerald-400 hover:text-emerald-300 rounded cursor-pointer"
+                      className="p-0.5 text-blue-300 hover:text-blue-200 rounded cursor-pointer"
                       title="Add Right Service"
                     >
                       <Plus className="w-3 h-3" />
@@ -444,7 +434,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                           updated[idx] = e.target.value;
                           updatePO({ rightServices: updated });
                         }}
-                        className="w-full bg-[#1e2a3c] border border-gray-700 rounded px-2 py-1 text-[10.5px] text-white"
+                        className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2 py-1 text-[10.5px] text-white"
                       />
                       {po.rightServices.length > 1 && (
                         <button
@@ -466,9 +456,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({
 
             {/* Bottom Footer Box */}
             <div className="p-3 bg-[#15202f] border border-emerald-900/60 rounded-lg space-y-3 shadow-sm">
-              <div className="flex items-center space-x-2 border-b border-gray-800 pb-2">
-                <Building className="w-4 h-4 text-emerald-400" />
-                <span className="font-bold text-emerald-400 uppercase text-[11px] tracking-wide">
+              <div className="flex items-center space-x-2 border-b border-[#141f33] pb-2">
+                <Building className="w-4 h-4 text-blue-300" />
+                <span className="font-bold text-blue-300 uppercase text-[11px] tracking-wide">
                   Bottom Letterhead Footer
                 </span>
               </div>
@@ -476,7 +466,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               {/* Phone */}
               <div className="space-y-1">
                 <label className="block font-medium text-gray-300 text-[10.5px] flex items-center space-x-1">
-                  <Phone className="w-3 h-3 text-emerald-400" />
+                  <Phone className="w-3 h-3 text-blue-300" />
                   <span>Company Phone Number</span>
                 </label>
                 <input
@@ -484,21 +474,21 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   value={po.companyPhone}
                   onChange={(e) => updatePO({ companyPhone: e.target.value })}
                   placeholder="+91 98765 43210"
-                  className="w-full bg-[#1e2a3c] border border-gray-700 rounded px-2.5 py-1.5 text-white text-xs"
+                  className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white text-xs"
                 />
               </div>
 
               {/* Footer Address */}
               <div className="space-y-1">
                 <label className="block font-medium text-gray-300 text-[10.5px] flex items-center space-x-1">
-                  <MapPin className="w-3 h-3 text-emerald-400" />
+                  <MapPin className="w-3 h-3 text-blue-300" />
                   <span>Registered Footer Address</span>
                 </label>
                 <input
                   type="text"
                   value={po.companyAddressFooter}
                   onChange={(e) => updatePO({ companyAddressFooter: e.target.value })}
-                  className="w-full bg-[#1e2a3c] border border-gray-700 rounded px-2.5 py-1.5 text-white text-xs"
+                  className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white text-xs"
                 />
               </div>
 
@@ -506,26 +496,26 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
                   <label className="block font-medium text-gray-300 text-[10.5px] flex items-center space-x-1">
-                    <Mail className="w-3 h-3 text-emerald-400" />
+                    <Mail className="w-3 h-3 text-blue-300" />
                     <span>Email</span>
                   </label>
                   <input
                     type="text"
                     value={po.companyEmail}
                     onChange={(e) => updatePO({ companyEmail: e.target.value })}
-                    className="w-full bg-[#1e2a3c] border border-gray-700 rounded px-2.5 py-1.5 text-white text-xs"
+                    className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white text-xs"
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="block font-medium text-gray-300 text-[10.5px] flex items-center space-x-1">
-                    <Globe className="w-3 h-3 text-emerald-400" />
+                    <Globe className="w-3 h-3 text-blue-300" />
                     <span>Website</span>
                   </label>
                   <input
                     type="text"
                     value={po.companyWebsite}
                     onChange={(e) => updatePO({ companyWebsite: e.target.value })}
-                    className="w-full bg-[#1e2a3c] border border-gray-700 rounded px-2.5 py-1.5 text-white text-xs"
+                    className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white text-xs"
                   />
                 </div>
               </div>
@@ -545,7 +535,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                 value={doc.title}
                 onChange={(e) => updateDoc({ title: e.target.value })}
                 placeholder="LABOUR CONTRACT PURCHASE ORDER"
-                className="w-full bg-[#1b2535] border border-gray-700 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-emerald-500 font-bold text-white"
+                className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 focus:ring-1 focus:ring-emerald-500 font-bold text-white"
               />
             </div>
 
@@ -558,7 +548,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   type="text"
                   value={po.poNumber}
                   onChange={(e) => updatePO({ poNumber: e.target.value })}
-                  className="w-full bg-[#1b2535] border border-gray-700 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-emerald-500 text-white font-medium"
+                  className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 focus:ring-1 focus:ring-emerald-500 text-white font-medium"
                 />
               </div>
 
@@ -570,13 +560,13 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   type="text"
                   value={po.poDate}
                   onChange={(e) => updatePO({ poDate: e.target.value })}
-                  className="w-full bg-[#1b2535] border border-gray-700 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-emerald-500 text-white font-medium"
+                  className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 focus:ring-1 focus:ring-emerald-500 text-white font-medium"
                 />
               </div>
             </div>
 
-            <div className="p-3 bg-[#16202e] border border-gray-700/80 rounded space-y-2.5">
-              <span className="block font-bold text-emerald-400 uppercase text-[10.5px]">
+            <div className="p-3 bg-[#16202e] border border-[#16233a]/80 rounded space-y-2.5">
+              <span className="block font-bold text-blue-300 uppercase text-[10.5px]">
                 Contractor & Project Info
               </span>
 
@@ -586,7 +576,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   type="text"
                   value={po.contractorName}
                   onChange={(e) => updatePO({ contractorName: e.target.value })}
-                  className="w-full bg-[#1f2d40] border border-gray-700 rounded px-2 py-1 text-white font-semibold"
+                  className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-semibold"
                 />
               </div>
 
@@ -596,7 +586,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   type="text"
                   value={po.projectName}
                   onChange={(e) => updatePO({ projectName: e.target.value })}
-                  className="w-full bg-[#1f2d40] border border-gray-700 rounded px-2 py-1 text-white font-semibold"
+                  className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-semibold"
                 />
               </div>
 
@@ -606,7 +596,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   type="text"
                   value={po.projectLocation}
                   onChange={(e) => updatePO({ projectLocation: e.target.value })}
-                  className="w-full bg-[#1f2d40] border border-gray-700 rounded px-2 py-1 text-white font-semibold"
+                  className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-semibold"
                 />
               </div>
             </div>
@@ -617,7 +607,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {activeSectionId === 'scope' && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-emerald-400 uppercase text-[10.5px]">
+              <span className="font-bold text-blue-300 uppercase text-[10.5px]">
                 Scope of Work Items ({po.scopeOfWork.length})
               </span>
               <button
@@ -644,7 +634,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     updated[idx] = e.target.value;
                     updatePO({ scopeOfWork: updated });
                   }}
-                  className="flex-1 bg-[#1b2535] border border-gray-700 rounded p-2 text-xs text-white"
+                  className="flex-1 bg-[#070c18] border border-[#16233a] rounded p-2 text-xs text-white"
                 />
                 <button
                   onClick={() => {
@@ -664,7 +654,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {activeSectionId === 'rates' && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-emerald-400 uppercase text-[10.5px]">
+              <span className="font-bold text-blue-300 uppercase text-[10.5px]">
                 Line Items ({po.rateItems.length})
               </span>
               <button
@@ -680,7 +670,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               {po.rateItems.map((item, index) => (
                 <div
                   key={item.id}
-                  className="p-2.5 bg-[#16202e] border border-gray-700/80 rounded space-y-2"
+                  className="p-2.5 bg-[#16202e] border border-[#16233a]/80 rounded space-y-2"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-gray-300 text-[11px]">
@@ -703,7 +693,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                       handleRateChange(item.id, 'description', e.target.value)
                     }
                     placeholder="Description"
-                    className="w-full bg-[#1f2d40] border border-gray-700 rounded px-2 py-1 text-white font-medium text-xs"
+                    className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-medium text-xs"
                   />
 
                   <div className="grid grid-cols-4 gap-1.5">
@@ -715,7 +705,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         onChange={(e) =>
                           handleRateChange(item.id, 'unit', e.target.value)
                         }
-                        className="w-full bg-[#1f2d40] border border-gray-700 rounded px-1.5 py-1 text-white text-[11px]"
+                        className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-1.5 py-1 text-white text-[11px]"
                       />
                     </div>
                     <div>
@@ -726,7 +716,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         onChange={(e) =>
                           handleRateChange(item.id, 'qty', e.target.value)
                         }
-                        className="w-full bg-[#1f2d40] border border-gray-700 rounded px-1.5 py-1 text-white text-[11px]"
+                        className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-1.5 py-1 text-white text-[11px]"
                       />
                     </div>
                     <div>
@@ -737,7 +727,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         onChange={(e) =>
                           handleRateChange(item.id, 'rate', e.target.value)
                         }
-                        className="w-full bg-[#1f2d40] border border-gray-700 rounded px-1.5 py-1 text-white text-[11px]"
+                        className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-1.5 py-1 text-white text-[11px]"
                       />
                     </div>
                     <div>
@@ -748,7 +738,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         onChange={(e) =>
                           handleRateChange(item.id, 'total', e.target.value)
                         }
-                        className="w-full bg-[#1f2d40] border border-gray-700 rounded px-1.5 py-1 text-white font-bold font-mono text-[11px]"
+                        className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-1.5 py-1 text-white font-bold font-mono text-[11px]"
                       />
                     </div>
                   </div>
@@ -756,7 +746,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               ))}
             </div>
 
-            <div className="space-y-1 pt-2 border-t border-gray-800">
+            <div className="space-y-1 pt-2 border-t border-[#141f33]">
               <label className="block font-medium text-gray-400">
                 Amount in Words
               </label>
@@ -764,7 +754,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                 type="text"
                 value={po.amountInWords}
                 onChange={(e) => updatePO({ amountInWords: e.target.value })}
-                className="w-full bg-[#1b2535] border border-gray-700 rounded px-2.5 py-1.5 text-white font-semibold"
+                className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 text-white font-semibold"
               />
             </div>
           </div>
@@ -773,21 +763,37 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {/* 4. SCOPE OF CONTRACTOR (PAGE 2) */}
         {activeSectionId === 'scope_contractor' && (
           <div className="space-y-3">
-            <span className="block font-bold uppercase text-[10.5px] text-emerald-400">
-              Scope of Contractor Clauses (Page 2)
-            </span>
+            <div className="flex justify-between items-center">
+              <span className="block font-bold uppercase text-[10.5px] text-blue-300">
+                Scope of Contractor Clauses (Page 2)
+              </span>
+              <button
+                onClick={() => updatePO({ scopeOfContractor: [...po.scopeOfContractor, 'New clause'] })}
+                className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+              >
+                <Plus className="w-3 h-3" />
+                <span>Add Clause</span>
+              </button>
+            </div>
             {po.scopeOfContractor.map((clause, idx) => (
-              <textarea
-                key={idx}
-                rows={3}
-                value={clause}
-                onChange={(e) => {
-                  const updated = [...po.scopeOfContractor];
-                  updated[idx] = e.target.value;
-                  updatePO({ scopeOfContractor: updated });
-                }}
-                className="w-full bg-[#1b2535] border border-gray-700 rounded p-2 text-xs text-white"
-              />
+              <div key={idx} className="flex items-start space-x-2">
+                <textarea
+                  rows={3}
+                  value={clause}
+                  onChange={(e) => {
+                    const updated = [...po.scopeOfContractor];
+                    updated[idx] = e.target.value;
+                    updatePO({ scopeOfContractor: updated });
+                  }}
+                  className="w-full bg-[#070c18] border border-[#16233a] rounded p-2 text-xs text-white"
+                />
+                <button
+                  onClick={() => updatePO({ scopeOfContractor: po.scopeOfContractor.filter((_, i) => i !== idx) })}
+                  className="p-1 text-gray-500 hover:text-red-400 rounded mt-1 cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
             ))}
           </div>
         )}
@@ -795,12 +801,29 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {/* 5. PAYMENT TERMS (PAGE 2) */}
         {activeSectionId === 'payment_terms' && (
           <div className="space-y-3">
-            <span className="block font-bold uppercase text-[10.5px] text-emerald-400">
-              Payment Terms Clauses (Page 2)
-            </span>
+            <div className="flex justify-between items-center">
+              <span className="block font-bold uppercase text-[10.5px] text-blue-300">
+                Payment Terms Clauses (Page 2)
+              </span>
+              <button
+                onClick={() => updatePO({ paymentTerms: [...po.paymentTerms, 'New payment term'] })}
+                className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+              >
+                <Plus className="w-3 h-3" />
+                <span>Add Term</span>
+              </button>
+            </div>
             {po.paymentTerms.map((term, idx) => (
-              <div key={idx} className="space-y-1">
-                <label className="block text-gray-400 text-[10.5px]">Clause {idx + 1}</label>
+              <div key={idx} className="space-y-1 bg-[#070c18] p-2 rounded border border-[#16233a]">
+                <div className="flex justify-between items-center">
+                  <label className="block text-gray-400 text-[10.5px]">Clause {idx + 1}</label>
+                  <button
+                    onClick={() => updatePO({ paymentTerms: po.paymentTerms.filter((_, i) => i !== idx) })}
+                    className="text-red-400 hover:text-red-300 p-0.5 cursor-pointer"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={term}
@@ -809,7 +832,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     updated[idx] = e.target.value;
                     updatePO({ paymentTerms: updated });
                   }}
-                  className="w-full bg-[#1b2535] border border-gray-700 rounded px-2.5 py-1.5 text-xs text-white"
+                  className="w-full bg-[#0e1624] border border-[#16233a] rounded px-2.5 py-1.5 text-xs text-white focus:outline-none"
                 />
               </div>
             ))}
@@ -819,21 +842,37 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {/* 6. QUALITY, MATERIALS & SAFETY */}
         {activeSectionId === 'measurement' && (
           <div className="space-y-3">
-            <span className="block font-bold uppercase text-[10.5px] text-emerald-400">
-              Quality, Materials & Safety Clauses (5–7)
-            </span>
+            <div className="flex justify-between items-center">
+              <span className="block font-bold uppercase text-[10.5px] text-blue-300">
+                Quality, Materials & Safety Clauses (5–7)
+              </span>
+              <button
+                onClick={() => updatePO({ measurementClause: [...po.measurementClause, 'New clause'] })}
+                className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+              >
+                <Plus className="w-3 h-3" />
+                <span>Add Clause</span>
+              </button>
+            </div>
             {po.measurementClause.map((clause, idx) => (
-              <textarea
-                key={idx}
-                rows={3}
-                value={clause}
-                onChange={(e) => {
-                  const updated = [...po.measurementClause];
-                  updated[idx] = e.target.value;
-                  updatePO({ measurementClause: updated });
-                }}
-                className="w-full bg-[#1b2535] border border-gray-700 rounded p-2 text-xs text-white"
-              />
+              <div key={idx} className="flex items-start space-x-2">
+                <textarea
+                  rows={3}
+                  value={clause}
+                  onChange={(e) => {
+                    const updated = [...po.measurementClause];
+                    updated[idx] = e.target.value;
+                    updatePO({ measurementClause: updated });
+                  }}
+                  className="w-full bg-[#070c18] border border-[#16233a] rounded p-2 text-xs text-white"
+                />
+                <button
+                  onClick={() => updatePO({ measurementClause: po.measurementClause.filter((_, i) => i !== idx) })}
+                  className="p-1 text-gray-500 hover:text-red-400 rounded mt-1 cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
             ))}
           </div>
         )}
@@ -841,12 +880,29 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {/* 7. COMMERCIAL & LABOUR TERMS (PAGE 2) */}
         {activeSectionId === 'terms' && (
           <div className="space-y-3">
-            <span className="block font-bold uppercase text-[10.5px] text-emerald-400">
-              Commercial & Labour Terms (Clauses 8–10)
-            </span>
+            <div className="flex justify-between items-center">
+              <span className="block font-bold uppercase text-[10.5px] text-blue-300">
+                Commercial & Labour Terms (Clauses 8–10)
+              </span>
+              <button
+                onClick={() => updatePO({ termsAndConditions: [...po.termsAndConditions, 'New commercial term'] })}
+                className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+              >
+                <Plus className="w-3 h-3" />
+                <span>Add Term</span>
+              </button>
+            </div>
             {po.termsAndConditions.map((term, idx) => (
-              <div key={idx} className="space-y-1">
-                <label className="block text-gray-400 text-[10.5px]">Term {idx + 1}</label>
+              <div key={idx} className="space-y-1 bg-[#070c18] p-2 rounded border border-[#16233a]">
+                <div className="flex justify-between items-center">
+                  <label className="block text-gray-400 text-[10.5px]">Term {idx + 1}</label>
+                  <button
+                    onClick={() => updatePO({ termsAndConditions: po.termsAndConditions.filter((_, i) => i !== idx) })}
+                    className="text-red-400 hover:text-red-300 p-0.5 cursor-pointer"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={term}
@@ -855,7 +911,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     updated[idx] = e.target.value;
                     updatePO({ termsAndConditions: updated });
                   }}
-                  className="w-full bg-[#1b2535] border border-gray-700 rounded px-2.5 py-1.5 text-xs text-white"
+                  className="w-full bg-[#0e1624] border border-[#16233a] rounded px-2.5 py-1.5 text-xs text-white focus:outline-none"
                 />
               </div>
             ))}
@@ -865,12 +921,29 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {/* 8. GENERAL TERMS & DEFECT LIABILITY (PAGE 3) */}
         {activeSectionId === 'page3_terms' && (
           <div className="space-y-3">
-            <span className="block font-bold uppercase text-[10.5px] text-emerald-400">
-              General Terms & Defect Liability (Clauses 11–16)
-            </span>
+            <div className="flex justify-between items-center">
+              <span className="block font-bold uppercase text-[10.5px] text-blue-300">
+                General Terms & Defect Liability (Clauses 11–16)
+              </span>
+              <button
+                onClick={() => updatePO({ page3Terms: [...po.page3Terms, 'New clause'] })}
+                className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+              >
+                <Plus className="w-3 h-3" />
+                <span>Add Clause</span>
+              </button>
+            </div>
             {po.page3Terms.map((term, idx) => (
-              <div key={idx} className="space-y-1">
-                <label className="block text-gray-400 text-[10.5px]">Clause {idx + 1}</label>
+              <div key={idx} className="space-y-1 bg-[#070c18] p-2 rounded border border-[#16233a]">
+                <div className="flex justify-between items-center">
+                  <label className="block text-gray-400 text-[10.5px]">Clause {idx + 1}</label>
+                  <button
+                    onClick={() => updatePO({ page3Terms: po.page3Terms.filter((_, i) => i !== idx) })}
+                    className="text-red-400 hover:text-red-300 p-0.5 cursor-pointer"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={term}
@@ -879,7 +952,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     updated[idx] = e.target.value;
                     updatePO({ page3Terms: updated });
                   }}
-                  className="w-full bg-[#1b2535] border border-gray-700 rounded px-2.5 py-1.5 text-xs text-white"
+                  className="w-full bg-[#0e1624] border border-[#16233a] rounded px-2.5 py-1.5 text-xs text-white focus:outline-none"
                 />
               </div>
             ))}
@@ -889,30 +962,30 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {/* 9. SIGNATURE BLOCKS */}
         {activeSectionId === 'signatures' && (
           <div className="space-y-4">
-            <div className="p-3 bg-[#16202e] border border-gray-700/80 rounded space-y-2">
-              <span className="block font-bold text-emerald-400 uppercase text-[10.5px]">
+            <div className="p-3 bg-[#16202e] border border-[#16233a]/80 rounded space-y-2">
+              <span className="block font-bold text-blue-300 uppercase text-[10.5px]">
                 Company Signature Designation
               </span>
               <input
                 type="text"
                 value={`For ${po.companyName}`}
                 readOnly
-                className="w-full bg-[#1f2d40] border border-gray-700 rounded px-2 py-1 text-white font-bold text-xs"
+                className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-bold text-xs"
               />
               <p className="text-[10px] text-gray-400">
                 Rendered on Page 3 with authorized signatory stamp block.
               </p>
             </div>
 
-            <div className="p-3 bg-[#16202e] border border-gray-700/80 rounded space-y-2">
-              <span className="block font-bold text-emerald-400 uppercase text-[10.5px]">
+            <div className="p-3 bg-[#16202e] border border-[#16233a]/80 rounded space-y-2">
+              <span className="block font-bold text-blue-300 uppercase text-[10.5px]">
                 Contractor Acceptance Designation
               </span>
               <input
                 type="text"
                 value={`Accepted By Contractor: ${po.contractorName}`}
                 readOnly
-                className="w-full bg-[#1f2d40] border border-gray-700 rounded px-2 py-1 text-white font-bold text-xs"
+                className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-bold text-xs"
               />
               <p className="text-[10px] text-gray-400">
                 Rendered on Page 3 with contractor signature and seal acknowledgment.
@@ -932,7 +1005,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                 type="text"
                 value={customSection.title}
                 onChange={(e) => handleUpdateCustomSection({ title: e.target.value })}
-                className="w-full bg-[#1b2535] border border-gray-700 rounded px-2.5 py-1.5 text-white font-bold"
+                className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 text-white font-bold"
               />
             </div>
 
@@ -953,7 +1026,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     className={`flex-1 py-1 rounded text-xs font-bold border cursor-pointer ${
                       currentSectionPage === pageNum
                         ? 'bg-emerald-700 border-emerald-500 text-white'
-                        : 'bg-[#1b2535] border-gray-700 text-gray-300 hover:text-white'
+                        : 'bg-[#070c18] border-[#16233a] text-gray-300 hover:text-white'
                     }`}
                   >
                     P{pageNum}
@@ -995,7 +1068,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                       e.target.value = '';
                     }}
                     defaultValue=""
-                    className="bg-[#1f2d40] text-emerald-300 border border-emerald-700/60 rounded px-2 py-0.5 text-[10px] font-bold cursor-pointer"
+                    className="bg-[#1f2d40] text-blue-200 border border-emerald-700/60 rounded px-2 py-0.5 text-[10px] font-bold cursor-pointer"
                   >
                     <option value="" disabled>
                       ⚡ Insert Preset Template...
@@ -1039,7 +1112,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     className={`px-1.5 py-1 rounded text-[10.5px] font-medium border cursor-pointer text-center truncate ${
                       customSection.contentType === type
                         ? 'bg-emerald-700 border-emerald-500 text-white font-bold'
-                        : 'bg-[#1b2535] border-gray-700 text-gray-300 hover:text-white'
+                        : 'bg-[#070c18] border-[#16233a] text-gray-300 hover:text-white'
                     }`}
                   >
                     {label}
@@ -1078,7 +1151,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         cur[idx] = e.target.value;
                         handleUpdateCustomSection({ bullets: cur });
                       }}
-                      className="w-full bg-[#1b2535] border border-gray-700 rounded px-2 py-1 text-xs text-white"
+                      className="w-full bg-[#070c18] border border-[#16233a] rounded px-2 py-1 text-xs text-white"
                     />
                     <button
                       onClick={() => {
@@ -1122,8 +1195,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   </button>
                 </div>
                 {(customSection.paragraphs || []).map((p, idx) => (
-                  <div key={idx} className="flex items-start space-x-1.5 bg-[#172232] p-2 rounded border border-gray-800">
-                    <span className="font-mono font-bold text-emerald-400 text-xs mt-1 shrink-0">
+                  <div key={idx} className="flex items-start space-x-1.5 bg-[#172232] p-2 rounded border border-[#141f33]">
+                    <span className="font-mono font-bold text-blue-300 text-xs mt-1 shrink-0">
                       {idx + 1}.0
                     </span>
                     <textarea
@@ -1134,7 +1207,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         cur[idx] = e.target.value;
                         handleUpdateCustomSection({ paragraphs: cur });
                       }}
-                      className="w-full bg-[#1b2535] border border-gray-700 rounded p-2 text-xs text-white"
+                      className="w-full bg-[#070c18] border border-[#16233a] rounded p-2 text-xs text-white"
                     />
                     <button
                       onClick={() => {
@@ -1181,7 +1254,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         cur[idx] = { ...cur[idx], key: e.target.value };
                         handleUpdateCustomSection({ keyValuePairs: cur });
                       }}
-                      className="w-1/3 bg-[#1f2d40] border border-gray-700 rounded px-2 py-1 text-xs font-semibold text-emerald-300"
+                      className="w-1/3 bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-xs font-semibold text-blue-200"
                     />
                     <input
                       type="text"
@@ -1192,7 +1265,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         cur[idx] = { ...cur[idx], value: e.target.value };
                         handleUpdateCustomSection({ keyValuePairs: cur });
                       }}
-                      className="w-2/3 bg-[#1b2535] border border-gray-700 rounded px-2 py-1 text-xs text-white"
+                      className="w-2/3 bg-[#070c18] border border-[#16233a] rounded px-2 py-1 text-xs text-white"
                     />
                     <button
                       onClick={() => {
@@ -1234,7 +1307,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   value={customSection.calloutText || ''}
                   onChange={(e) => handleUpdateCustomSection({ calloutText: e.target.value })}
                   placeholder="Enter notice text or mandatory directive..."
-                  className="w-full bg-[#1b2535] border border-amber-800/60 rounded p-2 text-xs text-amber-200"
+                  className="w-full bg-[#070c18] border border-amber-800/60 rounded p-2 text-xs text-amber-200"
                 />
               </div>
             )}
@@ -1275,7 +1348,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                             cur[idx] = e.target.value;
                             handleUpdateCustomSection({ tableHeaders: cur });
                           }}
-                          className="bg-[#1f2d40] border border-gray-700 rounded px-2 py-1 text-[11px] font-bold text-white flex-1 min-w-[80px]"
+                          className="bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-[11px] font-bold text-white flex-1 min-w-[80px]"
                         />
                       )
                     )}
@@ -1317,7 +1390,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                               cur[rIdx][cIdx] = e.target.value;
                               handleUpdateCustomSection({ tableRows: cur });
                             }}
-                            className="bg-[#1b2535] border border-gray-700 rounded px-2 py-1 text-xs text-white flex-1 min-w-[70px]"
+                            className="bg-[#070c18] border border-[#16233a] rounded px-2 py-1 text-xs text-white flex-1 min-w-[70px]"
                           />
                         ))}
                       </div>

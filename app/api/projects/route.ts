@@ -43,6 +43,7 @@ export async function GET(request: Request) {
         owner: row.owner,
         lastModified: row.lastModified,
         tags: row.tags ? JSON.parse(row.tags) : [],
+        companyProfile: row.companyProfile ? JSON.parse(row.companyProfile) : undefined,
         isArchived: row.isArchived === 1,
         documents: documents,
         document: activeDoc ? activeDoc.document : null,
@@ -59,57 +60,76 @@ export async function GET(request: Request) {
 // POST create project
 export async function POST(request: Request) {
   try {
-    const { id, userId, title, code, clientName, location, category, budget, status, owner, lastModified, tags, isArchived, document } = await request.json();
+    const newProject = await request.json();
+    const { id, title, category, code, document } = newProject;
 
     if (!id || !title) {
       return NextResponse.json({ error: 'ID and title are required' }, { status: 400 });
     }
 
     // Insert project record
-    const insertProjStmt = db.prepare(`
-      INSERT INTO projects (id, userId, title, code, clientName, location, category, budget, status, owner, lastModified, tags, isArchived)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    const stmt = db.prepare(`
+      INSERT INTO projects (id, userId, title, code, clientName, location, category, budget, status, owner, lastModified, tags, companyProfile, isArchived)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    insertProjStmt.run(
-      id,
-      userId || 'guest',
-      title,
-      code || '',
-      clientName || '',
-      location || '',
-      category || '',
-      budget || '',
-      status || 'active',
-      owner || 'You',
-      lastModified || new Date().toLocaleString(),
-      tags ? JSON.stringify(tags) : '[]',
-      isArchived ? 1 : 0
+    stmt.run(
+      newProject.id,
+      newProject.userId || 'guest',
+      newProject.title,
+      newProject.code || '',
+      newProject.clientName || '',
+      newProject.location || '',
+      newProject.category || '',
+      newProject.budget || '',
+      newProject.status || 'active',
+      newProject.owner || 'You',
+      newProject.lastModified || new Date().toLocaleString(),
+      JSON.stringify(newProject.tags || []),
+      newProject.companyProfile ? JSON.stringify(newProject.companyProfile) : null,
+      newProject.isArchived ? 1 : 0
     );
 
-    // Insert initial document record linked to this project
-    const docId = `doc_${id.split('_')[1] || Date.now()}`;
-    const docType = category?.toLowerCase().includes('invoice') 
-      ? 'tax_invoice' 
-      : category?.toLowerCase().includes('quotation') 
-      ? 'quotation' 
-      : 'work_order';
-
+    // Insert document records linked to this project
     const insertDocStmt = db.prepare(`
       INSERT INTO documents (id, projectId, title, docType, docNumber, status, lastModified, document)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    insertDocStmt.run(
-      docId,
-      id,
-      title,
-      docType,
-      code || '',
-      'draft',
-      lastModified || new Date().toLocaleString(),
-      document ? JSON.stringify(document) : '{}'
-    );
+    if (newProject.documents && Array.isArray(newProject.documents) && newProject.documents.length > 0) {
+      for (const [idx, doc] of newProject.documents.entries()) {
+        const docId = doc.id && doc.projectId === id ? doc.id : `doc_${id.split('_')[1] || Date.now()}_${idx}`;
+        insertDocStmt.run(
+          docId,
+          id,
+          doc.title || title || 'Untitled Document',
+          doc.docType || 'quotation',
+          doc.docNumber || code || '',
+          doc.status || 'draft',
+          doc.lastModified || newProject.lastModified || new Date().toLocaleString(),
+          doc.document ? JSON.stringify(doc.document) : '{}'
+        );
+      }
+    } else {
+      // Fallback: Insert single initial document
+      const docId = `doc_${id.split('_')[1] || Date.now()}`;
+      const docType = category?.toLowerCase().includes('invoice') 
+        ? 'tax_invoice' 
+        : category?.toLowerCase().includes('quotation') 
+        ? 'quotation' 
+        : 'work_order';
+
+      insertDocStmt.run(
+        docId,
+        id,
+        title,
+        docType,
+        code || '',
+        'draft',
+        newProject.lastModified || new Date().toLocaleString(),
+        document ? JSON.stringify(document) : '{}'
+      );
+    }
 
     return NextResponse.json({ success: true, id }, { status: 201 });
   } catch (error: any) {

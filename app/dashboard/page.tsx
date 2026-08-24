@@ -6,6 +6,8 @@ import { ProjectsDashboard } from '@/components/ProjectsDashboard';
 import { ProjectItem } from '@/types/project';
 import { LatexDocument } from '@/types/document';
 import { LABOUR_PO_TEMPLATE } from '@/lib/templates';
+import { createProjectDocument } from '@/lib/project-doc-templates';
+import { Loader } from '@/components/ui/loader';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -61,8 +63,16 @@ export default function DashboardPage() {
     if (!currentUser) return;
 
     const newProjId = `proj_${Date.now()}`;
-    const defaultDoc: LatexDocument = JSON.parse(JSON.stringify(LABOUR_PO_TEMPLATE));
-    defaultDoc.title = title;
+    const initialDocuments = (initialDocTypes && initialDocTypes.length > 0 ? initialDocTypes : ['work_order']).map((docType) => {
+      return createProjectDocument(docType as any, {
+        title,
+        clientName,
+        location,
+        code,
+      });
+    });
+
+    const defaultDoc = initialDocuments[0]?.document || JSON.parse(JSON.stringify(LABOUR_PO_TEMPLATE));
 
     const newProj = {
       id: newProjId,
@@ -78,6 +88,7 @@ export default function DashboardPage() {
       lastModified: 'Just now',
       tags: [category, ...initialDocTypes],
       isArchived: false,
+      documents: initialDocuments,
       document: defaultDoc,
     };
 
@@ -115,6 +126,13 @@ export default function DashboardPage() {
     if (!orig || !currentUser) return;
 
     const newProjId = `proj_${Date.now()}`;
+    const duplicatedDocs = (orig.documents || []).map((d, index) => ({
+      ...d,
+      id: `doc_${Date.now()}_${index}`,
+      projectId: newProjId,
+      lastModified: 'Just now',
+    }));
+
     const duplicated = {
       ...orig,
       id: newProjId,
@@ -122,6 +140,8 @@ export default function DashboardPage() {
       code: `${orig.code}-COPY`,
       lastModified: 'Just now',
       isArchived: false,
+      documents: duplicatedDocs,
+      document: duplicatedDocs[0]?.document || orig.document || null,
     };
 
     fetch('/api/projects', {
@@ -134,6 +154,34 @@ export default function DashboardPage() {
         setProjects((prev) => [duplicated as any, ...prev]);
       })
       .catch((err) => console.error('Duplicate project error:', err));
+  };
+
+  const handleToggleArchiveProject = (projectId: string, currentIsArchived: boolean) => {
+    const nextIsArchived = !currentIsArchived;
+    const nextStatus = nextIsArchived ? 'archived' : 'active';
+    const actionText = nextIsArchived ? 'archive' : 'unarchive';
+    if (!confirm(`Are you sure you want to ${actionText} this project?`)) return;
+
+    fetch(`/api/projects/${projectId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        status: nextStatus,
+        isArchived: nextIsArchived,
+        lastModified: 'Just now',
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setProjects((prev) =>
+          prev.map((p) =>
+            p.id === projectId
+              ? { ...p, status: nextStatus, isArchived: nextIsArchived }
+              : p
+          )
+        );
+      })
+      .catch((err) => console.error('Archive project error:', err));
   };
 
   const handleCreateProjectFromTemplate = (templateDoc: LatexDocument, projectName: string, meta?: any) => {
@@ -194,16 +242,8 @@ export default function DashboardPage() {
 
   if (loading || !currentUser) {
     return (
-      <div className="app-shell min-h-screen flex items-center justify-center px-4">
-        <div className="glass-card rounded-[32px] px-8 py-7 text-center">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#0d3479]">
-            Contracti
-          </p>
-          <h1 className="mt-3 text-[30px] leading-[1]">Loading projects library</h1>
-          <p className="mt-3 text-sm text-[#666666]">
-            Preparing your dossiers, templates, and recent workspaces.
-          </p>
-        </div>
+      <div className="app-shell min-h-screen flex items-center justify-center">
+        <Loader size={48} className="text-[#0d3479]" />
       </div>
     );
   }
@@ -223,6 +263,7 @@ export default function DashboardPage() {
       onOpenAuth={() => {}}
       onLogout={handleLogout}
       onOpenTemplateBuilder={() => router.push('/template-builder')}
+      onArchiveProject={handleToggleArchiveProject}
     />
   );
 }

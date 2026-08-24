@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { LatexDocument, QuotationData, CustomSectionItem } from '@/types/document';
+import { CompanyProfile } from '@/types/project';
 import { applyVariables } from '@/lib/variables';
 import {
   getQuotationOutlineGroups,
@@ -19,6 +20,7 @@ interface QuotationPreviewProps {
   onHoverSection?: (sectionId: string | null) => void;
   onSelectSection?: (sectionId: string) => void;
   globalVars?: Record<string, string>;
+  companyProfile?: CompanyProfile;
 }
 
 export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
@@ -31,22 +33,20 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
   onHoverSection,
   onSelectSection,
   globalVars,
+  companyProfile,
 }) => {
-  const companyName = applyVariables(q.companyName || 'GLOBAL', globalVars);
-  const companySubtitle = applyVariables(q.companySubtitle || 'INDUSTRIES', globalVars);
-  const leftServices = q.leftServices || [
-    '• Pre Engineering Building',
-    '• Roofing Solution',
-    '• Engineering Project & Designing',
-    '• "Z" & "C" Purlins',
-    '• UPVC Roofing Sheet',
-  ];
-  const rightServices = q.rightServices || [
-    '• Infra Materials',
-    '• Puf Panels & Insulation Roofing',
-    '• Skylight Sheets',
-    '• Air Ventilators',
-  ];
+  const pProfile = companyProfile || ({} as Partial<CompanyProfile>);
+  const companyName = applyVariables(pProfile.companyName || q.companyName || 'GLOBAL', globalVars);
+  const companySubtitle = applyVariables(pProfile.companySubtitle || q.companySubtitle || 'INDUSTRIES', globalVars);
+  const leftServices = pProfile.leftServices || q.leftServices || [];
+  const rightServices = pProfile.rightServices || q.rightServices || [];
+  
+  const companyAddressHeader = pProfile.companyAddressHeader || q.companyAddressHeader || 'Regd. Off. : SO7B / 2nd floor, ...';
+  const companyGstNo = pProfile.companyGstNo || q.companyGstNo || '24AA...';
+  const companyPhone = pProfile.companyPhone || q.companyPhone || '+91 9000000000';
+  const companyAddressFooter = pProfile.companyAddressFooter || q.companyAddressFooter || 'Block No. 1068, ...';
+  const companyEmail = pProfile.companyEmail || q.companyEmail || 'info@company.com';
+  const companyWebsite = pProfile.companyWebsite || q.companyWebsite || 'www.company.com';
 
   const isHeaderActive = activeSectionId === 'header_footer';
   const isHeaderHovered = hoveredSectionId === 'header_footer' && !isHeaderActive;
@@ -461,8 +461,8 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
       </div>
 
       <div className="flex justify-between items-center text-[10px] font-bold text-gray-900">
-        <div>Regd. Off. : SO7B / 2nd floor / Phase 2, Indiabulls, Jetalpur road, Vadodara</div>
-        <div>GST NO: {applyVariables(q.companyGstNo || '24CLNPS9550H1ZI', globalVars)}</div>
+        <div>{applyVariables(companyAddressHeader, globalVars)}</div>
+        <div>GST NO: {applyVariables(companyGstNo, globalVars)}</div>
       </div>
 
       <div className="h-[1px] bg-black my-1" />
@@ -492,15 +492,11 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
       <div className="h-[1.5px] bg-black mb-1" />
       <div className="flex justify-between items-center text-[9px] leading-tight text-black">
         <div className="flex-1 text-center font-semibold">
-          Phone: {applyVariables(q.companyPhone || '+91 97254 45370', globalVars)} &bull;{' '}
-          {applyVariables(
-            q.companyAddressFooter ||
-              'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243',
-            globalVars
-          )}
+          Phone: {applyVariables(companyPhone, globalVars)} &bull;{' '}
+          {applyVariables(companyAddressFooter, globalVars)}
           <br />
-          Email: {applyVariables(q.companyEmail || 'info@globalindustries.co', globalVars)} &bull; Website:{' '}
-          {applyVariables(q.companyWebsite || 'www.globalindustries.co', globalVars)}
+          Email: {applyVariables(companyEmail, globalVars)} &bull; Website:{' '}
+          {applyVariables(companyWebsite, globalVars)}
         </div>
         <div className="text-[10px] font-mono font-bold text-gray-700 shrink-0 pl-2">
           Page {pageIndex + 1} of {totalPages}

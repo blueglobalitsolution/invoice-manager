@@ -16,9 +16,11 @@ import {
   OutlineGroup,
   OutlineSectionItem,
 } from '@/lib/document-sections';
+import { CompanyProfile } from '@/types/project';
 
 interface DocumentPreviewProps {
   document: LatexDocument;
+  companyProfile?: CompanyProfile;
   zoomLevel: number;
   setZoomLevel: (zoom: number) => void;
   printRef?: React.RefObject<HTMLDivElement | null>;
@@ -32,6 +34,7 @@ interface DocumentPreviewProps {
 
 export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   document: doc,
+  companyProfile,
   zoomLevel,
   setZoomLevel,
   printRef,
@@ -153,6 +156,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
             <QuotationPreview
               doc={doc}
               quotation={doc.quotation}
+              companyProfile={companyProfile}
               fontFamilyStyle={fontFamilyStyle}
               printRef={printRef || { current: null }}
               activeSectionId={activeSectionId}
@@ -165,6 +169,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
             <TaxInvoicePreview
               doc={doc}
               invoice={doc.taxInvoice}
+              companyProfile={companyProfile}
               fontFamilyStyle={fontFamilyStyle}
               printRef={printRef || { current: null }}
               activeSectionId={activeSectionId}
@@ -177,6 +182,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
             <PurchaseOrderPages
               doc={doc}
               po={doc.purchaseOrder}
+              companyProfile={companyProfile}
               fontFamilyStyle={fontFamilyStyle}
               printRef={printRef}
               activeSectionId={activeSectionId}
@@ -273,6 +279,7 @@ interface LetterHeaderProps {
   isHovered?: boolean;
   onHover?: (hovering: boolean) => void;
   onSelect?: () => void;
+  companyProfile?: CompanyProfile;
 }
 
 const LetterHeader: React.FC<LetterHeaderProps> = ({
@@ -282,11 +289,13 @@ const LetterHeader: React.FC<LetterHeaderProps> = ({
   isHovered,
   onHover,
   onSelect,
+  companyProfile,
 }) => {
-  const companyName = applyVariables(po.companyName, globalVars, po);
-  const companySubtitle = applyVariables(po.companySubtitle, globalVars, po);
-  const leftServices = applyVariablesToArray(po.leftServices, globalVars, po);
-  const rightServices = applyVariablesToArray(po.rightServices, globalVars, po);
+  const pProfile = companyProfile || ({} as Partial<CompanyProfile>);
+  const companyName = applyVariables(pProfile.companyName || po.companyName, globalVars, po);
+  const companySubtitle = applyVariables(pProfile.companySubtitle || po.companySubtitle, globalVars, po);
+  const leftServices = applyVariablesToArray(pProfile.leftServices || po.leftServices, globalVars, po);
+  const rightServices = applyVariablesToArray(pProfile.rightServices || po.rightServices, globalVars, po);
 
   return (
     <div
@@ -345,8 +354,8 @@ const LetterHeader: React.FC<LetterHeaderProps> = ({
       </div>
 
       <div className="flex justify-between items-center text-[10px] font-bold text-gray-900">
-        <div>Regd. Off. : SO7B / 2nd floor / Phase 2, Indiabulls, Jetalpur road, Vadodara</div>
-        <div>GST NO: {applyVariables(po.gstNo, globalVars, po)}</div>
+        <div>{applyVariables(companyProfile?.companyAddressHeader || po.companyAddress?.join(', ') || '', globalVars, po)}</div>
+        <div>GST NO: {applyVariables(companyProfile?.companyGstNo || po.gstNo, globalVars, po)}</div>
       </div>
 
       <div className="h-[1px] bg-black my-1" />
@@ -359,6 +368,7 @@ interface LetterFooterProps {
   globalVars?: Record<string, string>;
   pageIndex?: number;
   totalPages?: number;
+  companyProfile?: CompanyProfile;
 }
 
 const LetterFooter: React.FC<LetterFooterProps> = ({
@@ -366,17 +376,18 @@ const LetterFooter: React.FC<LetterFooterProps> = ({
   globalVars,
   pageIndex,
   totalPages,
+  companyProfile,
 }) => {
   return (
     <div className="pt-2 mt-auto select-none">
       <div className="h-[1.5px] bg-black mb-1" />
       <div className="flex justify-between items-center text-[9px] leading-tight text-black">
         <div className="flex-1 text-center font-semibold">
-          Phone: {applyVariables(po.companyPhone, globalVars, po)} &bull;{' '}
-          {applyVariables(po.companyAddressFooter, globalVars, po)}
+          Phone: {applyVariables(companyProfile?.companyPhone || po.companyPhone, globalVars, po)} &bull;{' '}
+          {applyVariables(companyProfile?.companyAddressFooter || po.companyAddressFooter, globalVars, po)}
           <br />
-          Email: {applyVariables(po.companyEmail, globalVars, po)} &bull; Website:{' '}
-          {applyVariables(po.companyWebsite, globalVars, po)}
+          Email: {applyVariables(companyProfile?.companyEmail || po.companyEmail, globalVars, po)} &bull; Website:{' '}
+          {applyVariables(companyProfile?.companyWebsite || po.companyWebsite, globalVars, po)}
         </div>
         {pageIndex !== undefined && totalPages !== undefined && totalPages > 1 && (
           <div className="text-[10px] font-mono font-bold text-gray-700 shrink-0 pl-2">
@@ -540,6 +551,7 @@ interface PurchaseOrderPagesProps {
   onHoverSection?: (sectionId: string | null) => void;
   onSelectSection?: (sectionId: string) => void;
   globalVars?: Record<string, string>;
+  companyProfile?: CompanyProfile;
 }
 
 const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
@@ -552,6 +564,7 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
   onHoverSection,
   onSelectSection,
   globalVars,
+  companyProfile,
 }) => {
   // Strict A4 Page Dimensions (794px width x 1123px height at standard 96 DPI screen/print)
   const pageStyle: React.CSSProperties = {
@@ -563,8 +576,18 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
   };
 
   // Resolved dynamic variables
-  const companyName = applyVariables(po.companyName, globalVars, po);
-  const companySubtitle = applyVariables(po.companySubtitle, globalVars, po);
+  const pProfile = companyProfile || ({} as Partial<CompanyProfile>);
+  const companyName = applyVariables(pProfile.companyName || po.companyName, globalVars, po);
+  const companySubtitle = applyVariables(pProfile.companySubtitle || po.companySubtitle, globalVars, po);
+  const leftServices = pProfile.leftServices || po.leftServices || [];
+  const rightServices = pProfile.rightServices || po.rightServices || [];
+  
+  const companyAddressHeader = pProfile.companyAddressHeader || po.companyAddress?.join(', ') || '';
+  const companyGstNo = pProfile.companyGstNo || po.gstNo || '';
+  const companyPhone = pProfile.companyPhone || po.companyPhone || '+91 97254 45370';
+  const companyAddressFooter = pProfile.companyAddressFooter || po.companyAddressFooter || 'Block No. 1068/99, Ratnakar Business Hub...';
+  const companyEmail = pProfile.companyEmail || po.companyEmail || 'info@globalindustries.co';
+  const companyWebsite = pProfile.companyWebsite || po.companyWebsite || 'www.globalindustries.co';
   const poNumber = applyVariables(po.poNumber, globalVars, po);
   const poDate = applyVariables(po.poDate, globalVars, po);
   const contractorName = applyVariables(po.contractorName, globalVars, po);
@@ -994,6 +1017,7 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             <LetterHeader
               po={po}
               globalVars={globalVars}
+              companyProfile={companyProfile}
               isActive={isHeaderActive}
               isHovered={isHeaderHovered}
               onHover={(h) => onHoverSection?.(h ? 'letterhead' : null)}
@@ -1017,6 +1041,7 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
           <LetterFooter
             po={po}
             globalVars={globalVars}
+            companyProfile={companyProfile}
             pageIndex={pageIdx}
             totalPages={outlineGroups.length}
           />

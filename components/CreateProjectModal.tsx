@@ -54,22 +54,10 @@ const INITIAL_DOC_OPTIONS: { type: ProjectDocType; label: string; desc: string; 
     icon: FileCheck,
   },
   {
-    type: 'purchase_order',
-    label: 'Material Purchase Order',
-    desc: 'Procurement order for PEB steel & roofing sheets',
-    icon: Package,
-  },
-  {
     type: 'invoice',
     label: 'Tax Invoice & RA Bill',
     desc: 'Running Account progress billing with retention',
     icon: Receipt,
-  },
-  {
-    type: 'technical_specs',
-    label: 'Technical Specs Annexure',
-    desc: 'Engineering tolerances & QA/QC inspection plans',
-    icon: Layers,
   },
 ];
 

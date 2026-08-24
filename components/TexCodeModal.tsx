@@ -15,19 +15,21 @@ import {
 import { LatexDocument } from '@/types/document';
 import { generateLatexCode } from '@/lib/latex-generator';
 import { downloadLatexFile } from '@/lib/tex-export';
+import { CompanyProfile } from '@/types/project';
 
 interface TexCodeModalProps {
   isOpen: boolean;
   onClose: () => void;
   document: LatexDocument;
+  companyProfile?: CompanyProfile;
 }
 
-export const TexCodeModal: React.FC<TexCodeModalProps> = ({ isOpen, onClose, document: doc }) => {
+export const TexCodeModal: React.FC<TexCodeModalProps> = ({ isOpen, onClose, document: doc, companyProfile }) => {
   const [copied, setCopied] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const texCode = useMemo(() => generateLatexCode(doc), [doc]);
+  const texCode = useMemo(() => generateLatexCode(doc, companyProfile), [doc, companyProfile]);
   const lines = useMemo(() => texCode.split('\n'), [texCode]);
 
   if (!isOpen) return null;

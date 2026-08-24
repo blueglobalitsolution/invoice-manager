@@ -1,5 +1,20 @@
 import { LatexDocument } from './document';
 
+export interface CompanyProfile {
+  companyName: string;
+  companySubtitle: string;
+  companyAddressHeader: string;
+  companyAddressFooter: string;
+  companyGstNo: string;
+  companyPanNo: string;
+  companyEpfNo: string;
+  companyPhone: string;
+  companyEmail: string;
+  companyWebsite: string;
+  leftServices: string[];
+  rightServices: string[];
+}
+
 export type ProjectDocType =
   | 'quotation'
   | 'work_order'
@@ -53,4 +68,5 @@ export interface ProjectItem {
   isArchived?: boolean;
   documents?: ProjectDocumentItem[];
   document?: LatexDocument;
+  companyProfile?: CompanyProfile;
 }

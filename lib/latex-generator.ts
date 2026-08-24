@@ -1,4 +1,5 @@
 import { LatexDocument, CustomSectionItem } from '@/types/document';
+import { CompanyProfile } from '@/types/project';
 
 function renderSectionToLatex(sec: CustomSectionItem): string {
   let content = `\n{\\color{sectioncolor} \\large \\textbf{${sec.title}}}\n`;
@@ -41,28 +42,34 @@ function renderSectionToLatex(sec: CustomSectionItem): string {
 /**
  * Converts the structured LatexDocument form state into standard valid LaTeX source code (.tex).
  */
-export function generateLatexCode(doc: LatexDocument): string {
+export function generateLatexCode(doc: LatexDocument, companyProfile?: CompanyProfile): string {
   // If this document is a Quotation
   if (doc.quotation) {
-    return generateQuotationLatex(doc);
+    return generateQuotationLatex(doc, companyProfile);
   }
 
   // If this document is a Tax Invoice
   if (doc.taxInvoice) {
-    return generateTaxInvoiceLatex(doc);
+    return generateTaxInvoiceLatex(doc, companyProfile);
   }
 
   // If this document is a Purchase Order (Labour Contract Purchase Order)
   if (doc.purchaseOrder) {
     const po = doc.purchaseOrder;
+    const pProfile = companyProfile || ({} as Partial<CompanyProfile>);
     const customSections = po.customSections || [];
     const customPages = po.customPages || [];
 
-    const maxServices = Math.max(po.leftServices.length, po.rightServices.length);
+    const maxServices = Math.max(
+      pProfile.leftServices?.length || po.leftServices.length,
+      pProfile.rightServices?.length || po.rightServices.length
+    );
     const servicesRows: string[] = [];
+    const leftServicesSrc = pProfile.leftServices || po.leftServices;
+    const rightServicesSrc = pProfile.rightServices || po.rightServices;
     for (let i = 0; i < maxServices; i++) {
-      const left = po.leftServices[i] ? po.leftServices[i].replace(/&/g, '\\&') : '';
-      const right = po.rightServices[i] ? po.rightServices[i].replace(/&/g, '\\&') : '';
+      const left = leftServicesSrc[i] ? leftServicesSrc[i].replace(/&/g, '\\&') : '';
+      const right = rightServicesSrc[i] ? rightServicesSrc[i].replace(/&/g, '\\&') : '';
       servicesRows.push(`            ${left} & ${right} \\\\`);
     }
 
@@ -116,8 +123,8 @@ export function generateLatexCode(doc: LatexDocument): string {
 % Fixed Header Macro
 \\newcommand{\\makeletterheader}{%
     \\begin{minipage}[c]{0.35\\textwidth}
-        {\\Huge \\textbf{${po.companyName}}} \\\\[2pt]
-        {\\Large \\textbf{${po.companySubtitle}}}
+        {\\Huge \\textbf{${pProfile.companyName || po.companyName}}} \\\\[2pt]
+        {\\Large \\textbf{${pProfile.companySubtitle || po.companySubtitle}}}
     \\end{minipage}%
     \\vrule width 0.8pt%
     \\hspace{0.02\\textwidth}%
@@ -131,7 +138,7 @@ ${servicesRows.join('\n')}
     \\vspace{4pt}
     \\hrule height 0.8pt
     \\vspace{2pt}
-    {\\raggedleft \\footnotesize \\textbf{GST NO. : ${po.gstNo}} \\par}
+    {\\raggedleft \\footnotesize \\textbf{GST NO. : ${pProfile.companyGstNo || po.gstNo}} \\par}
     \\vspace{4pt}
 }
 
@@ -142,9 +149,9 @@ ${servicesRows.join('\n')}
     \\vspace{6pt}
     \\begin{raggedright}
         \\footnotesize
-        ${po.companyPhone} \\\\
-        ${po.companyAddressFooter} \\\\
-        ${po.companyEmail} \\qquad ${po.companyWebsite}
+        ${pProfile.companyPhone || po.companyPhone} \\\\
+        ${pProfile.companyAddressFooter || po.companyAddressFooter} \\\\
+        ${pProfile.companyEmail || po.companyEmail} \\qquad ${pProfile.companyWebsite || po.companyWebsite}
     \\end{raggedright}
 }
 
@@ -443,15 +450,17 @@ function escapeLatex(str: string): string {
     .replace(/\^/g, '\\textasciicircum{}');
 }
 
-export function generateTaxInvoiceLatex(doc: LatexDocument): string {
+export function generateTaxInvoiceLatex(doc: LatexDocument, companyProfile?: CompanyProfile): string {
   const inv = doc.taxInvoice!;
-  const leftServices = inv.leftServices || [
+  const pProfile = companyProfile || ({} as Partial<CompanyProfile>);
+  
+  const leftServices = pProfile.leftServices || inv.leftServices || [
     '• Pre Engineering Building',
     '• Roofing Solution',
     '• Engineering Project & Designing',
     '• "Z" & "C" Purlins',
   ];
-  const rightServices = inv.rightServices || [
+  const rightServices = pProfile.rightServices || inv.rightServices || [
     '• Infra Materials',
     '• Puf Panels & Insulation Roofing',
     '• Skylight Sheets',
@@ -511,8 +520,8 @@ export function generateTaxInvoiceLatex(doc: LatexDocument): string {
 \\newcommand{\\makeletterheader}{%
     \\noindent
     \\begin{minipage}[c]{0.35\\textwidth}
-        {\\Huge \\textbf{${inv.companyName || 'GLOBAL'}}} \\\\[2pt]
-        {\\Large \\textbf{${inv.companySubtitle || 'INDUSTRIES'}}}
+        {\\Huge \\textbf{${pProfile.companyName || inv.companyName || 'GLOBAL'}}} \\\\[2pt]
+        {\\Large \\textbf{${pProfile.companySubtitle || inv.companySubtitle || 'INDUSTRIES'}}}
     \\end{minipage}%
     \\vrule width 0.8pt%
     \\hspace{0.02\\textwidth}%
@@ -524,10 +533,9 @@ ${servicesRows.join('\n')}
     \\end{minipage}
     
     \\vspace{3pt}
-    \\hrule height 0.8pt
-    \\vspace{2pt}
-    {\\raggedleft \\footnotesize \\textbf{GST NO. : ${inv.companyGstNo || '24CLNPS9550H1ZI'}} \\par}
-    \\vspace{2pt}
+    {\\raggedright \\footnotesize \\textbf{${pProfile.companyAddressHeader || inv.companyAddressHeader || ''}}} \\hfill
+    {\\raggedleft \\footnotesize \\textbf{GST NO. : ${pProfile.companyGstNo || inv.companyGstNo || '24CLNPS9550H1ZI'}}} \\par
+    \\vspace{4pt}
 }
 
 % Fixed Footer Macro
@@ -537,9 +545,9 @@ ${servicesRows.join('\n')}
     \\vspace{4pt}
     \\begin{raggedright}
         \\footnotesize
-        ${inv.companyPhone || '+91 97254 45370'} \\\\
-        ${inv.companyAddressFooter || 'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243'} \\\\
-        ${inv.companyEmail || 'info@globalindustries.co'} \\qquad ${inv.companyWebsite || 'www.globalindustries.co'}
+        ${pProfile.companyPhone || inv.companyPhone || '+91 97254 45370'} \\\\
+        ${pProfile.companyAddressFooter || inv.companyAddressFooter || 'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243'} \\\\
+        ${pProfile.companyEmail || inv.companyEmail || 'info@globalindustries.co'} \\qquad ${pProfile.companyWebsite || inv.companyWebsite || 'www.globalindustries.co'}
     \\end{raggedright}
 }
 
@@ -609,18 +617,19 @@ ${termsBlock}
 \\end{document}`;
 }
 
-export function generateQuotationLatex(doc: LatexDocument): string {
+export function generateQuotationLatex(doc: LatexDocument, companyProfile?: CompanyProfile): string {
   const q = doc.quotation!;
+  const pProfile = companyProfile || ({} as Partial<CompanyProfile>);
 
   // Services table for header
-  const leftServices = q.leftServices || [
+  const leftServices = pProfile.leftServices || q.leftServices || [
     '• Pre Engineering Building',
     '• Roofing Solution',
     '• Engineering Project & Designing',
     '• "Z" & "C" Purlins',
     '• UPVC Roofing Sheet',
   ];
-  const rightServices = q.rightServices || [
+  const rightServices = pProfile.rightServices || q.rightServices || [
     '• Infra Materials',
     '• Puf Panels & Insulation Roofing',
     '• Skylight Sheets',
@@ -634,19 +643,29 @@ export function generateQuotationLatex(doc: LatexDocument): string {
     servicesRows.push(`            ${left} & ${right} \\\\`);
   }
 
+  const formatLatexMultiline = (str: string): string => {
+    if (!str) return '';
+    const cleaned = str.replace(/\\newline/g, '\n').replace(/&/g, '\\&');
+    return cleaned
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .join(' \\newline\n');
+  };
+
   // Page 2: Technical details
   const techDetailsRows = q.technicalDetails
-    .map((td) => `\\textbf{${td.label}} & ${td.value} \\\\ \\hline`)
+    .map((td) => `\\textbf{${td.label}} & ${formatLatexMultiline(td.value)} \\\\ \\hline`)
     .join('\n');
 
   // Page 3: Specifications
   const specsRows = q.specifications
-    .map((sp) => `\\textbf{${sp.title}} & ${sp.details} \\\\ \\hline`)
+    .map((sp) => `\\textbf{${sp.title}} & ${formatLatexMultiline(sp.details)} \\\\ \\hline`)
     .join('\n\n');
 
   // Page 4: Commercial BOQ
   const commercialRows = q.commercialItems
-    .map((item) => `${item.description} & ${item.price} \\\\ \\hline`)
+    .map((item) => `${formatLatexMultiline(item.description)} & ${item.price} \\\\ \\hline`)
     .join('\n');
 
   // Payment terms
@@ -665,11 +684,11 @@ export function generateQuotationLatex(doc: LatexDocument): string {
 
   // Page 6 & 7: Vendor list (Split 14 / 11)
   const vendorP1 = q.vendorList.slice(0, 14)
-    .map((v) => `${v.srNo} & ${v.description} & ${v.brand} \\\\ \\hline`)
+    .map((v) => `${v.srNo} & ${v.description} & ${formatLatexMultiline(v.brand)} \\\\ \\hline`)
     .join('\n');
 
   const vendorP2 = q.vendorList.slice(14)
-    .map((v) => `${v.srNo} & ${v.description} & ${v.brand} \\\\ \\hline`)
+    .map((v) => `${v.srNo} & ${v.description} & ${formatLatexMultiline(v.brand)} \\\\ \\hline`)
     .join('\n');
 
   // Notes
@@ -740,8 +759,8 @@ export function generateQuotationLatex(doc: LatexDocument): string {
 \\newcommand{\\makeletterheader}{%
     \\noindent
     \\begin{minipage}[c]{0.35\\textwidth}
-        {\\Huge \\textbf{${q.companyName || 'GLOBAL'}}} \\\\[2pt]
-        {\\Large \\textbf{${q.companySubtitle || 'INDUSTRIES'}}}
+        {\\Huge \\textbf{${pProfile.companyName || q.companyName || 'GLOBAL'}}} \\\\[2pt]
+        {\\Large \\textbf{${pProfile.companySubtitle || q.companySubtitle || 'INDUSTRIES'}}}
     \\end{minipage}%
     \\vrule width 0.8pt%
     \\hspace{0.02\\textwidth}%
@@ -755,8 +774,9 @@ ${servicesRows.join('\n')}
     \\vspace{4pt}
     \\hrule height 0.8pt
     \\vspace{2pt}
-    {\\raggedright \\footnotesize \\textbf{Regd. Off. : SO7B / 2nd floor / Phase 2, Indiabulls, Jetalpur road, Vadodara} \\hfill \\textbf{GST NO. : ${q.companyGstNo || '24CLNPS9550H1ZI'}} \\par}
-    \\vspace{2pt}
+    {\\raggedright \\footnotesize \\textbf{${pProfile.companyAddressHeader || q.companyAddressHeader || 'Regd. Off. : SO7B / 2nd floor / Phase 2, Indiabulls, Jetalpur road, Vadodara'}}} \\hfill
+    {\\raggedleft \\footnotesize \\textbf{GST NO. : ${pProfile.companyGstNo || q.companyGstNo || '24CLNPS9550H1ZI'}}} \\par
+    \\vspace{4pt}
     \\hrule height 0.5pt
     \\vspace{4pt}
 }
@@ -768,8 +788,9 @@ ${servicesRows.join('\n')}
     \\vspace{4pt}
     \\begin{center}
         \\footnotesize
-        Phone: ${q.companyPhone || '+91 97254 45370'} $\\bullet$ ${q.companyAddressFooter || 'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243'} \\\\
-        Email: ${q.companyEmail || 'info@globalindustries.co'} $\\bullet$ Website: ${q.companyWebsite || 'www.globalindustries.co'}
+        ${pProfile.companyPhone || q.companyPhone || '+91 97254 45370'} \\\\
+        ${pProfile.companyAddressFooter || q.companyAddressFooter || 'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243'} \\\\
+        ${pProfile.companyEmail || q.companyEmail || 'info@globalindustries.co'} \\qquad ${pProfile.companyWebsite || q.companyWebsite || 'www.globalindustries.co'}
     \\end{center}
 }
 
@@ -1061,3 +1082,77 @@ ${specialNotesList}
 \\end{document}`;
 }
 
+
+/**
+ * Generates a LaTeX document containing ONLY the header and footer for previewing the Company Profile.
+ */
+export function generateCompanyProfileLatex(profile: CompanyProfile): string {
+  const maxServices = Math.max(profile.leftServices.length, profile.rightServices.length);
+  const servicesRows: string[] = [];
+  for (let i = 0; i < maxServices; i++) {
+    const left = profile.leftServices[i] ? profile.leftServices[i].replace(/&/g, '\\&') : '';
+    const right = profile.rightServices[i] ? profile.rightServices[i].replace(/&/g, '\\&') : '';
+    servicesRows.push(`            ${left} & ${right} \\\\`);
+  }
+
+  return `\\documentclass[10pt,a4paper]{article}
+\\usepackage[utf8]{inputenc}
+\\usepackage[margin=0.6in,top=0.4in,bottom=0.4in]{geometry}
+\\usepackage{graphicx}
+\\usepackage{tabularx}
+\\usepackage{array}
+\\usepackage{xcolor}
+\\usepackage{helvet}
+
+\\renewcommand{\\familydefault}{\\sfdefault} % Sans-Serif font (Arial/Helvetica)
+\\linespread{1.15}
+\\pagestyle{empty} % Remove page numbers
+
+\\newcommand{\\makeletterheader}{%
+    \\begin{minipage}[c]{0.35\\textwidth}
+        {\\Huge \\textbf{${profile.companyName}}} \\\\\[2pt]
+        {\\Large \\textbf{${profile.companySubtitle}}}
+    \\end{minipage}%
+    \\vrule width 0.8pt%
+    \\hspace{0.02\\textwidth}%
+    \\begin{minipage}[c]{0.60\\textwidth}
+        \\footnotesize
+        \\begin{tabular}{@{}l@{\\hspace{10pt}}l@{}}
+${servicesRows.join('\n')}
+        \\end{tabular}
+    \\end{minipage}
+    
+    \\vspace{4pt}
+    \\hrule height 0.8pt
+    \\vspace{2pt}
+    {\\footnotesize \\textbf{${profile.companyAddressHeader}} \\hfill \\textbf{GST NO. : ${profile.companyGstNo}} \\par}
+    \\vspace{4pt}
+}
+
+\\newcommand{\\makeletterfooter}{%
+    \\vfill
+    \\hrule height 0.8pt
+    \\vspace{6pt}
+    \\begin{raggedright}
+        \\footnotesize
+        ${profile.companyPhone} \\\\
+        ${profile.companyAddressFooter} \\\\
+        ${profile.companyEmail} \\qquad ${profile.companyWebsite}
+    \\end{raggedright}
+}
+
+\\begin{document}
+
+\\makeletterheader
+
+\\vspace{150pt}
+\\begin{center}
+\\textcolor{gray}{\\Large \\textit{[ Document Body Preview Placeholder ]}}
+\\end{center}
+\\vspace{150pt}
+
+\\makeletterfooter
+
+\\end{document}
+`;
+}

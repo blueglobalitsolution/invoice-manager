@@ -27,6 +27,8 @@ import {
   ArrowRight,
   ChevronRight,
   MoreVertical,
+  Archive,
+  ArchiveRestore,
 } from 'lucide-react';
 import { ProjectItem, ProjectDocType } from '@/types/project';
 import { LatexDocument } from '@/types/document';
@@ -55,6 +57,7 @@ interface ProjectsDashboardProps {
   onOpenAuth: (mode: 'login' | 'signup') => void;
   onLogout: () => void;
   onOpenTemplateBuilder?: () => void;
+  onArchiveProject?: (projectId: string, isArchived: boolean) => void;
 }
 
 export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
@@ -71,6 +74,7 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
   onOpenAuth,
   onLogout,
   onOpenTemplateBuilder,
+  onArchiveProject,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'your' | 'shared' | 'archived'>('all');
@@ -80,10 +84,12 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
   const filteredProjects = projects.filter((p) => {
-    if (activeTab === 'archived' && !p.isArchived) return false;
-    if (activeTab === 'all' && p.isArchived) return false;
-    if (activeTab === 'shared') return false;
-    if (activeTab === 'your' && p.isArchived) return false;
+    const isArchived = Boolean(p.isArchived || p.status === 'archived');
+    if (activeTab === 'archived') {
+      if (!isArchived) return false;
+    } else {
+      if (isArchived) return false;
+    }
 
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
@@ -111,8 +117,9 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
   };
 
   // Metrics
-  const totalProjectsCount = projects.length;
-  const totalDocsCount = projects.reduce((acc, p) => acc + (p.documents?.length || 1), 0);
+  const activeProjects = projects.filter((p) => !(p.isArchived || p.status === 'archived'));
+  const totalProjectsCount = activeProjects.length;
+  const totalDocsCount = activeProjects.reduce((acc, p) => acc + (p.documents?.length || 1), 0);
 
   return (
     <div className="app-shell flex min-h-screen w-full text-black font-sans overflow-hidden select-none bg-gray-50">
@@ -255,9 +262,16 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                     <div>
                       {/* Category & Status */}
                       <div className="flex items-center justify-between gap-2 mb-2.5">
-                        <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de]">
-                          {project.category || 'Civil & PEB'}
-                        </span>
+                        <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
+                          <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de]">
+                            {project.category || 'Civil & PEB'}
+                          </span>
+                          {(project.isArchived || project.status === 'archived') && (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                              Archived
+                            </span>
+                          )}
+                        </div>
                         {project.code && (
                           <span className="px-2 py-1 rounded text-[10px] font-mono text-[#666666] bg-white/70 border border-[#cccccc]">
                             {project.code}
@@ -330,6 +344,19 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                         className="flex items-center space-x-1"
                         onClick={(e) => e.stopPropagation()}
                       >
+                        {onArchiveProject && (
+                          <button
+                            onClick={() => onArchiveProject(project.id, Boolean(project.isArchived || project.status === 'archived'))}
+                            className="p-2 text-[#666666] hover:text-black hover:bg-white rounded-[12px] transition-colors cursor-pointer"
+                            title={project.isArchived || project.status === 'archived' ? 'Unarchive Project' : 'Archive Project'}
+                          >
+                            {project.isArchived || project.status === 'archived' ? (
+                              <ArchiveRestore className="w-3.5 h-3.5 text-amber-600" />
+                            ) : (
+                              <Archive className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                        )}
                         <button
                           onClick={() => onDuplicateProject(project.id)}
                           className="p-2 text-[#666666] hover:text-black hover:bg-white rounded-[12px] transition-colors cursor-pointer"
@@ -436,6 +463,22 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                         </td>
                         <td className="py-3.5 px-4 text-right" onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center justify-end space-x-1">
+                            {onArchiveProject && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onArchiveProject(project.id, Boolean(project.isArchived || project.status === 'archived'));
+                                }}
+                                className="p-1.5 text-[#666666] hover:text-black hover:bg-white rounded-[12px] transition-colors cursor-pointer"
+                                title={project.isArchived || project.status === 'archived' ? 'Unarchive' : 'Archive'}
+                              >
+                                {project.isArchived || project.status === 'archived' ? (
+                                  <ArchiveRestore className="w-3.5 h-3.5 text-amber-600" />
+                                ) : (
+                                  <Archive className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                            )}
                             <button
                               onClick={() => onDuplicateProject(project.id)}
                               className="p-1.5 text-[#666666] hover:text-black hover:bg-white rounded-[12px] transition-colors cursor-pointer"

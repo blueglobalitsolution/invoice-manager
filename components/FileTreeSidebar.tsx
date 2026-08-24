@@ -261,21 +261,6 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
       
       {/* Sections Tree Outline */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
-        
-        {/* Brand Header */}
-        <div className="h-14 px-4 flex items-center justify-between border-b border-gray-200 bg-white shrink-0">
-          <div className="flex items-center space-x-2.5">
-            <svg className="w-5 h-5 text-[#0d3479]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-            </svg>
-            <span className="font-bold text-sm text-gray-900 tracking-tight">Contracti</span>
-          </div>
-          
-          <div className="flex items-center space-x-1 shrink-0">
-          </div>
-        </div>
-
-
 
         {/* Logical Flow List */}
         <div className="p-3 overflow-y-auto flex-1 text-xs space-y-1.5 scrollbar-thin">
