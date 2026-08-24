@@ -31,7 +31,9 @@ import {
   getQuotationOutlineGroups,
   OutlineGroup,
   OutlineSectionItem,
+  moveSectionToPage,
 } from '@/lib/document-sections';
+import { SAMPLE_GENERIC_TEMPLATE } from '@/lib/sample_template';
 
 interface FileTreeSidebarProps {
   document: LatexDocument;
@@ -121,7 +123,24 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
         ],
       },
     ];
+  } else if (document.dynamicTemplate) {
+    groups = [
+      {
+        pageNum: 1,
+        groupId: 'page_1',
+        groupTitle: SAMPLE_GENERIC_TEMPLATE.name,
+        isCustomGroup: false,
+        sections: SAMPLE_GENERIC_TEMPLATE.sections.map((s: any) => ({
+          id: s.id,
+          label: s.title,
+          icon: FileText,
+          isCustom: false,
+          pageNumber: 1
+        }))
+      }
+    ];
   }
+
 
   const toggleGroup = (pageNum: number) => {
     setCollapsedGroups((prev) => ({
@@ -257,10 +276,25 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
   };
 
   return (
-    <aside className="w-64 bg-[#f9fafb] border-r border-gray-200 flex flex-col justify-between shrink-0 select-none text-xs text-gray-700 overflow-hidden relative h-full min-h-0">
+    <aside className="w-64 bg-[#070A13] border-r border-[#151C2C] flex flex-col justify-between shrink-0 select-none text-xs text-slate-400 overflow-hidden relative h-full min-h-0">
       
       {/* Sections Tree Outline */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+
+        {/* Outline Header */}
+        <div className="px-4 py-3.5 border-b border-[#151C2C] flex items-center justify-between shrink-0">
+          <div className="flex items-center space-x-2 text-[11px] font-bold text-slate-400 tracking-wider">
+            <FileText className="w-3.5 h-3.5" />
+            <span>DOCUMENT OUTLINE</span>
+          </div>
+          <button
+            onClick={() => onAddPage && onAddPage()}
+            className="w-5 h-5 rounded-full border border-slate-700 hover:border-slate-500 flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer"
+            title="Add Page / Group"
+          >
+            <Plus className="w-3 h-3" />
+          </button>
+        </div>
 
         {/* Logical Flow List */}
         <div className="p-3 overflow-y-auto flex-1 text-xs space-y-1.5 scrollbar-thin">
@@ -284,15 +318,15 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                 {/* Collapsible Group Header Row */}
                 <div
                   onClick={() => toggleGroup(grp.pageNum)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors cursor-pointer ${
+                  className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
                     isGroupTargeted
-                      ? 'border border-emerald-400 bg-emerald-50/50'
-                      : 'hover:bg-gray-100/70 text-gray-800'
+                      ? 'border border-indigo-500 bg-indigo-500/10'
+                      : 'hover:bg-slate-800/40 text-slate-200'
                   }`}
                 >
                   <div className="flex items-center space-x-2.5 min-w-0">
-                    <GroupIcon className="w-4 h-4 text-gray-500 shrink-0" />
-                    <span className="text-xs font-bold text-gray-900 truncate">
+                    <GroupIcon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <span className="text-xs font-semibold text-slate-200 truncate">
                       Page {grp.pageNum}
                     </span>
                   </div>
@@ -304,16 +338,16 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                         e.stopPropagation();
                         setDropdownPageNum(isDropdownOpen ? null : grp.pageNum);
                       }}
-                      className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-gray-700 transition-colors"
+                      className="p-1 hover:bg-slate-800 rounded text-slate-500 hover:text-slate-300 transition-colors"
                       title="Add Section"
                     >
                       <Plus className="w-3.5 h-3.5" />
                     </button>
 
                     {isCollapsed ? (
-                      <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+                      <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
                     ) : (
-                      <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
                     )}
                   </div>
 
@@ -322,11 +356,11 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                     <div
                       ref={dropdownRef}
                       onClick={(e) => e.stopPropagation()}
-                      className="absolute right-0 top-9 w-56 bg-white border border-gray-200 rounded-xl shadow-2xl z-40 p-1.5 text-xs text-gray-700 animate-in fade-in zoom-in-95 duration-100"
+                      className="absolute right-0 top-9 w-56 bg-[#0F1523] border border-[#1E293B] rounded-xl shadow-2xl z-40 p-1.5 text-xs text-slate-300 animate-in fade-in zoom-in-95 duration-100"
                     >
-                      <div className="px-2 py-1.5 text-[10px] font-bold uppercase text-gray-500 border-b border-gray-100 flex items-center justify-between">
+                      <div className="px-2 py-1.5 text-[10px] font-bold uppercase text-slate-400 border-b border-[#1E293B] flex items-center justify-between">
                         <span>Add Section Type</span>
-                        <span className="text-[9px] text-[#0d3479] font-mono">
+                        <span className="text-[9px] text-indigo-400 font-mono">
                           Page {grp.pageNum}
                         </span>
                       </div>
@@ -338,17 +372,17 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                             <button
                               key={typeOption.type}
                               onClick={() => handleQuickAddType(typeOption.type, grp.pageNum)}
-                              className="w-full text-left px-2 py-1.5 hover:bg-gray-100 rounded-lg flex items-center space-x-2 text-xs text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
+                              className="w-full text-left px-2 py-1.5 hover:bg-slate-800 rounded-lg flex items-center space-x-2 text-xs text-slate-300 hover:text-white transition-colors cursor-pointer"
                             >
-                              <Icon className="w-3.5 h-3.5 text-gray-400" />
+                              <Icon className="w-3.5 h-3.5 text-slate-400" />
                               <span>{typeOption.label}</span>
                             </button>
                           );
                         })}
-                        <div className="border-t border-gray-100 my-1 pt-1">
+                        <div className="border-t border-[#1E293B] my-1 pt-1">
                           <button
                             onClick={() => handleOpenCustomizer(grp.pageNum, grp.groupTitle)}
-                            className="w-full text-left px-2 py-1.5 hover:bg-[#0d3479]/10 text-[#0d3479] rounded-lg flex items-center space-x-2 text-xs font-semibold transition-colors cursor-pointer"
+                            className="w-full text-left px-2 py-1.5 hover:bg-indigo-600/20 text-indigo-400 rounded-lg flex items-center space-x-2 text-xs font-semibold transition-colors cursor-pointer"
                           >
                             <Sparkles className="w-3.5 h-3.5" />
                             <span>Add Custom Section...</span>
@@ -361,12 +395,12 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
 
                 {/* Subsections List (Show when group is NOT collapsed) */}
                 {!isCollapsed && (
-                  <div className="border-l border-gray-200 ml-4.5 pl-3.5 py-1 space-y-1">
+                  <div className="ml-2 pl-2 py-0.5 space-y-1">
                     {grp.sections.length === 0 && (
                       <div
                         onDragOver={(e) => handleGroupDragOver(e, grp.pageNum)}
                         onDrop={(e) => handleDropOnGroup(e, grp.pageNum)}
-                        className="text-[10px] italic text-gray-400 py-3 text-center border border-dashed border-gray-200 rounded-lg bg-gray-50/50"
+                        className="text-[10px] italic text-slate-500 py-3 text-center border border-dashed border-slate-800 rounded-lg bg-slate-900/30"
                       >
                         Drop sections here
                       </div>
@@ -381,7 +415,7 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                       const subsections = getSubsections(sec);
 
                       return (
-                        <div key={sec.id} className="space-y-0.5">
+                        <div key={sec.id} className="space-y-1">
                           {/* Section Card Row */}
                           <div
                             draggable
@@ -393,115 +427,61 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                             onClick={() => onSelectSection(sec.id)}
                             onMouseEnter={() => onHoverSection?.(sec.id)}
                             onMouseLeave={() => onHoverSection?.(null)}
-                            className={`group/sec relative flex items-center justify-between px-2.5 py-2 rounded-lg transition-all duration-150 cursor-pointer select-none ${
+                            className={`group/sec relative flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-150 cursor-pointer select-none ${
                               isMoveMenuOpen ? 'z-40' : 'z-0'
                             } ${
                               isDraggingThis
-                                ? 'opacity-40 scale-95 border-dashed border-2 border-[#0d3479] bg-[#0d3479]/5 shadow-inner'
+                                ? 'opacity-40 scale-95 border-dashed border-2 border-indigo-500 bg-indigo-500/10'
                                 : ''
                             } ${
                               isDragOverThis
                                 ? dropPosition === 'before'
-                                  ? 'border-t-2 border-[#0d3479] bg-[#0d3479]/5'
-                                  : 'border-b-2 border-[#0d3479] bg-[#0d3479]/5'
+                                  ? 'border-t-2 border-indigo-500'
+                                  : 'border-b-2 border-indigo-500'
                                 : ''
                             } ${
                               isSecActive
-                                ? 'bg-gray-100 text-gray-900 font-semibold'
+                                ? 'bg-[#1C1436] border border-[#7C3AED]/70 text-white font-medium shadow-[0_0_14px_rgba(124,58,237,0.22)]'
                                 : isSecHovered
-                                ? 'bg-gray-50 text-gray-900'
-                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                ? 'bg-slate-800/50 text-slate-200'
+                                : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-200'
                             }`}
                           >
                             <div className="flex items-center space-x-2 truncate flex-1 min-w-0">
                               <span className="truncate text-xs flex-1">{sec.label}</span>
                             </div>
 
-                            {/* Section Actions: Reorder & Delete */}
-                            <div className="flex items-center space-x-1 shrink-0 ml-1">
-                              {/* Move Popover Trigger */}
-                              <div className={`relative ${isMoveMenuOpen ? 'z-50' : 'z-auto'}`}>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setMoveMenuSecId(isMoveMenuOpen ? null : sec.id);
-                                  }}
-                                  className={`p-1 rounded cursor-pointer transition-opacity ${
-                                    isMoveMenuOpen
-                                      ? 'opacity-100 bg-[#0d3479] text-white'
-                                      : 'opacity-0 group-hover/sec:opacity-100 text-gray-400 hover:text-gray-700 hover:bg-gray-100'
-                                  }`}
-                                  title="Move section"
-                                >
-                                  <ArrowRightLeft className="w-2.5 h-2.5" />
-                                </button>
-
-                                {isMoveMenuOpen && (
-                                  <div
-                                    ref={moveMenuRef}
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="absolute right-0 top-7 w-48 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 p-1.5 text-xs text-gray-700 animate-in fade-in zoom-in-95 duration-100"
+                            {/* Chevron when active or action buttons */}
+                            {isSecActive ? (
+                              <ChevronDown className="w-3.5 h-3.5 text-indigo-300 shrink-0" />
+                            ) : (
+                              <div className="flex items-center space-x-1 shrink-0 ml-1">
+                                {onDeleteSection && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onDeleteSection(sec.id);
+                                    }}
+                                    className="p-1 hover:bg-slate-800 rounded text-slate-500 hover:text-rose-400 transition-colors opacity-0 group-hover/sec:opacity-100"
+                                    title={`Delete ${sec.label}`}
                                   >
-                                    <div className="text-[9px] uppercase font-bold text-gray-500 px-1.5 py-1 border-b border-gray-100 mb-1 flex items-center justify-between">
-                                      <span className="truncate">Move &quot;{sec.label}&quot;</span>
-                                    </div>
-                                    <div className="space-y-0.5 max-h-48 overflow-y-auto">
-                                      {groups.map((targetGrp) => (
-                                        <button
-                                          key={targetGrp.pageNum}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (onMoveSectionToPage) {
-                                              onMoveSectionToPage(sec.id, targetGrp.pageNum);
-                                            } else if (onReorderSections) {
-                                              onReorderSections(sec.id, '', targetGrp.pageNum);
-                                            }
-                                            setMoveMenuSecId(null);
-                                          }}
-                                          className={`w-full text-left px-2 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors cursor-pointer ${
-                                            targetGrp.pageNum === grp.pageNum
-                                              ? 'bg-[#0d3479]/10 text-[#0d3479] font-bold'
-                                              : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
-                                          }`}
-                                        >
-                                          <span className="truncate">
-                                            Page {targetGrp.pageNum}: {targetGrp.groupTitle}
-                                          </span>
-                                          {targetGrp.pageNum === grp.pageNum && (
-                                            <Check className="w-3 h-3 text-[#0d3479] shrink-0 ml-1" />
-                                          )}
-                                        </button>
-                                      ))}
-                                    </div>
-                                  </div>
+                                    <Trash2 className="w-2.5 h-2.5" />
+                                  </button>
                                 )}
                               </div>
-
-                              {onDeleteSection && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onDeleteSection(sec.id);
-                                  }}
-                                  className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded cursor-pointer opacity-0 group-hover/sec:opacity-100 transition-opacity"
-                                  title={`Delete ${sec.label}`}
-                                >
-                                  <Trash2 className="w-2.5 h-2.5" />
-                                </button>
-                              )}
-                            </div>
+                            )}
                           </div>
 
                           {/* Subsections Flow Display */}
                           {isSecActive && subsections.length > 0 && (
-                            <div className="border-l border-gray-200 ml-4.5 pl-3.5 py-0.5 space-y-0.5 animate-in fade-in duration-150">
+                            <div className="ml-3 pl-3 py-1 space-y-1.5 border-l border-indigo-500/20 animate-in fade-in duration-150">
                               {subsections.map((sub, idx) => (
                                 <div
                                   key={idx}
-                                  className="flex items-center space-x-1.5 py-0.5 text-gray-400"
+                                  className="flex items-center space-x-2 py-0.5 text-indigo-300/80 hover:text-indigo-200 text-xs"
                                 >
-                                  <span className="w-1 h-1 rounded-full bg-gray-300" />
-                                  <span className="text-[10px] truncate">{sub}</span>
+                                  <span className="w-1.5 h-1.5 rounded-full bg-[#818CF8] shrink-0" />
+                                  <span className="truncate font-normal">{sub}</span>
                                 </div>
                               ))}
                             </div>

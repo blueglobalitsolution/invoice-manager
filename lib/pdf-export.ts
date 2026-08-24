@@ -6,13 +6,15 @@ import html2canvas from 'html2canvas';
  * or triggers the native browser print dialog as fallback.
  */
 export async function exportToPdf(element: HTMLElement | null, filename: string = 'document.pdf') {
-  if (!element) {
-    window.print();
-    return;
-  }
+  const container = element || document.getElementById('pdf-preview-container') || document.body;
+  const originalZoom = container.style.zoom;
 
   try {
-    const pageElements = element.querySelectorAll<HTMLElement>('.latex-paper');
+    // Reset zoom temporarily for crisp 1:1 scale rendering
+    container.style.zoom = '1';
+    await new Promise((resolve) => setTimeout(resolve, 80));
+
+    const pageElements = document.querySelectorAll<HTMLElement>('.latex-paper');
     
     if (pageElements.length > 0) {
       const pdf = new jsPDF({
@@ -25,7 +27,7 @@ export async function exportToPdf(element: HTMLElement | null, filename: string 
         const pageEl = pageElements[i];
         
         const canvas = await html2canvas(pageEl, {
-          scale: 2, // High resolution (300 DPI equivalent)
+          scale: 2, // 300 DPI equivalent
           useCORS: true,
           logging: false,
           backgroundColor: '#ffffff',
@@ -37,7 +39,7 @@ export async function exportToPdf(element: HTMLElement | null, filename: string 
           pdf.addPage('a4', 'portrait');
         }
 
-        // Exact standard A4 dimensions in mm: 210 x 297
+        // Standard A4 dimensions in mm: 210 x 297
         pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
       }
 
@@ -46,29 +48,12 @@ export async function exportToPdf(element: HTMLElement | null, filename: string 
     }
 
     // Fallback if no .latex-paper elements found
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff',
-    });
-
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-    });
-
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save(filename.endsWith('.pdf') ? filename : `${filename}.pdf`);
+    window.print();
   } catch (err) {
     console.error('Canvas PDF export error, falling back to print dialog:', err);
     window.print();
+  } finally {
+    container.style.zoom = originalZoom;
   }
 }
 

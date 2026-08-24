@@ -159,7 +159,7 @@ export const BLANK_TEMPLATE: LatexDocument = {
       subsections: [
         {
           id: 'sub_1',
-          title: 'Overview',
+          title: '', // Removed default title to avoid 'section under section' look
           contentType: 'paragraph',
           body: 'Start typing your LaTeX document content here.',
         },

@@ -46,8 +46,7 @@ export default function ProjectDetailPage() {
   }, [projectId, currentUser, router]);
 
   const handleOpenDocument = (docId: string) => {
-    // Navigate directly to the editor workspace of this project
-    router.push(`/editor/${projectId}`);
+    router.push(`/editor/${projectId}?docId=${docId}`);
   };
 
   const handleCreateDocument = (

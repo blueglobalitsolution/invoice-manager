@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, use } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { Header } from '@/components/Header';
 import { FormEditor } from '@/components/FormEditor';
 import { DocumentPreview } from '@/components/DocumentPreview';
@@ -20,13 +20,14 @@ import { LatexDocument, DocumentSettings } from '@/types/document';
 import { ProjectItem, ProjectDocumentItem, ProjectDocStatus, ProjectDocType } from '@/types/project';
 import { LABOUR_PO_TEMPLATE, SAMPLE_TEMPLATES } from '@/lib/templates';
 import { moveQuotationSectionToPage, moveSectionToPage, getQuotationSectionPageNumber } from '@/lib/document-sections';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+import { exportToPdf } from '@/lib/pdf-export';
 
 export default function EditorPage() {
   const router = useRouter();
   const rawParams = useParams();
+  const searchParams = useSearchParams();
   const projectId = rawParams?.projectId as string;
+  const docId = searchParams?.get('docId');
 
   const [currentUser, setCurrentUser] = useState<{ name: string; email: string } | null>(null);
   const [project, setProject] = useState<ProjectItem | null>(null);
@@ -39,7 +40,7 @@ export default function EditorPage() {
   const [isGlobalVarsOpen, setIsGlobalVarsOpen] = useState(false);
   const [isCreateDocModalOpen, setIsCreateDocModalOpen] = useState(false);
   const [isLatexCodeModalOpen, setIsLatexCodeModalOpen] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(100);
+  const [zoomLevel, setZoomLevel] = useState(85);
   const [isRecompiling, setIsRecompiling] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState('info');
   const [hoveredSectionId, setHoveredSectionId] = useState<string | null>(null);
@@ -116,7 +117,13 @@ export default function EditorPage() {
   }, [projectId, currentUser, router]);
 
   // Access document state inside project object
-  const docState: LatexDocument = project?.document || LABOUR_PO_TEMPLATE;
+  let docState: LatexDocument;
+  if (docId && project?.documents) {
+    const found = project.documents.find(d => d.id === docId);
+    docState = found?.document || project?.document || LABOUR_PO_TEMPLATE;
+  } else {
+    docState = project?.document || LABOUR_PO_TEMPLATE;
+  }
 
   // Save changes to SQLite database (Debounced)
   useEffect(() => {
@@ -128,7 +135,8 @@ export default function EditorPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           document: project.document,
-          title: project.document?.title || project.title,
+          documents: project.documents,
+          title: project.title,
           lastModified: 'Just now by You',
         }),
       }).catch((err) => console.error('Save project error:', err));
@@ -146,11 +154,21 @@ export default function EditorPage() {
       setRedoStack([]);
     }
 
-    setProject({
-      ...project,
-      document: updatedDoc,
-      lastModified: 'Just now by You',
-    });
+    let updatedProject = { ...project, lastModified: 'Just now by You' };
+    
+    if (docId && project.documents) {
+      updatedProject.documents = project.documents.map(d => 
+        d.id === docId ? { ...d, document: updatedDoc, title: updatedDoc.title, lastModified: 'Just now' } : d
+      );
+      // Fallback update legacy document if it happens to be the same
+      if (project.document?.id === docId) {
+        updatedProject.document = updatedDoc;
+      }
+    } else {
+      updatedProject.document = updatedDoc;
+    }
+
+    setProject(updatedProject);
   };
 
   const handleUndo = () => {
@@ -233,39 +251,11 @@ export default function EditorPage() {
 
   const handleExportPdf = async () => {
     try {
-      const element = document.getElementById('pdf-preview-container');
-      if (!element) {
-        alert('Preview container not found!');
-        return;
-      }
-
-      // Temporarily remove transform for accurate PDF generation
-      const originalTransform = element.style.transform;
-      element.style.transform = 'none';
-
-      // We might need to wait for a tick so the browser applies the transform change
-      await new Promise((resolve) => setTimeout(resolve, 50));
-
-      const html2canvas = (await import('html2canvas')).default;
-      const { jsPDF } = await import('jspdf');
-
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-      const imgData = canvas.toDataURL('image/jpeg', 0.98);
-
-      const pdf = new jsPDF({
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait'
-      });
-
-      pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-      pdf.save(`${docState.title || 'Document'}.pdf`);
-
-      // Restore transform
-      element.style.transform = originalTransform;
+      const container = document.getElementById('pdf-preview-container');
+      await exportToPdf(container, `${docState.title || 'Document'}.pdf`);
     } catch (err) {
       console.error('Error generating PDF:', err);
-      alert('Failed to generate PDF. Check console for details.');
+      window.print();
     }
   };
 
@@ -407,7 +397,7 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="app-shell flex flex-col h-screen w-full text-[#334155] font-sans overflow-hidden">
+    <div className="app-shell flex flex-col h-screen w-full text-slate-300 font-sans overflow-hidden bg-[#070A13]">
       <div className="print:hidden w-full shrink-0">
         <Header
           document={docState}
@@ -498,46 +488,27 @@ export default function EditorPage() {
                 e.preventDefault();
                 setIsDragging(true);
               }}
-              className={`hidden md:block w-1.5 hover:w-2 hover:bg-emerald-500 bg-gray-800 cursor-col-resize h-full shrink-0 transition-all z-20 print:hidden ${
-                isDragging ? 'bg-emerald-500 w-2' : ''
+              className={`hidden md:block w-[1px] hover:w-1 hover:bg-[#6366f1] bg-[#151C2C] cursor-col-resize h-full shrink-0 transition-all z-20 print:hidden ${
+                isDragging ? 'bg-[#6366f1] w-1' : ''
               }`}
             />
 
             {/* PDF Live compilation Preview Panel */}
             <div className="flex-1 h-full min-w-[320px] overflow-hidden relative print:overflow-visible print:w-full print:absolute print:inset-0 print:z-50 print:bg-white">
-              <div
-                className="flex-1 overflow-y-auto w-full h-full flex justify-center py-8 relative scroll-smooth print:py-0 print:bg-white print:overflow-visible"
-                style={{
-                  backgroundColor: '#1e293b',
-                  scrollbarWidth: 'thin',
-                  scrollbarColor: '#475569 #1e293b',
+              <DocumentPreview
+                document={docState}
+                companyProfile={project?.companyProfile}
+                zoomLevel={zoomLevel}
+                setZoomLevel={setZoomLevel}
+                activeSectionId={activeSectionId}
+                hoveredSectionId={hoveredSectionId}
+                onHoverSection={setHoveredSectionId}
+                onSelectSection={(id) => {
+                  setActiveSectionId(id);
+                  setRailTab('filetree');
                 }}
-              >
-                <div
-                  id="pdf-preview-container"
-                  className="bg-white shadow-2xl transition-transform duration-200 origin-top print:shadow-none print:transform-none print:w-full print:max-w-none print:min-h-0 print:h-auto"
-                  style={{
-                    width: '210mm',
-                    minHeight: '297mm',
-                    transform: `scale(${zoomLevel / 100})`,
-                  }}
-                >
-                  <DocumentPreview
-                    document={docState}
-                    companyProfile={project?.companyProfile}
-                    zoomLevel={zoomLevel}
-                    setZoomLevel={setZoomLevel}
-                    activeSectionId={activeSectionId}
-                    hoveredSectionId={hoveredSectionId}
-                    onHoverSection={setHoveredSectionId}
-                    onSelectSection={(id) => {
-                      setActiveSectionId(id);
-                      setRailTab('filetree');
-                    }}
-                    onOpenLatexCode={() => setIsLatexCodeModalOpen(true)}
-                  />
-                </div>
-              </div>
+                onOpenLatexCode={() => setIsLatexCodeModalOpen(true)}
+              />
             </div>
 
           </div>

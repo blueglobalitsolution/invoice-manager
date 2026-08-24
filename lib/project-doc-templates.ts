@@ -298,6 +298,49 @@ export function createProjectDocument(
       break;
     }
 
+    case 'custom': {
+      docNumber = customNumber || `GI/DOC/${year}/${randomSuffix}`;
+      if (!docTitle) docTitle = `Generic Document - ${projectName}`;
+      docAmount = customAmount || '₹0.00';
+      
+      const { SAMPLE_GENERIC_TEMPLATE } = require('@/lib/sample_template');
+
+      initialLatexDoc = {
+        id: docId,
+        title: docTitle,
+        authors: [],
+        date: dateStr,
+        abstract: '',
+        keywords: [],
+        sections: [],
+        equations: [],
+        figures: [],
+        tables: [],
+        references: [],
+        settings: {
+          paperSize: 'a4paper',
+          fontSize: '11pt',
+          columns: 'onecolumn',
+          fontFamily: 'times',
+          margins: 'normal',
+          showPageNumbers: true,
+          showDate: true,
+          accentColor: '#000000',
+        },
+        dynamicTemplate: {
+          templateId: SAMPLE_GENERIC_TEMPLATE.id,
+          data: {
+            ...SAMPLE_GENERIC_TEMPLATE.defaults,
+            subject: docTitle,
+            toName: client,
+            toAddress: location,
+            refNo: docNumber,
+          }
+        }
+      };
+      break;
+    }
+
     default: {
       docNumber = `GI/DOC/${year}/${randomSuffix}`;
       if (!docTitle) docTitle = `Document - ${projectName}`;

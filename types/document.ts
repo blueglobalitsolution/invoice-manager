@@ -336,5 +336,6 @@ export interface LatexDocument {
   purchaseOrder?: PurchaseOrderData;
   taxInvoice?: TaxInvoiceData;
   quotation?: QuotationData;
+  dynamicTemplate?: any; // Avoiding circular/complex imports for now or use proper import
   globalVariables?: Record<string, string>;
 }

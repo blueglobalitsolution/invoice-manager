@@ -30,33 +30,33 @@ export const EditorRail: React.FC<EditorRailProps> = ({
   onOpenLatexCode,
 }) => {
   return (
-    <div className="w-12 bg-[#070c18] border-r border-[#141f33] flex flex-col justify-between items-center py-2.5 shrink-0 z-30 select-none">
+    <div className="w-14 bg-[#070A13] border-r border-[#151C2C] flex flex-col justify-between items-center py-3.5 shrink-0 z-30 select-none">
       {/* Top Rail Navigation Icons */}
-      <div className="flex flex-col items-center space-y-2.5 w-full">
+      <div className="flex flex-col items-center space-y-3.5 w-full">
         {/* Document Pages & Sections Icon */}
         <button
           onClick={() => setActiveTab('filetree')}
-          className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors relative cursor-pointer ${
+          className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all relative cursor-pointer ${
             activeTab === 'filetree'
-              ? 'bg-[#0d3479] text-white shadow border border-[#2563eb]/40'
-              : 'text-slate-400 hover:text-white hover:bg-[#0d1728]'
+              ? 'bg-[#4F46E5] text-white shadow-[0_0_18px_rgba(79,70,229,0.55)] ring-1 ring-indigo-400/50'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
           }`}
           title="Document Outline & Sections"
         >
-          <FileText className="w-4 h-4" />
+          <FileText className="w-5 h-5" />
         </button>
 
         {/* Dedicated Header & Footer Icon */}
         <button
           onClick={() => setActiveTab('header_footer')}
-          className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors relative cursor-pointer ${
+          className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all relative cursor-pointer ${
             activeTab === 'header_footer'
-              ? 'bg-[#0d3479] text-white shadow border border-[#2563eb]/40'
-              : 'text-slate-400 hover:text-white hover:bg-[#0d1728]'
+              ? 'bg-[#4F46E5] text-white shadow-[0_0_18px_rgba(79,70,229,0.55)] ring-1 ring-indigo-400/50'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
           }`}
           title="Header & Footer Configuration"
         >
-          <LayoutTemplate className="w-4 h-4" />
+          <LayoutTemplate className="w-5 h-5" />
         </button>
 
         {/* Global Variables & Placeholders Icon */}
@@ -68,14 +68,14 @@ export const EditorRail: React.FC<EditorRailProps> = ({
               setActiveTab('variables');
             }
           }}
-          className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors relative cursor-pointer ${
+          className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all relative cursor-pointer ${
             activeTab === 'variables'
-              ? 'bg-[#0d3479] text-white shadow border border-[#2563eb]/40'
-              : 'text-slate-400 hover:text-white hover:bg-[#0d1728]'
+              ? 'bg-[#4F46E5] text-white shadow-[0_0_18px_rgba(79,70,229,0.55)] ring-1 ring-indigo-400/50'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
           }`}
           title="Global Variables & Placeholders ({{CLIENT_NAME}})"
         >
-          <Braces className="w-4 h-4" />
+          <Braces className="w-5 h-5" />
         </button>
 
         {/* LaTeX Code Viewer */}
@@ -87,39 +87,45 @@ export const EditorRail: React.FC<EditorRailProps> = ({
               setActiveTab('code');
             }
           }}
-          className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors cursor-pointer ${
+          className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all cursor-pointer ${
             activeTab === 'code'
-              ? 'bg-[#0d3479] text-white shadow border border-[#2563eb]/40'
-              : 'text-sky-400 hover:text-sky-200 hover:bg-[#0d1728]'
+              ? 'bg-[#4F46E5] text-white shadow-[0_0_18px_rgba(79,70,229,0.55)] ring-1 ring-indigo-400/50'
+              : 'text-cyan-400 hover:text-cyan-200 hover:bg-slate-800/40'
           }`}
           title="View & Export LaTeX Source Code (.tex)"
         >
-          <FileCode className="w-4 h-4" />
+          <FileCode className="w-5 h-5" />
         </button>
 
         {/* Media / Figures */}
         <button
           onClick={() => setActiveTab('media')}
-          className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors cursor-pointer ${
+          className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all cursor-pointer ${
             activeTab === 'media'
-              ? 'bg-[#0d3479] text-white shadow border border-[#2563eb]/40'
-              : 'text-slate-400 hover:text-white hover:bg-[#0d1728]'
+              ? 'bg-[#4F46E5] text-white shadow-[0_0_18px_rgba(79,70,229,0.55)] ring-1 ring-indigo-400/50'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
           }`}
           title="Figures and Images"
         >
-          <ImageIcon className="w-4 h-4" />
+          <ImageIcon className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Bottom Rail Icons: Settings Gear */}
-      <div className="flex flex-col items-center space-y-2.5 w-full">
+      {/* Bottom Rail Actions */}
+      <div className="flex flex-col items-center space-y-3 w-full">
+        {/* Settings modal */}
         <button
           onClick={onOpenSettings}
-          className="w-9 h-9 rounded-xl text-slate-400 hover:text-white hover:bg-[#0d1728] flex items-center justify-center transition-colors cursor-pointer"
-          title="Project Settings & Formatting"
+          className="w-10 h-10 rounded-2xl text-slate-400 hover:text-white hover:bg-slate-800/40 flex items-center justify-center transition-colors cursor-pointer"
+          title="Document & Compiler Settings"
         >
-          <Settings className="w-4 h-4" />
+          <Settings className="w-5 h-5" />
         </button>
+
+        {/* User Avatar initial */}
+        <div className="w-8 h-8 rounded-full bg-[#1E2538] border border-slate-700 text-slate-300 font-semibold text-xs flex items-center justify-center">
+          N
+        </div>
       </div>
     </div>
   );

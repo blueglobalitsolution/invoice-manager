@@ -44,9 +44,13 @@ interface FormEditorProps {
   onOpenGlobalVariables?: () => void;
 }
 
+import { DynamicTemplateEditor } from '@/components/DynamicTemplateEditor';
+import { SAMPLE_GENERIC_TEMPLATE } from '@/lib/sample_template';
+
 export const FormEditor: React.FC<FormEditorProps> = ({
   document: doc,
   activeSectionId,
+  onSelectSection,
   onChange,
   onOpenGlobalVariables,
 }) => {
@@ -88,10 +92,22 @@ export const FormEditor: React.FC<FormEditorProps> = ({
     );
   }
 
+  if (doc.dynamicTemplate) {
+    return (
+      <DynamicTemplateEditor
+        schema={SAMPLE_GENERIC_TEMPLATE}
+        documentData={doc.dynamicTemplate}
+        onChange={(newDynamicDoc) => onChange({ ...doc, dynamicTemplate: newDynamicDoc })}
+        activeSectionId={activeSectionId}
+        onSelectSection={onSelectSection}
+      />
+    );
+  }
+
   if (!doc.purchaseOrder) {
     return (
-      <aside className="w-full bg-[#080d1a] text-gray-200 flex flex-col h-full shrink-0 select-none overflow-hidden">
-        <div className="px-4 py-3 border-b border-[#141f33] bg-[#0a1120] flex justify-between items-center shrink-0">
+      <aside className="w-full bg-[#0B0F19] text-gray-200 flex flex-col h-full shrink-0 select-none overflow-hidden">
+        <div className="px-4 py-3 border-b border-[#1E293B] bg-[#0F1523] flex justify-between items-center shrink-0">
           <h2 className="font-bold text-xs uppercase tracking-wider text-gray-300">
             Document Settings
           </h2>
@@ -105,7 +121,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               type="text"
               value={doc.title}
               onChange={(e) => updateDoc({ title: e.target.value })}
-              className="w-full bg-[#070c18] border border-[#16233a] rounded px-3 py-2 text-sm text-white font-medium"
+              className="w-full bg-[#111827] border border-[#1E293B] rounded px-3 py-2 text-sm text-white font-medium"
             />
           </div>
         </div>
@@ -255,11 +271,11 @@ export const FormEditor: React.FC<FormEditorProps> = ({
   };
 
   return (
-    <aside className="w-full bg-[#080d1a] text-gray-200 flex flex-col h-full shrink-0 select-none overflow-hidden">
+    <aside className="w-full bg-[#0B0F19] text-gray-200 flex flex-col h-full shrink-0 select-none overflow-hidden">
       {/* Single Unified Header */}
-      <div className="px-4 py-3 border-b border-[#141f33] bg-[#0a1120] flex items-center justify-between shrink-0">
+      <div className="px-4 py-4 border-b border-[#1E293B] bg-[#0F1523] flex items-center justify-between shrink-0">
         <div className="flex items-center space-x-2.5 min-w-0">
-          <div className="p-2 bg-[#0d3479]/30 rounded-xl border border-[#0d3479]/50 text-blue-300 shrink-0">
+          <div className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] text-blue-300 shrink-0">
             <CurrentIcon className="w-4 h-4" />
           </div>
           <div className="truncate">
@@ -535,7 +551,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                 value={doc.title}
                 onChange={(e) => updateDoc({ title: e.target.value })}
                 placeholder="LABOUR CONTRACT PURCHASE ORDER"
-                className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 focus:ring-1 focus:ring-emerald-500 font-bold text-white"
+                className="w-full mt-1 px-2.5 py-1.5 bg-[#111827] border border-[#1E293B] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none"
               />
             </div>
 
