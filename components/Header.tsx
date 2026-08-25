@@ -114,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({
   const currentDocItem = projectDocs.find((d) => d.id === activeDocumentId);
 
   return (
-    <header className="w-full h-14 bg-[#070A13] border-b border-[#151C2C] flex items-center justify-between px-5 shrink-0 z-20 text-xs select-none">
+    <header className="w-full h-14 bg-[#070A13] border-b border-[#151C2C] flex items-center justify-between px-5 shrink-0 z-20 text-xs select-none print:hidden">
       
       {/* Left side actions and breadcrumbs */}
       <div className="flex items-center space-x-4">

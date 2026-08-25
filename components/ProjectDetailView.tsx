@@ -37,6 +37,7 @@ import {
 } from '@/types/project';
 import { CreateDocumentModal } from '@/components/CreateDocumentModal';
 import { DashboardSidebar } from '@/components/DashboardSidebar';
+import { SettingsModal } from '@/components/SettingsModal';
 import { useRouter } from 'next/navigation';
 
 interface ProjectDetailViewProps {
@@ -58,6 +59,7 @@ interface ProjectDetailViewProps {
   onUpdateCompanyProfile?: (profile: any) => void;
   currentUser?: { name: string; email: string } | null;
   onLogout?: () => void;
+  onUpdateProject?: (updatedProject: ProjectItem) => void;
 }
 
 export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
@@ -74,6 +76,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
   onUpdateCompanyProfile,
   currentUser,
   onLogout,
+  onUpdateProject,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | ProjectDocType>('all');
@@ -82,6 +85,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
   const router = useRouter();
   const [activeStatusMenuDocId, setActiveStatusMenuDocId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const documents = project.documents || [];
 
@@ -158,6 +162,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
         onLogout={onLogout || (() => {})}
         projectId={project.id}
         projectName={project.title}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       />
       
       {/* Main Content Area */}
@@ -645,6 +650,69 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
           project={project}
           onCreateDocument={onCreateDocument}
         />
+
+        {/* Document Settings Modal */}
+        {(() => {
+          const firstDoc = project.documents?.[0];
+          const docSettings = firstDoc?.document?.settings || {
+            paperSize: 'a4paper' as const,
+            columns: 'onecolumn' as const,
+            fontSize: '11pt' as const,
+            fontFamily: 'times' as const,
+            margins: 'normal' as const,
+            showPageNumbers: true,
+            showDate: true,
+            accentColor: '#002057'
+          };
+
+          return (
+            <SettingsModal
+              isOpen={isSettingsOpen}
+              onClose={() => setIsSettingsOpen(false)}
+              settings={docSettings}
+              onUpdateSettings={(newSettings) => {
+                if (!onUpdateProject) return;
+                const updatedDocs = (project.documents || []).map((doc) => ({
+                  ...doc,
+                  document: {
+                    ...doc.document,
+                    settings: {
+                      ...doc.document.settings,
+                      ...newSettings
+                    }
+                  }
+                }));
+                onUpdateProject({
+                  ...project,
+                  documents: updatedDocs
+                });
+              }}
+              projectTitle={project.title}
+              onUpdateTitle={(newTitle) => {
+                if (!onUpdateProject) return;
+                onUpdateProject({
+                  ...project,
+                  title: newTitle
+                });
+              }}
+              document={firstDoc?.document}
+              onUpdateVariables={(newVars) => {
+                if (!onUpdateProject) return;
+                const updatedDocs = (project.documents || []).map((doc) => ({
+                  ...doc,
+                  document: {
+                    ...doc.document,
+                    globalVariables: newVars
+                  }
+                }));
+                onUpdateProject({
+                  ...project,
+                  documents: updatedDocs
+                });
+              }}
+            />
+          );
+        })()}
       </div>
     </div>
   );

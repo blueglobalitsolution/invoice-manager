@@ -137,24 +137,96 @@
   font-family: 'Fira Code', monospace;
 }
 
-/* Print specific styles for exact PDF exporting */
+/* Print specific styles for exact A4 PDF exporting without software UI */
 @media print {
-  body {
-    background: white !important;
-    overflow: visible !important;
+  @page {
+    size: A4 portrait;
+    margin: 0mm;
   }
-  .no-print {
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Completely hide all software chrome, toolbars, sidebars, headers, footers and modals */
+  header,
+  footer,
+  aside,
+  nav,
+  button,
+  input,
+  select,
+  textarea,
+  .print\:hidden,
+  .no-print,
+  [role="dialog"],
+  .toast {
     display: none !important;
   }
-  .print-area {
-    position: absolute;
-    left: 0;
-    top: 0;
+
+  /* Reset layout shells */
+  #__next,
+  main,
+  .app-shell,
+  .flex-1 {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
     width: 100% !important;
     height: auto !important;
+    background: transparent !important;
+    overflow: visible !important;
+  }
+
+  #pdf-preview-container,
+  .print-area {
+    display: block !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    transform: none !important;
+    zoom: 1 !important;
+    width: 100% !important;
+    height: auto !important;
+    background: transparent !important;
+    overflow: visible !important;
+  }
+
+  /* Perfect A4 paper dimensions and page-break isolation */
+  .latex-paper {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    margin: 0 auto !important;
     box-shadow: none !important;
-    margin: 0 !important;
-    padding: 20mm !important;
+    border: none !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    padding: 10mm 15mm !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .latex-paper:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 }
 

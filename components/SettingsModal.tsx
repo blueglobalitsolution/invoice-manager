@@ -1,25 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Settings, Braces, Sliders, Plus, Trash2, Copy, Check } from 'lucide-react';
-import {
-  DocumentSettings,
-  PaperSize,
-  FontSize,
-  ColumnMode,
-  FontFamily,
-  MarginSize,
-  LatexDocument,
-} from '@/types/document';
-import { DEFAULT_GLOBAL_VARIABLES } from '@/lib/variables';
+import { X, Braces, Plus, Trash2, Copy, Check } from 'lucide-react';
+import { LatexDocument } from '@/types/document';
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  settings: DocumentSettings;
-  onUpdateSettings: (newSettings: Partial<DocumentSettings>) => void;
-  projectTitle: string;
-  onUpdateTitle: (title: string) => void;
+  settings?: any;
+  onUpdateSettings?: (newSettings: any) => void;
+  projectTitle?: string;
+  onUpdateTitle?: (title: string) => void;
   document?: LatexDocument;
   onUpdateVariables?: (vars: Record<string, string>) => void;
 }
@@ -27,14 +18,9 @@ interface SettingsModalProps {
 export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
-  settings,
-  onUpdateSettings,
-  projectTitle,
-  onUpdateTitle,
   document: doc,
   onUpdateVariables,
 }) => {
-  const [activeTab, setActiveTab] = useState<'formatting' | 'variables'>('formatting');
   const [newKey, setNewKey] = useState('');
   const [newValue, setNewValue] = useState('');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -52,7 +38,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const handleAddVar = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newKey.trim() || !newValue.trim() || !onUpdateVariables) return;
-    const cleanKey = newKey.trim().replace(/[{}\s]/g, '').toUpperCase();
+    const cleanKey = newKey.trim().toUpperCase().replace(/[{}\s]/g, '');
     onUpdateVariables({
       ...customVars,
       [cleanKey]: newValue.trim(),
@@ -63,221 +49,86 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/75 backdrop-blur-xs z-50 flex items-center justify-center p-4 select-none">
-      <div className="bg-[#161c26] border border-gray-700 rounded-xl max-w-xl w-full p-6 text-gray-200 space-y-5 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Header with Tabs */}
-        <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+      <div className="bg-[#002057] border border-blue-900 rounded-2xl max-w-xl w-full p-6 text-gray-200 space-y-5 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-blue-900 pb-3">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-emerald-950 text-emerald-400 rounded border border-emerald-800/60">
-              <Settings className="w-5 h-5" />
+            <div className="p-2.5 bg-white/10 text-white rounded-xl border border-white/15">
+              <Braces className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-white">Document Settings</h3>
-              <p className="text-xs text-gray-400">Configure page geometry, typography, and global variables</p>
+              <h3 className="font-bold text-base text-white">Project Variables</h3>
+              <p className="text-xs text-blue-200/70">Manage dynamic placeholders and dynamic text substitution</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white p-1 rounded transition-colors cursor-pointer"
+            className="text-blue-200 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex items-center space-x-2 border-b border-gray-800 pb-2 text-xs">
-          <button
-            onClick={() => setActiveTab('formatting')}
-            className={`px-3 py-1.5 rounded-md font-bold flex items-center space-x-1.5 transition-all cursor-pointer ${
-              activeTab === 'formatting'
-                ? 'bg-emerald-600 text-white shadow'
-                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
-            }`}
-          >
-            <Sliders className="w-3.5 h-3.5" />
-            <span>Formatting & Page</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('variables')}
-            className={`px-3 py-1.5 rounded-md font-bold flex items-center space-x-1.5 transition-all cursor-pointer ${
-              activeTab === 'variables'
-                ? 'bg-emerald-600 text-white shadow'
-                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
-            }`}
-          >
-            <Braces className="w-3.5 h-3.5" />
-            <span>Global Variables ({Object.keys(customVars).length})</span>
-          </button>
-        </div>
-
-        {/* Tab: Formatting */}
-        {activeTab === 'formatting' && (
-          <div className="space-y-4 text-xs overflow-y-auto pr-1">
-            {/* Project Name */}
-            <div className="space-y-1.5">
-              <label className="block text-gray-400 font-bold uppercase tracking-wider text-[10px]">
-                Document Title
-              </label>
+        {/* Variables Content */}
+        <div className="space-y-4 text-xs overflow-y-auto flex-1 pr-1 scrollbar-thin">
+          
+          {/* Quick Add Form */}
+          <form onSubmit={handleAddVar} className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3">
+            <div className="text-[11px] font-bold text-blue-300 uppercase tracking-wide flex items-center space-x-1.5">
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create Custom Placeholder</span>
+            </div>
+            <div className="flex items-center space-x-2">
               <input
                 type="text"
-                value={projectTitle}
-                onChange={(e) => onUpdateTitle(e.target.value)}
-                className="w-full bg-[#1e2633] border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 font-medium"
+                placeholder="KEY (e.g. CLIENT_NAME)"
+                value={newKey}
+                onChange={(e) => setNewKey(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ''))}
+                className="w-1/2 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-xs font-mono text-blue-200 placeholder:text-blue-200/40 focus:outline-none focus:border-blue-400"
               />
-            </div>
-
-            {/* Paper Size & Columns */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-gray-400 font-bold uppercase tracking-wider text-[10px]">
-                  Paper Size
-                </label>
-                <select
-                  value={settings.paperSize}
-                  onChange={(e) => onUpdateSettings({ paperSize: e.target.value as PaperSize })}
-                  className="w-full bg-[#1e2633] border border-gray-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 font-medium"
-                >
-                  <option value="a4paper">A4 Standard (210 x 297 mm)</option>
-                  <option value="letterpaper">US Letter (8.5 x 11 in)</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-gray-400 font-bold uppercase tracking-wider text-[10px]">
-                  Column Mode
-                </label>
-                <select
-                  value={settings.columns}
-                  onChange={(e) => onUpdateSettings({ columns: e.target.value as ColumnMode })}
-                  className="w-full bg-[#1e2633] border border-gray-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 font-medium"
-                >
-                  <option value="onecolumn">Single Column (Standard Report)</option>
-                  <option value="twocolumn">Two Columns</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Typography */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-gray-400 font-bold uppercase tracking-wider text-[10px]">
-                  Font Family
-                </label>
-                <select
-                  value={settings.fontFamily}
-                  onChange={(e) => onUpdateSettings({ fontFamily: e.target.value as FontFamily })}
-                  className="w-full bg-[#1e2633] border border-gray-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 font-medium"
-                >
-                  <option value="helvetica">Helvetica / Sans-Serif (Standard)</option>
-                  <option value="times">Times New Roman</option>
-                  <option value="latin-modern">Latin Modern Garamond</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-gray-400 font-bold uppercase tracking-wider text-[10px]">
-                  Font Size
-                </label>
-                <select
-                  value={settings.fontSize}
-                  onChange={(e) => onUpdateSettings({ fontSize: e.target.value as FontSize })}
-                  className="w-full bg-[#1e2633] border border-gray-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 font-medium"
-                >
-                  <option value="10pt">10pt Standard Compact</option>
-                  <option value="11pt">11pt Balanced</option>
-                  <option value="12pt">12pt Large Print</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Margins */}
-            <div className="space-y-1.5">
-              <label className="block text-gray-400 font-bold uppercase tracking-wider text-[10px]">
-                Page Margins
-              </label>
-              <select
-                value={settings.margins}
-                onChange={(e) => onUpdateSettings({ margins: e.target.value as MarginSize })}
-                className="w-full bg-[#1e2633] border border-gray-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 font-medium"
+              <input
+                type="text"
+                placeholder="Value (e.g. Reliance Industries)"
+                value={newValue}
+                onChange={(e) => setNewValue(e.target.value)}
+                className="w-1/2 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-blue-200/40 focus:outline-none focus:border-blue-400"
+              />
+              <button
+                type="submit"
+                disabled={!newKey.trim() || !newValue.trim()}
+                className="px-4 py-2 bg-white text-[#002057] hover:bg-white/90 disabled:opacity-50 text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
               >
-                <option value="compact">Compact (0.75 in)</option>
-                <option value="normal">Normal Standard (1.0 in)</option>
-                <option value="wide">Wide (1.25 in)</option>
-              </select>
+                Add
+              </button>
             </div>
+          </form>
 
-            {/* Display Toggles */}
-            <div className="pt-2 border-t border-gray-800 space-y-2.5">
-              <label className="flex items-center space-x-3 text-xs text-gray-200 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={settings.showPageNumbers}
-                  onChange={(e) => onUpdateSettings({ showPageNumbers: e.target.checked })}
-                  className="rounded accent-emerald-500 w-4 h-4"
-                />
-                <span>Include Bottom Page Numbers</span>
-              </label>
+          {/* Placeholders List */}
+          <div className="space-y-2.5">
+            <div className="text-[10px] font-bold text-blue-200/60 uppercase tracking-wider">
+              Active Placeholders & Custom Variables
             </div>
-          </div>
-        )}
-
-        {/* Tab: Variables */}
-        {activeTab === 'variables' && (
-          <div className="space-y-4 text-xs overflow-y-auto flex-1 pr-1 scrollbar-thin">
-            {/* Quick Add */}
-            <form onSubmit={handleAddVar} className="p-3 bg-[#111927] border border-gray-800 rounded-lg space-y-2">
-              <div className="text-[11px] font-bold text-emerald-400 uppercase tracking-wide">
-                + Create Custom Placeholder
+            {Object.keys(customVars).length === 0 ? (
+              <div className="p-6 text-center text-blue-200/50 italic bg-white/5 border border-white/10 rounded-xl">
+                No custom placeholders added yet. Use form above to create one.
               </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="text"
-                  placeholder="KEY (e.g. CLIENT_NAME)"
-                  value={newKey}
-                  onChange={(e) => setNewKey(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ''))}
-                  className="w-1/2 bg-[#1b2535] border border-gray-700 rounded px-2.5 py-1.5 text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Value (e.g. Reliance Industries)"
-                  value={newValue}
-                  onChange={(e) => setNewValue(e.target.value)}
-                  className="w-1/2 bg-[#1b2535] border border-gray-700 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
-                />
-                <button
-                  type="submit"
-                  disabled={!newKey.trim() || !newValue.trim()}
-                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded font-bold transition-all cursor-pointer shrink-0"
-                >
-                  Add
-                </button>
-              </div>
-            </form>
-
-            {/* Custom Variables */}
-            <div className="space-y-2">
-              <div className="text-[11px] font-bold text-gray-400 uppercase">
-                Active Placeholders & Custom Variables
-              </div>
-              {Object.keys(customVars).length === 0 ? (
-                <div className="p-4 text-center text-gray-500 italic bg-[#111927] border border-gray-800 rounded">
-                  No custom placeholders added yet. Use form above to create one.
-                </div>
-              ) : (
-                Object.entries(customVars).map(([k, v]) => (
+            ) : (
+              <div className="space-y-2">
+                {Object.entries(customVars).map(([k, v]) => (
                   <div
                     key={k}
-                    className="p-2 bg-[#1b2535] border border-gray-700/80 rounded flex items-center justify-between space-x-2"
+                    className="p-3 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between space-x-3 hover:bg-white/8 transition-colors"
                   >
                     <div className="flex-1 truncate">
-                      <div className="font-mono text-xs text-emerald-400 font-bold">{`{{${k}}}`}</div>
-                      <div className="text-[11px] text-gray-300 truncate">{v}</div>
+                      <div className="font-mono text-xs text-blue-300 font-bold">{`{{${k}}}`}</div>
+                      <div className="text-[11px] text-white/90 truncate mt-0.5">{v}</div>
                     </div>
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-1.5 shrink-0">
                       <button
                         onClick={() => handleCopy(k)}
-                        className="p-1 text-gray-400 hover:text-white rounded"
-                        title="Copy placeholder"
+                        className="p-2 text-blue-200 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+                        title="Copy placeholder tag"
                       >
                         {copiedKey === k ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                       </button>
@@ -287,24 +138,24 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                           delete updated[k];
                           onUpdateVariables?.(updated);
                         }}
-                        className="p-1 text-gray-400 hover:text-red-400 rounded"
+                        className="p-2 text-blue-200 hover:text-rose-400 rounded-lg hover:bg-white/10 transition-colors"
                         title="Delete variable"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Footer */}
-        <div className="flex justify-end pt-3 border-t border-gray-800">
+        <div className="flex justify-end pt-3 border-t border-blue-900">
           <button
             onClick={onClose}
-            className="px-5 py-2 bg-[#15803d] hover:bg-[#16a34a] text-white rounded text-xs font-bold transition-all shadow cursor-pointer"
+            className="px-5 py-2.5 bg-white text-[#002057] hover:bg-white/95 rounded-xl text-xs font-bold transition-all shadow cursor-pointer"
           >
             Done
           </button>

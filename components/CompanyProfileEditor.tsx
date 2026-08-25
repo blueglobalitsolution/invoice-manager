@@ -38,7 +38,8 @@ export const CompanyProfileEditor: React.FC<CompanyProfileEditorProps> = ({
                 type="text"
                 value={profile.companyName}
                 onChange={(e) => onChange({ ...profile, companyName: e.target.value })}
-                className="w-full bg-[#0a0f18] border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+                className="w-full bg-white/10 border border-white/15 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-semibold"
+                style={{ color: '#ffffff' }}
                 placeholder="GLOBAL"
               />
             </div>
@@ -48,7 +49,8 @@ export const CompanyProfileEditor: React.FC<CompanyProfileEditorProps> = ({
                 type="text"
                 value={profile.companySubtitle}
                 onChange={(e) => onChange({ ...profile, companySubtitle: e.target.value })}
-                className="w-full bg-[#0a0f18] border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+                className="w-full bg-white/10 border border-white/15 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-semibold"
+                style={{ color: '#ffffff' }}
                 placeholder="INDUSTRIES"
               />
             </div>
@@ -59,7 +61,8 @@ export const CompanyProfileEditor: React.FC<CompanyProfileEditorProps> = ({
               type="text"
               value={profile.companyGstNo}
               onChange={(e) => onChange({ ...profile, companyGstNo: e.target.value })}
-              className="w-full bg-[#0a0f18] border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-mono"
+              className="w-full bg-white/10 border border-white/15 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-mono"
+              style={{ color: '#ffffff' }}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -69,7 +72,8 @@ export const CompanyProfileEditor: React.FC<CompanyProfileEditorProps> = ({
                 type="text"
                 value={profile.companyPanNo}
                 onChange={(e) => onChange({ ...profile, companyPanNo: e.target.value })}
-                className="w-full bg-[#0a0f18] border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-mono"
+                className="w-full bg-white/10 border border-white/15 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-mono"
+                style={{ color: '#ffffff' }}
               />
             </div>
             <div>
@@ -78,7 +82,8 @@ export const CompanyProfileEditor: React.FC<CompanyProfileEditorProps> = ({
                 type="text"
                 value={profile.companyEpfNo}
                 onChange={(e) => onChange({ ...profile, companyEpfNo: e.target.value })}
-                className="w-full bg-[#0a0f18] border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-mono"
+                className="w-full bg-white/10 border border-white/15 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-mono"
+                style={{ color: '#ffffff' }}
               />
             </div>
           </div>
@@ -88,7 +93,8 @@ export const CompanyProfileEditor: React.FC<CompanyProfileEditorProps> = ({
               type="text"
               value={profile.companyAddressHeader}
               onChange={(e) => onChange({ ...profile, companyAddressHeader: e.target.value })}
-              className="w-full bg-[#0a0f18] border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+              className="w-full bg-white/10 border border-white/15 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+              style={{ color: '#ffffff' }}
               placeholder="Regd. Off. : SO7B / 2nd floor..."
             />
           </div>
@@ -116,7 +122,8 @@ export const CompanyProfileEditor: React.FC<CompanyProfileEditorProps> = ({
                         arr[i] = e.target.value;
                         onChange({ ...profile, leftServices: arr });
                       }}
-                      className="flex-1 bg-[#0a0f18] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-emerald-500/50"
+                      className="flex-1 bg-white/10 border border-white/15 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500/50"
+                      style={{ color: '#ffffff' }}
                     />
                     <button
                       onClick={() => {
@@ -157,7 +164,8 @@ export const CompanyProfileEditor: React.FC<CompanyProfileEditorProps> = ({
                         arr[i] = e.target.value;
                         onChange({ ...profile, rightServices: arr });
                       }}
-                      className="flex-1 bg-[#0a0f18] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-emerald-500/50"
+                      className="flex-1 bg-white/10 border border-white/15 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500/50"
+                      style={{ color: '#ffffff' }}
                     />
                     <button
                       onClick={() => {
@@ -193,7 +201,8 @@ export const CompanyProfileEditor: React.FC<CompanyProfileEditorProps> = ({
             <textarea
               value={profile.companyAddressFooter}
               onChange={(e) => onChange({ ...profile, companyAddressFooter: e.target.value })}
-              className="w-full bg-[#0a0f18] border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all min-h-[60px]"
+              className="w-full bg-white/10 border border-white/15 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all min-h-[60px]"
+              style={{ color: '#ffffff' }}
               placeholder="Block No. 1068..."
             />
           </div>
@@ -204,7 +213,8 @@ export const CompanyProfileEditor: React.FC<CompanyProfileEditorProps> = ({
                 type="text"
                 value={profile.companyPhone}
                 onChange={(e) => onChange({ ...profile, companyPhone: e.target.value })}
-                className="w-full bg-[#0a0f18] border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-emerald-500/50 transition-all"
+                className="w-full bg-white/10 border border-white/15 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/50 transition-all"
+                style={{ color: '#ffffff' }}
               />
             </div>
             <div>
@@ -213,7 +223,8 @@ export const CompanyProfileEditor: React.FC<CompanyProfileEditorProps> = ({
                 type="text"
                 value={profile.companyEmail}
                 onChange={(e) => onChange({ ...profile, companyEmail: e.target.value })}
-                className="w-full bg-[#0a0f18] border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-emerald-500/50 transition-all"
+                className="w-full bg-white/10 border border-white/15 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/50 transition-all"
+                style={{ color: '#ffffff' }}
               />
             </div>
           </div>
@@ -223,7 +234,8 @@ export const CompanyProfileEditor: React.FC<CompanyProfileEditorProps> = ({
               type="text"
               value={profile.companyWebsite}
               onChange={(e) => onChange({ ...profile, companyWebsite: e.target.value })}
-              className="w-full bg-[#0a0f18] border border-gray-800 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-emerald-500/50 transition-all"
+              className="w-full bg-white/10 border border-white/15 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/50 transition-all"
+              style={{ color: '#ffffff' }}
             />
           </div>
         </div>

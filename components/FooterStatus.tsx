@@ -27,7 +27,7 @@ export const FooterStatus: React.FC<FooterStatusProps> = ({ document: doc }) => 
   }, [doc]);
 
   return (
-    <footer className="h-6 bg-[#070A13] border-t border-[#151C2C] flex items-center justify-between px-4 text-[10px] text-slate-500 uppercase font-mono shrink-0 z-10 select-none">
+    <footer className="h-6 bg-[#070A13] border-t border-[#151C2C] flex items-center justify-between px-4 text-[10px] text-slate-500 uppercase font-mono shrink-0 z-10 select-none print:hidden">
       <div className="flex items-center space-x-4">
         <span>WORDS: <strong className="text-slate-400 font-normal">{wordCount || 18}</strong></span>
         <span>SECTIONS: <strong className="text-slate-400 font-normal">{doc.sections.length}</strong></span>

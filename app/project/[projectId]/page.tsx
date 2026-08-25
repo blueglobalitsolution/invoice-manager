@@ -53,7 +53,8 @@ export default function ProjectDetailPage() {
     docType: ProjectDocType,
     customTitle?: string,
     customNumber?: string,
-    customAmount?: string
+    customAmount?: string,
+    localVariables?: Record<string, string>
   ) => {
     if (!project) return;
 
@@ -63,6 +64,13 @@ export default function ProjectDetailPage() {
                    : docType === 'work_order' ? SAMPLE_TEMPLATES.labour_po
                    : SAMPLE_TEMPLATES.blank || LABOUR_PO_TEMPLATE);
     const template = JSON.parse(templateStr);
+
+    // Merge existing project-wide variables + new local variables
+    const projectVars = project.documents?.[0]?.document?.globalVariables || {};
+    template.globalVariables = {
+      ...projectVars,
+      ...(localVariables || {})
+    };
 
     // Inject company profile if available
     if (project.companyProfile) {
@@ -249,6 +257,18 @@ export default function ProjectDetailPage() {
     }).catch((err) => console.error('Failed to update project status:', err));
   };
 
+  const handleUpdateProject = (updatedProject: ProjectItem) => {
+    setProject(updatedProject);
+    fetch(`/api/projects/${projectId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...updatedProject,
+        lastModified: 'Just now by You',
+      }),
+    }).catch((err) => console.error('Failed to update project settings:', err));
+  };
+
   const handleArchiveProject = () => {
     if (!project) return;
     const isCurrentlyArchived = Boolean(project.isArchived || project.status === 'archived');
@@ -313,6 +333,7 @@ export default function ProjectDetailPage() {
       onDeleteProject={handleDeleteProject}
       onArchiveProject={handleArchiveProject}
       onUpdateCompanyProfile={handleUpdateCompanyProfile}
+      onUpdateProject={handleUpdateProject}
     />
   );
 }

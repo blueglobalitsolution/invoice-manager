@@ -25,7 +25,8 @@ interface CreateDocumentModalProps {
     docType: ProjectDocType,
     customTitle?: string,
     customNumber?: string,
-    customAmount?: string
+    customAmount?: string,
+    localVariables?: Record<string, string>
   ) => void;
 }
 
@@ -39,6 +40,14 @@ export const CreateDocumentModal: React.FC<CreateDocumentModalProps> = ({
   const [title, setTitle] = useState('');
   const [docNumber, setDocNumber] = useState('');
   const [amount, setAmount] = useState('');
+
+  // Document level placeholders setup
+  const [customVars, setCustomVars] = useState<{ key: string; value: string }[]>([
+    { key: 'DELIVERY_PERIOD', value: '30 Days' },
+    { key: 'WARRANTY_TERMS', value: '12 Months' },
+  ]);
+  const [newKey, setNewKey] = useState('');
+  const [newValue, setNewValue] = useState('');
 
   if (!isOpen) return null;
 
@@ -56,14 +65,51 @@ export const CreateDocumentModal: React.FC<CreateDocumentModalProps> = ({
     }
   };
 
+  const handleAddCustomVar = () => {
+    if (!newKey.trim() || !newValue.trim()) return;
+    const cleanKey = newKey.trim().toUpperCase().replace(/[{}\s]/g, '');
+    if (customVars.some(v => v.key === cleanKey)) {
+      alert('Key already exists');
+      return;
+    }
+    setCustomVars([...customVars, { key: cleanKey, value: newValue.trim() }]);
+    setNewKey('');
+    setNewValue('');
+  };
+
+  const handleRemoveCustomVar = (key: string) => {
+    setCustomVars(customVars.filter(v => v.key !== key));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Combine inputs + custom doc-level variables
+    const vars: Record<string, string> = {
+      DOC_TITLE: title.trim() || `${selectedType.toUpperCase()} Sheet`,
+      DOC_NUMBER: docNumber.trim() || '',
+      DOC_AMOUNT: amount.trim() || '',
+    };
+
+    customVars.forEach((v) => {
+      if (v.key && v.value) {
+        vars[v.key] = v.value;
+      }
+    });
+
     onCreateDocument(
       selectedType,
       title.trim() || undefined,
       docNumber.trim() || undefined,
-      amount.trim() || undefined
+      amount.trim() || undefined,
+      vars
     );
+
+    setTitle('');
+    setCustomVars([
+      { key: 'DELIVERY_PERIOD', value: '30 Days' },
+      { key: 'WARRANTY_TERMS', value: '12 Months' },
+    ]);
     onClose();
   };
 
@@ -183,6 +229,80 @@ export const CreateDocumentModal: React.FC<CreateDocumentModalProps> = ({
                 placeholder="e.g. ₹8,45,000.00"
                 className="brand-input w-full px-4 py-3 text-sm"
               />
+            </div>
+          </div>
+
+          {/* Document Specific Placeholders Setup */}
+          <div className="border border-slate-200 rounded-[20px] p-4 bg-white/45 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-[#0d3479] text-xs">
+                Document Specific Placeholders (Used only in this document)
+              </span>
+              <span className="text-[10px] text-slate-500 font-mono">
+                {customVars.length + 3} Active
+              </span>
+            </div>
+
+            {/* Auto variables list */}
+            <div className="flex flex-wrap gap-1.5 pb-2">
+              <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 font-mono text-[9px] font-semibold border border-blue-100">
+                {"{{"}DOC_TITLE{"}}"}
+              </span>
+              <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 font-mono text-[9px] font-semibold border border-blue-100">
+                {"{{"}DOC_NUMBER{"}}"}
+              </span>
+              <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 font-mono text-[9px] font-semibold border border-blue-100">
+                {"{{"}DOC_AMOUNT{"}}"}
+              </span>
+            </div>
+
+            {/* Custom vars list */}
+            {customVars.length > 0 && (
+              <div className="space-y-1.5 max-h-[120px] overflow-y-auto pr-1">
+                {customVars.map((v) => (
+                  <div key={v.key} className="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200 shadow-3xs">
+                    <div className="flex items-center space-x-2">
+                      <span className="font-mono font-bold text-[#0d3479] text-[10px]">
+                        {"{{"}{v.key}{"}}"}
+                      </span>
+                      <span className="text-slate-400">&rarr;</span>
+                      <span className="text-slate-800 text-[10px] max-w-[200px] truncate">{v.value}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveCustomVar(v.key)}
+                      className="text-rose-500 hover:text-rose-700 font-bold px-1.5 py-0.5 rounded hover:bg-rose-50 transition-colors cursor-pointer"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add Custom Var form */}
+            <div className="flex items-center space-x-2 pt-1">
+              <input
+                type="text"
+                value={newKey}
+                onChange={(e) => setNewKey(e.target.value)}
+                placeholder="KEY (e.g. TAX_RATE)"
+                className="brand-input flex-1 px-3 py-2 text-[11px] uppercase"
+              />
+              <input
+                type="text"
+                value={newValue}
+                onChange={(e) => setNewValue(e.target.value)}
+                placeholder="Value (e.g. 18%)"
+                className="brand-input flex-1 px-3 py-2 text-[11px]"
+              />
+              <button
+                type="button"
+                onClick={handleAddCustomVar}
+                className="brand-button px-3.5 py-2 text-[11px] font-bold rounded-lg shrink-0 cursor-pointer"
+              >
+                + Add
+              </button>
             </div>
           </div>
 

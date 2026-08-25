@@ -51,6 +51,7 @@ export default function DashboardPage() {
     category,
     budget,
     initialDocTypes,
+    globalVariables,
   }: {
     title: string;
     code: string;
@@ -59,17 +60,25 @@ export default function DashboardPage() {
     category: string;
     budget: string;
     initialDocTypes: any[];
+    globalVariables?: Record<string, string>;
   }) => {
     if (!currentUser) return;
 
     const newProjId = `proj_${Date.now()}`;
     const initialDocuments = (initialDocTypes && initialDocTypes.length > 0 ? initialDocTypes : ['work_order']).map((docType) => {
-      return createProjectDocument(docType as any, {
+      const docItem = createProjectDocument(docType as any, {
         title,
         clientName,
         location,
         code,
       });
+      if (globalVariables && docItem.document) {
+        docItem.document.globalVariables = {
+          ...(docItem.document.globalVariables || {}),
+          ...globalVariables,
+        };
+      }
+      return docItem;
     });
 
     const defaultDoc = initialDocuments[0]?.document || JSON.parse(JSON.stringify(LABOUR_PO_TEMPLATE));
