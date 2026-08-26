@@ -7,13 +7,13 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId') || 'guest';
 
-    // Fetch projects
-    const stmt = db.prepare('SELECT * FROM projects WHERE userId = ? ORDER BY lastModified DESC');
+    // Fetch projects (newest inserted on top)
+    const stmt = db.prepare('SELECT * FROM projects WHERE userId = ? ORDER BY rowid DESC');
     const projectRows = stmt.all(userId) as any[];
 
     const projects = projectRows.map((row) => {
-      // Fetch documents belonging to this project
-      const docStmt = db.prepare('SELECT * FROM documents WHERE projectId = ? ORDER BY lastModified DESC');
+      // Fetch documents belonging to this project (newest on top)
+      const docStmt = db.prepare('SELECT * FROM documents WHERE projectId = ? ORDER BY rowid DESC');
       const docRows = docStmt.all(row.id) as any[];
 
       const documents = docRows.map((d) => ({

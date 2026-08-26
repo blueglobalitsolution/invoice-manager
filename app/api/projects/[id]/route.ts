@@ -14,8 +14,8 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
-    // Fetch documents linked to this project
-    const docStmt = db.prepare('SELECT * FROM documents WHERE projectId = ? ORDER BY lastModified DESC');
+    // Fetch documents linked to this project (newest on top)
+    const docStmt = db.prepare('SELECT * FROM documents WHERE projectId = ? ORDER BY rowid DESC');
     const docRows = docStmt.all(id) as any[];
 
     const documents = docRows.map((d) => ({

@@ -130,7 +130,7 @@ export default function ProjectDetailPage() {
       document: template,
     };
 
-    const updatedDocs = [...(project.documents || []), newDocItem];
+    const updatedDocs = [newDocItem, ...(project.documents || [])];
 
     // Optimistically update client UI
     setProject({
@@ -185,7 +185,7 @@ export default function ProjectDetailPage() {
       lastModified: 'Just now',
     };
 
-    const updatedDocs = [...(project.documents || []), duplicated];
+    const updatedDocs = [duplicated, ...(project.documents || [])];
 
     setProject({
       ...project,

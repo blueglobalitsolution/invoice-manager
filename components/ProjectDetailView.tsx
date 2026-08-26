@@ -1,6 +1,5 @@
-'use client';
-
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Plus,
   Search,
@@ -22,7 +21,6 @@ import {
   Send,
   PenTool,
   Check,
-  Grid,
   List,
   ChevronDown,
   Archive,
@@ -39,6 +37,159 @@ import { CreateDocumentModal } from '@/components/CreateDocumentModal';
 import { DashboardSidebar } from '@/components/DashboardSidebar';
 import { SettingsModal } from '@/components/SettingsModal';
 import { useRouter } from 'next/navigation';
+
+interface StatusSelectMenuProps {
+  currentStatus: ProjectDocStatus;
+  onSelectStatus: (status: ProjectDocStatus) => void;
+  getStatusBadge: (status: ProjectDocStatus) => {
+    label: string;
+    color: string;
+    icon: React.ComponentType<{ className?: string }>;
+  };
+}
+
+const StatusSelectMenu: React.FC<StatusSelectMenuProps> = ({
+  currentStatus,
+  onSelectStatus,
+  getStatusBadge,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [coords, setCoords] = useState<{ top: number; left: number; openUpwards: boolean } | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  const statusInfo = getStatusBadge(currentStatus);
+  const StatusIcon = statusInfo.icon;
+
+  const toggleMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      const menuHeight = 240;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const openUpwards = spaceBelow < menuHeight && rect.top > menuHeight;
+
+      setCoords({
+        top: openUpwards ? rect.top - 6 : rect.bottom + 6,
+        left: Math.min(rect.left, window.innerWidth - 190),
+        openUpwards,
+      });
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (
+        triggerRef.current?.contains(e.target as Node) ||
+        menuRef.current?.contains(e.target as Node)
+      ) {
+        return;
+      }
+      setIsOpen(false);
+    };
+
+    const handleScrollOrResize = () => {
+      setIsOpen(false);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    window.addEventListener('scroll', handleScrollOrResize, true);
+    window.addEventListener('resize', handleScrollOrResize);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      window.removeEventListener('scroll', handleScrollOrResize, true);
+      window.removeEventListener('resize', handleScrollOrResize);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
+
+  const allStatuses: { value: ProjectDocStatus; label: string; dotColor: string }[] = [
+    { value: 'draft', label: 'Draft', dotColor: 'bg-gray-400' },
+    { value: 'under_review', label: 'Under Review', dotColor: 'bg-amber-500' },
+    { value: 'approved', label: 'Approved', dotColor: 'bg-emerald-500' },
+    { value: 'sent', label: 'Sent', dotColor: 'bg-blue-500' },
+    { value: 'signed', label: 'Signed', dotColor: 'bg-indigo-500' },
+    { value: 'paid', label: 'Paid', dotColor: 'bg-teal-500' },
+  ];
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={toggleMenu}
+        className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border flex items-center space-x-1.5 transition-all shadow-xs hover:shadow-sm cursor-pointer ${statusInfo.color} ${
+          isOpen ? 'ring-2 ring-[#0d3479]/20' : ''
+        }`}
+      >
+        <StatusIcon className="w-3 h-3 shrink-0" />
+        <span>{statusInfo.label}</span>
+        <ChevronDown
+          className={`w-2.5 h-2.5 opacity-60 transition-transform duration-200 ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+
+      {isOpen && coords && typeof document !== 'undefined' && createPortal(
+        <div
+          ref={menuRef}
+          style={{
+            position: 'fixed',
+            top: coords.openUpwards ? 'auto' : `${coords.top}px`,
+            bottom: coords.openUpwards ? `${window.innerHeight - coords.top}px` : 'auto',
+            left: `${coords.left}px`,
+          }}
+          className="w-44 bg-white/95 backdrop-blur-md border border-[#cccccc] rounded-[20px] shadow-2xl p-1.5 z-[99999] animate-in fade-in zoom-in-95 duration-150"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="px-2.5 py-1 text-[10px] font-semibold text-[#666666] uppercase tracking-wider border-b border-[#eeeeee] mb-1">
+            Change Status
+          </div>
+          {allStatuses.map((st) => {
+            const isCurrent = currentStatus === st.value;
+            return (
+              <button
+                key={st.value}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelectStatus(st.value);
+                  setIsOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-[12px] text-xs font-medium transition-colors cursor-pointer ${
+                  isCurrent
+                    ? 'bg-[#dfe7f4] text-[#0d3479] font-bold'
+                    : 'text-black hover:bg-gray-100/80'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <span className={`w-2 h-2 rounded-full ${st.dotColor}`} />
+                  <span>{st.label}</span>
+                </div>
+                {isCurrent && (
+                  <Check className="w-3.5 h-3.5 text-[#0d3479]" strokeWidth={2.5} />
+                )}
+              </button>
+            );
+          })}
+        </div>,
+        document.body
+      )}
+    </>
+  );
+};
 
 interface ProjectDetailViewProps {
   project: ProjectItem;
@@ -83,8 +234,6 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
   const [statusFilter, setStatusFilter] = useState<'all' | ProjectDocStatus>('all');
   const [isCreateDocModalOpen, setIsCreateDocModalOpen] = useState(false);
   const router = useRouter();
-  const [activeStatusMenuDocId, setActiveStatusMenuDocId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const documents = project.documents || [];
@@ -155,7 +304,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
   };
 
   return (
-    <div className="app-shell flex min-h-screen w-full bg-gray-50 text-black font-sans overflow-hidden select-none">
+    <div className="app-shell flex h-screen max-h-screen w-full bg-gray-50 text-black font-sans overflow-hidden select-none">
       <DashboardSidebar
         currentUser={currentUser || null}
         onOpenAuth={() => {}}
@@ -166,7 +315,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
       />
       
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden relative">
         {/* Top Header Navigation */}
         <header className="h-16 px-4 md:px-6 flex items-center justify-between shrink-0 border-b border-[#cccccc] bg-white/40 backdrop-blur-md">
           <div className="flex items-center space-x-3">
@@ -299,7 +448,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                 </h2>
               </div>
 
-              {/* View Mode & Search */}
+              {/* Search in project */}
               <div className="flex items-center space-x-2">
                 <div className="relative">
                   <Search className="w-3.5 h-3.5 text-[#8b9dbc] absolute left-3 top-1/2 -translate-y-1/2" />
@@ -308,35 +457,8 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search in project..."
-                    className="brand-input pl-9 pr-3 py-2 text-xs w-44 md:w-56"
+                    className="brand-input pl-9 pr-3 py-2 text-xs w-52 md:w-64"
                   />
-                </div>
-
-                <div className="surface-card rounded-[20px] p-1 flex items-center shrink-0">
-                  <button
-                    onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded-[12px] text-sm font-medium flex items-center space-x-1 transition-colors ${
-                      viewMode === 'grid'
-                        ? 'bg-[#0d3479] text-white shadow'
-                        : 'text-[#666666] hover:text-black'
-                    }`}
-                    title="Grid View"
-                  >
-                    <Grid className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline text-[11px]">Grid</span>
-                  </button>
-                  <button
-                    onClick={() => setViewMode('table')}
-                    className={`p-2 rounded-[12px] text-sm font-medium flex items-center space-x-1 transition-colors ${
-                      viewMode === 'table'
-                        ? 'bg-[#0d3479] text-white shadow'
-                        : 'text-[#666666] hover:text-black'
-                    }`}
-                    title="Table View"
-                  >
-                    <List className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline text-[11px]">List</span>
-                  </button>
                 </div>
               </div>
             </div>
@@ -402,7 +524,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             </div>
           </div>
 
-          {/* Documents Grid / Table View */}
+          {/* Documents Table View */}
           {filteredDocs.length === 0 ? (
             <div className="glass-card rounded-[32px] p-12 text-center">
               <div className="w-14 h-14 rounded-[20px] bg-[#dfe7f4] flex items-center justify-center text-[#0d3479] mx-auto mb-3">
@@ -416,150 +538,18 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
               </p>
               <button
                 onClick={() => setIsCreateDocModalOpen(true)}
-                className="brand-button px-5 py-3 text-sm font-semibold inline-flex items-center space-x-2 cursor-pointer"
+                className="brand-button px-5 py-3 text-sm font-semibold inline-flex items-center space-x-2 cursor-pointer shadow"
               >
                 <Plus className="w-4 h-4" />
                 <span>Create First Document</span>
               </button>
             </div>
-          ) : viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {filteredDocs.map((doc) => {
-                const statusInfo = getStatusBadge(doc.status);
-                const StatusIcon = statusInfo.icon;
-                return (
-                  <div
-                    key={doc.id}
-                    className="glass-card hover:bg-white/85 border border-[#cccccc] rounded-[32px] p-5 transition-all flex flex-col justify-between group cursor-pointer relative overflow-hidden"
-                  >
-                    <div>
-                      {/* Top Row: Type Tag & Status */}
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        <div
-                          className={`px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider border flex items-center space-x-1.5 ${getDocTypeBadgeColor(
-                            doc.docType
-                          )}`}
-                        >
-                          {getDocTypeIcon(doc.docType)}
-                          <span>{doc.docType.replace('_', ' ')}</span>
-                        </div>
-
-                        {/* Status Dropdown Trigger */}
-                        <div className="relative">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActiveStatusMenuDocId(
-                                activeStatusMenuDocId === doc.id ? null : doc.id
-                              );
-                            }}
-                            className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border flex items-center space-x-1 transition-colors cursor-pointer ${statusInfo.color}`}
-                          >
-                            <StatusIcon className="w-3 h-3" />
-                            <span>{statusInfo.label}</span>
-                            <ChevronDown className="w-2.5 h-2.5 opacity-60" />
-                          </button>
-
-                          {/* Status change dropdown */}
-                          {activeStatusMenuDocId === doc.id && (
-                            <div
-                              className="absolute right-0 mt-1 w-36 bg-white border border-[#cccccc] rounded-[16px] shadow-xl py-1.5 z-30 text-[11px]"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {(
-                                [
-                                  'draft',
-                                  'under_review',
-                                  'approved',
-                                  'sent',
-                                  'signed',
-                                  'paid',
-                                ] as ProjectDocStatus[]
-                              ).map((st) => (
-                                <button
-                                  key={st}
-                                  onClick={() => {
-                                    onUpdateDocumentStatus(doc.id, st);
-                                    setActiveStatusMenuDocId(null);
-                                  }}
-                                  className="w-full text-left px-3 py-1.5 hover:bg-[#dfe7f4]/40 text-black capitalize flex items-center justify-between font-medium"
-                                >
-                                  <span>{st.replace('_', ' ')}</span>
-                                  {doc.status === st && (
-                                    <Check className="w-3.5 h-3.5 text-[#0d3479]" />
-                                  )}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Document Title & Reference Number */}
-                      <h3
-                        onClick={() => onOpenDocument(doc.id)}
-                        className="font-bold text-black text-base group-hover:text-[#0d3479] transition-colors line-clamp-2 cursor-pointer"
-                      >
-                        {doc.title}
-                      </h3>
-                      <div className="mt-2 flex items-center space-x-2 text-[11px] font-mono text-[#666666]">
-                        <span className="bg-[#dfe7f4]/40 px-2 py-0.5 rounded-[8px] border border-[#b9c7de]/50 font-bold">
-                          {doc.docNumber}
-                        </span>
-                      </div>
-
-                      {/* Valuation / Amount */}
-                      {doc.amount && doc.amount !== 'N/A' && (
-                        <div className="mt-3 p-3 rounded-[16px] bg-white/60 border border-[#cccccc] flex items-center justify-between">
-                          <span className="text-[11px] text-[#666666] uppercase tracking-wider font-semibold">Value:</span>
-                          <span className="font-bold text-[#0d3479] text-sm">
-                            {doc.amount}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Bottom Footer Actions */}
-                    <div className="mt-4 pt-3 border-t border-[#cccccc] flex items-center justify-between text-xs">
-                      <span className="text-[10px] text-[#666666]">
-                        {doc.lastModified}
-                      </span>
-
-                      <div className="flex items-center space-x-1">
-                        <button
-                          onClick={() => onDuplicateDocument(doc.id)}
-                          className="p-2 text-[#666666] hover:text-black hover:bg-white rounded-[10px] transition-colors cursor-pointer border border-transparent hover:border-[#cccccc]"
-                          title="Duplicate Document"
-                        >
-                          <Copy className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => onDeleteDocument(doc.id)}
-                          className="p-2 text-[#666666] hover:text-red-600 hover:bg-white rounded-[10px] transition-colors cursor-pointer border border-transparent hover:border-red-200"
-                          title="Delete Document"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => onOpenDocument(doc.id)}
-                          className="brand-button active:scale-95 px-3.5 py-1.5 text-white rounded-[10px] text-xs font-semibold flex items-center space-x-1 transition-all cursor-pointer ml-1"
-                        >
-                          <span>Open</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
           ) : (
-            /* Table View */
-            <div className="surface-card rounded-[24px] overflow-hidden border border-[#cccccc] text-xs">
+            <div className="surface-card rounded-[24px] overflow-hidden border border-[#cccccc] text-xs shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-[#cccccc] bg-white/40 text-[#666666] uppercase text-[10px] tracking-wider font-semibold">
+                    <tr className="border-b border-[#cccccc] bg-white/50 text-[#666666] uppercase text-[10px] tracking-wider font-semibold">
                       <th className="py-3.5 px-4">Document Title & Ref</th>
                       <th className="py-3.5 px-4">Type</th>
                       <th className="py-3.5 px-4">Amount</th>
@@ -568,9 +558,10 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                       <th className="py-3.5 px-4 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#cccccc] text-black">
+                  <tbody className="divide-y divide-[#cccccc] text-black font-medium">
                     {filteredDocs.map((doc) => {
                       const statusInfo = getStatusBadge(doc.status);
+                      const StatusIcon = statusInfo.icon;
                       return (
                         <tr
                           key={doc.id}
@@ -578,16 +569,18 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                           className="hover:bg-[#dfe7f4]/30 transition-colors cursor-pointer group"
                         >
                           <td className="py-3.5 px-4">
-                            <div className="font-bold text-black group-hover:text-[#0d3479] transition-colors">
+                            <div className="font-bold text-black group-hover:text-[#0d3479] transition-colors text-sm">
                               {doc.title}
                             </div>
                             <div className="text-[11px] font-mono text-[#666666] mt-0.5">
-                              {doc.docNumber}
+                              <span className="bg-[#dfe7f4]/60 px-1.5 py-0.5 rounded border border-[#b9c7de] font-semibold text-[10px]">
+                                {doc.docNumber}
+                              </span>
                             </div>
                           </td>
                           <td className="py-3.5 px-4">
                             <span
-                              className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border inline-flex items-center space-x-1 ${getDocTypeBadgeColor(
+                              className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border inline-flex items-center space-x-1.5 ${getDocTypeBadgeColor(
                                 doc.docType
                               )}`}
                             >
@@ -595,15 +588,15 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                               <span className="capitalize">{doc.docType.replace('_', ' ')}</span>
                             </span>
                           </td>
-                          <td className="py-3.5 px-4 font-bold text-[#0d3479]">
+                          <td className="py-3.5 px-4 font-bold text-[#0d3479] text-sm">
                             {doc.amount || '—'}
                           </td>
-                          <td className="py-3.5 px-4">
-                            <span
-                              className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border inline-flex items-center space-x-1 ${statusInfo.color}`}
-                            >
-                              <span>{statusInfo.label}</span>
-                            </span>
+                          <td className="py-3.5 px-4" onClick={(e) => e.stopPropagation()}>
+                            <StatusSelectMenu
+                              currentStatus={doc.status}
+                              onSelectStatus={(nextStatus) => onUpdateDocumentStatus(doc.id, nextStatus)}
+                              getStatusBadge={getStatusBadge}
+                            />
                           </td>
                           <td className="py-3.5 px-4 text-[#666666] text-[11px]">
                             {doc.lastModified}
@@ -613,20 +606,20 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                               <button
                                 onClick={() => onDuplicateDocument(doc.id)}
                                 className="p-2 text-[#666666] hover:text-black hover:bg-white rounded-[10px] transition-colors cursor-pointer border border-transparent hover:border-[#cccccc]"
-                                title="Duplicate"
+                                title="Duplicate Document"
                               >
                                 <Copy className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => onDeleteDocument(doc.id)}
                                 className="p-2 text-[#666666] hover:text-red-600 hover:bg-white rounded-[10px] transition-colors cursor-pointer border border-transparent hover:border-red-200"
-                                title="Delete"
+                                title="Delete Document"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => onOpenDocument(doc.id)}
-                                className="brand-button active:scale-95 px-3 py-1.5 text-white rounded-[10px] text-xs font-semibold flex items-center space-x-1 transition-all cursor-pointer"
+                                className="brand-button active:scale-95 px-3 py-1.5 text-white rounded-[10px] text-xs font-semibold flex items-center space-x-1 transition-all cursor-pointer ml-1 shadow"
                               >
                                 <span>Open</span>
                                 <ExternalLink className="w-3 h-3" />

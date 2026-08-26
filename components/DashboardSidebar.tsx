@@ -58,7 +58,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   };
 
   return (
-    <aside className="hidden lg:flex w-64 bg-[#002057] border-r border-[#15428a] flex-col justify-between shrink-0 p-4 h-screen select-none text-white">
+    <aside className="hidden lg:flex w-64 bg-[#002057] border-r border-[#15428a] flex-col justify-between shrink-0 p-4 h-full min-h-screen lg:min-h-0 self-stretch sticky top-0 select-none text-white z-20 overflow-y-auto">
       <div className="space-y-6">
         {projectId ? (
           <div className="px-3 py-2 space-y-3">
