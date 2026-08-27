@@ -6,6 +6,7 @@ import {
   LatexDocument,
   PurchaseOrderData,
   CustomSectionItem,
+  PORateItem,
 } from '@/types/document';
 import { TaxInvoicePreview } from './TaxInvoicePreview';
 import { QuotationPreview } from './QuotationPreview';
@@ -279,22 +280,6 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
           )}
         </div>
       </div>
-
-      {/* Floating Pagination Widget */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center bg-[#1E293B] text-slate-300 rounded-lg px-2 py-1.5 shadow-2xl border border-slate-700 select-none z-20 print:hidden">
-        <button className="p-1 hover:bg-slate-700 rounded transition-colors text-slate-400 hover:text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-        </button>
-        <div className="px-3 text-xs font-semibold">
-          Page 1 <span className="opacity-50">/</span> 1
-        </div>
-        <button className="p-1 hover:bg-slate-700 rounded transition-colors text-slate-400 hover:text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-        </button>
-        <button className="p-1 hover:bg-slate-700 rounded transition-colors ml-1 text-slate-400 hover:text-white border-l border-slate-600 pl-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-        </button>
-      </div>
     </div>
   );
 };
@@ -321,10 +306,30 @@ const LetterHeader: React.FC<LetterHeaderProps> = ({
   companyProfile,
 }) => {
   const pProfile = companyProfile || ({} as Partial<CompanyProfile>);
-  const companyName = applyVariables(pProfile.companyName || po.companyName, globalVars, po);
-  const companySubtitle = applyVariables(pProfile.companySubtitle || po.companySubtitle, globalVars, po);
-  const leftServices = applyVariablesToArray(pProfile.leftServices || po.leftServices, globalVars, po);
-  const rightServices = applyVariablesToArray(pProfile.rightServices || po.rightServices, globalVars, po);
+  const companyName = applyVariables(
+    po.companyName !== undefined && po.companyName !== ''
+      ? po.companyName
+      : pProfile.companyName || '',
+    globalVars,
+    po
+  );
+  const companySubtitle = applyVariables(
+    po.companySubtitle !== undefined && po.companySubtitle !== ''
+      ? po.companySubtitle
+      : pProfile.companySubtitle || '',
+    globalVars,
+    po
+  );
+  const leftServices = applyVariablesToArray(
+    po.leftServices && po.leftServices.length > 0 ? po.leftServices : pProfile.leftServices || [],
+    globalVars,
+    po
+  );
+  const rightServices = applyVariablesToArray(
+    po.rightServices && po.rightServices.length > 0 ? po.rightServices : pProfile.rightServices || [],
+    globalVars,
+    po
+  );
 
   return (
     <div
@@ -412,11 +417,11 @@ const LetterFooter: React.FC<LetterFooterProps> = ({
       <div className="h-[1.5px] bg-black mb-1" />
       <div className="flex justify-between items-center text-[9px] leading-tight text-black">
         <div className="flex-1 text-center font-semibold">
-          Phone: {applyVariables(companyProfile?.companyPhone || po.companyPhone, globalVars, po)} &bull;{' '}
-          {applyVariables(companyProfile?.companyAddressFooter || po.companyAddressFooter, globalVars, po)}
+          Phone: {applyVariables(po.companyPhone !== undefined && po.companyPhone !== '' ? po.companyPhone : companyProfile?.companyPhone || '', globalVars, po)} &bull;{' '}
+          {applyVariables(po.companyAddressFooter !== undefined && po.companyAddressFooter !== '' ? po.companyAddressFooter : companyProfile?.companyAddressFooter || '', globalVars, po)}
           <br />
-          Email: {applyVariables(companyProfile?.companyEmail || po.companyEmail, globalVars, po)} &bull; Website:{' '}
-          {applyVariables(companyProfile?.companyWebsite || po.companyWebsite, globalVars, po)}
+          Email: {applyVariables(po.companyEmail !== undefined && po.companyEmail !== '' ? po.companyEmail : companyProfile?.companyEmail || '', globalVars, po)} &bull; Website:{' '}
+          {applyVariables(po.companyWebsite !== undefined && po.companyWebsite !== '' ? po.companyWebsite : companyProfile?.companyWebsite || '', globalVars, po)}
         </div>
         {pageIndex !== undefined && totalPages !== undefined && totalPages > 1 && (
           <div className="text-[10px] font-mono font-bold text-gray-700 shrink-0 pl-2">
@@ -606,17 +611,42 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
 
   // Resolved dynamic variables
   const pProfile = companyProfile || ({} as Partial<CompanyProfile>);
-  const companyName = applyVariables(pProfile.companyName || po.companyName, globalVars, po);
-  const companySubtitle = applyVariables(pProfile.companySubtitle || po.companySubtitle, globalVars, po);
-  const leftServices = pProfile.leftServices || po.leftServices || [];
-  const rightServices = pProfile.rightServices || po.rightServices || [];
+  const companyName = applyVariables(
+    po.companyName !== undefined && po.companyName !== ''
+      ? po.companyName
+      : pProfile.companyName || '',
+    globalVars,
+    po
+  );
+  const companySubtitle = applyVariables(
+    po.companySubtitle !== undefined && po.companySubtitle !== ''
+      ? po.companySubtitle
+      : pProfile.companySubtitle || '',
+    globalVars,
+    po
+  );
+  const tableCompanyName = applyVariables(
+    po.tableCompanyName !== undefined
+      ? po.tableCompanyName
+      : (po.companyName || pProfile.companyName || ''),
+    globalVars,
+    po
+  );
+  const tableCompanySubtitle = applyVariables(
+    po.tableCompanySubtitle !== undefined
+      ? po.tableCompanySubtitle
+      : (po.companySubtitle || pProfile.companySubtitle || ''),
+    globalVars,
+    po
+  );
+  const tableCompanyAddress = po.tableCompanyAddress !== undefined ? po.tableCompanyAddress : (po.companyAddress || []);
   
-  const companyAddressHeader = pProfile.companyAddressHeader || po.companyAddress?.join(', ') || '';
-  const companyGstNo = pProfile.companyGstNo || po.gstNo || '';
-  const companyPhone = pProfile.companyPhone || po.companyPhone || '+91 97254 45370';
-  const companyAddressFooter = pProfile.companyAddressFooter || po.companyAddressFooter || 'Block No. 1068/99, Ratnakar Business Hub...';
-  const companyEmail = pProfile.companyEmail || po.companyEmail || 'info@globalindustries.co';
-  const companyWebsite = pProfile.companyWebsite || po.companyWebsite || 'www.globalindustries.co';
+  const companyAddressHeader = po.companyAddress?.join(', ') ?? pProfile.companyAddressHeader ?? '';
+  const companyGstNo = po.gstNo ?? pProfile.companyGstNo ?? '';
+  const companyPhone = po.companyPhone !== undefined && po.companyPhone !== '' ? po.companyPhone : pProfile.companyPhone || '+91 97254 45370';
+  const companyAddressFooter = po.companyAddressFooter !== undefined && po.companyAddressFooter !== '' ? po.companyAddressFooter : pProfile.companyAddressFooter || 'Block No. 1068/99, Ratnakar Business Hub...';
+  const companyEmail = po.companyEmail !== undefined && po.companyEmail !== '' ? po.companyEmail : pProfile.companyEmail || 'info@globalindustries.co';
+  const companyWebsite = po.companyWebsite !== undefined && po.companyWebsite !== '' ? po.companyWebsite : pProfile.companyWebsite || 'www.globalindustries.co';
   const poNumber = applyVariables(po.poNumber, globalVars, po);
   const poDate = applyVariables(po.poDate, globalVars, po);
   const contractorName = applyVariables(po.contractorName, globalVars, po);
@@ -687,24 +717,28 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
               <table className="w-full border-collapse">
                 <tbody>
                   <tr className="border-b border-black">
-                    <td className="w-1/2 p-2 border-r border-black font-bold align-top">
-                      Company: {companyName} {companySubtitle}
-                      <div className="font-bold">
-                        {applyVariables(po.companyAddress[0], globalVars, po)}
-                      </div>
-                      <div className="font-bold">
-                        {applyVariables(po.companyAddress[1], globalVars, po)}
-                      </div>
-                      <div className="font-bold">
-                        {applyVariables(po.companyAddress[2], globalVars, po)}
-                      </div>
-                      <div className="font-bold mt-1">PO No.: {poNumber}</div>
-                      <div className="font-bold">Date: {poDate}</div>
+                    <td className="w-1/2 p-2 border-r border-black font-bold align-top space-y-0.5">
+                      {(tableCompanyName || tableCompanySubtitle) && (
+                        <div>Company: {tableCompanyName} {tableCompanySubtitle}</div>
+                      )}
+                      {tableCompanyAddress.map((addrLine, aIdx) => {
+                        const resolved = applyVariables(addrLine, globalVars, po);
+                        if (!resolved || resolved.trim() === '') {
+                          return <div key={aIdx} className="h-3.5">&nbsp;</div>;
+                        }
+                        return (
+                          <div key={aIdx} className="font-bold">
+                            {resolved}
+                          </div>
+                        );
+                      })}
+                      {poNumber && <div className="font-bold mt-1">PO No.: {poNumber}</div>}
+                      {poDate && <div className="font-bold">Date: {poDate}</div>}
                     </td>
-                    <td className="w-1/2 p-2 font-bold align-top space-y-0.5">
-                      <div>Contractor Name: {contractorName}</div>
-                      <div>Project Name: {projectName}</div>
-                      <div>Project Location: {projectLocation}</div>
+                    <td className="w-1/2 p-2 font-bold align-top space-y-0.5 whitespace-pre-line">
+                      {contractorName && <div>Contractor Name: {contractorName}</div>}
+                      {projectName && <div>Project Name: {projectName}</div>}
+                      {projectLocation && <div>Project Location: {projectLocation}</div>}
                     </td>
                   </tr>
                 </tbody>
@@ -1033,47 +1067,359 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
     }
   };
 
+  // Accurate line counting that prevents double-counting \n and text-wrapping
+  const countRenderedLines = (text: string, charsPerLine: number = 70) => {
+    if (!text) return 1;
+    return text.split('\n').reduce((acc, line) => {
+      return acc + Math.max(1, Math.ceil(line.length / charsPerLine));
+    }, 0);
+  };
+
+  // Precise row height estimation helpers matching 11px CSS rendering
+  const getPoRateItemHeight = (item: PORateItem) => {
+    const lines = countRenderedLines(item.description || '', 55);
+    return Math.max(22, lines * 15 + 8);
+  };
+
+  const getPoScopeHeight = (item: string) => {
+    const lines = countRenderedLines(item || '', 80);
+    return Math.max(18, lines * 14 + 4);
+  };
+
+  const getPoTermHeight = (term: string) => {
+    const lines = countRenderedLines(term || '', 80);
+    return Math.max(18, lines * 14 + 4);
+  };
+
+  // Dynamic layout partitioner logic (heuristic-based Word/LaTeX style auto-pagination)
+  const partitionGroupSections = (group: OutlineGroup) => {
+    const subPages: { sections: React.ReactNode[] }[] = [];
+    let currentPageSections: React.ReactNode[] = [];
+    let currentHeight = 0;
+
+    const isPage1 = group.pageNum === 1;
+    // Page 1 has LetterHeader (185px) + Doc Title (40px) + Padding (80px) + Footer (65px) -> Safe Content Budget = 660px
+    // Continuation pages have Header (110px) + Padding (80px) + Footer (65px) -> Safe Content Budget = 760px
+    const budget = isPage1 ? 660 : 760;
+
+    const commitPage = () => {
+      if (currentPageSections.length > 0) {
+        subPages.push({ sections: currentPageSections });
+        currentPageSections = [];
+        currentHeight = 0;
+      }
+    };
+
+    group.sections.forEach((sec) => {
+      let estimatedHeight = 35;
+      if (sec.id === 'info') {
+        estimatedHeight = 175;
+      } else if (sec.id === 'scope') {
+        estimatedHeight = 30 + (po.scopeOfWork || []).reduce((acc, s) => acc + getPoScopeHeight(s), 0);
+      } else if (sec.id === 'rates') {
+        estimatedHeight = 35 + (po.rateItems || []).reduce((acc, r) => acc + getPoRateItemHeight(r), 0) + 35;
+      } else if (sec.id === 'scope_contractor') {
+        estimatedHeight = 30 + (po.scopeOfContractor || []).reduce((acc, s) => acc + getPoScopeHeight(s), 0);
+      } else if (sec.id === 'payment_terms') {
+        estimatedHeight = 30 + (po.paymentTerms || []).reduce((acc, s) => acc + getPoTermHeight(s), 0);
+      } else if (sec.id === 'measurement') {
+        estimatedHeight = 95;
+      } else if (sec.id === 'safety') {
+        estimatedHeight = 95;
+      } else if (sec.id === 'page3_terms') {
+        estimatedHeight = 30 + (po.page3Terms || []).reduce((acc, s) => acc + getPoTermHeight(s), 0);
+      } else if (sec.id === 'signatures') {
+        estimatedHeight = 160;
+      } else if (sec.isCustom && sec.customData) {
+        const cs = sec.customData;
+        estimatedHeight = 35;
+        if (cs.contentType === 'bullet_list' && cs.bullets) {
+          estimatedHeight += cs.bullets.reduce((acc, b) => acc + Math.max(20, countRenderedLines(b, 65) * 15 + 6), 0);
+        } else if (cs.contentType === 'paragraphs' && cs.paragraphs) {
+          estimatedHeight += cs.paragraphs.reduce((acc, p) => acc + Math.max(22, countRenderedLines(p, 70) * 15 + 8), 0);
+        } else if (cs.contentType === 'legal_clause' && cs.paragraphs) {
+          estimatedHeight += cs.paragraphs.reduce((acc, p) => acc + Math.max(24, countRenderedLines(p, 70) * 15 + 10), 0);
+        } else if (cs.contentType === 'table' && cs.tableRows) {
+          const headersHeight = 34;
+          const rowsHeight = cs.tableRows.reduce((acc, row) => {
+            const maxCellLines = row.reduce(
+              (maxL, cell) => Math.max(maxL, countRenderedLines(cell, 30)),
+              1
+            );
+            return acc + Math.max(26, maxCellLines * 16 + 8);
+          }, 0);
+          estimatedHeight += headersHeight + rowsHeight + 10;
+        } else if (cs.contentType === 'key_value' && cs.keyValuePairs) {
+          estimatedHeight += cs.keyValuePairs.reduce((acc, kv) => {
+            const kLines = countRenderedLines(kv.key, 22);
+            const vLines = countRenderedLines(kv.value, 40);
+            return acc + Math.max(26, Math.max(kLines, vLines) * 16 + 6);
+          }, 0) + 10;
+        } else if (cs.contentType === 'callout') {
+          estimatedHeight += Math.max(80, countRenderedLines(cs.calloutText || '', 65) * 16 + 45);
+        }
+      }
+
+      if (currentHeight + estimatedHeight <= budget) {
+        currentPageSections.push(renderSectionItem(sec, currentPageSections.length === 0, group.pageNum === 1));
+        currentHeight += estimatedHeight;
+      } else {
+        if (sec.id === 'rates') {
+          const list = po.rateItems || [];
+          let currentListIndex = 0;
+
+          while (currentListIndex < list.length) {
+            const remainingBudget = budget - currentHeight;
+            if (remainingBudget < 50) {
+              commitPage();
+            }
+
+            const pageRows: typeof list = [];
+            let rowsHeight = 30;
+
+            while (currentListIndex < list.length) {
+              const item = list[currentListIndex];
+              const rowH = getPoRateItemHeight(item);
+              if (rowsHeight + rowH <= budget - currentHeight) {
+                pageRows.push(item);
+                rowsHeight += rowH;
+                currentListIndex++;
+              } else {
+                break;
+              }
+            }
+
+            if (pageRows.length === 0 && currentListIndex < list.length) {
+              pageRows.push(list[currentListIndex]);
+              rowsHeight += getPoRateItemHeight(list[currentListIndex]);
+              currentListIndex++;
+            }
+
+            const isFinalPart = currentListIndex === list.length;
+            const amountInWordsHeight = 30;
+            const fitsAmount = isFinalPart && (rowsHeight + amountInWordsHeight <= budget - currentHeight);
+
+            currentPageSections.push(
+              <div
+                key={`${sec.id}_split_${subPages.length}`}
+                className={`mt-2 p-1.5 rounded relative ${
+                  activeSectionId === 'rates'
+                    ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+                    : hoveredSectionId === 'rates'
+                    ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
+                    : 'hover:ring-1 hover:ring-emerald-300/40'
+                }`}
+              >
+                <h2 className="text-[13px] font-bold text-[#505050] mb-1.5">
+                  Rate {pageRows.length < list.length || currentListIndex > pageRows.length ? '(Continued)' : ''}
+                </h2>
+                <div className="border border-black">
+                  <table className="w-full border-collapse text-[11px]">
+                    <thead>
+                      <tr className="border-b border-black bg-gray-50/50 font-bold">
+                        <th className="p-1.5 border-r border-black text-left">Description</th>
+                        <th className="p-1.5 border-r border-black text-left w-16">Unit</th>
+                        <th className="p-1.5 border-r border-black text-left w-24">Qty</th>
+                        <th className="p-1.5 border-r border-black text-left w-16">Rate</th>
+                        <th className="p-1.5 text-right w-28">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pageRows.map((item) => (
+                        <tr key={item.id} className="border-b border-black">
+                          <td className="p-1.5 border-r border-black leading-snug align-top">
+                            {applyVariables(item.description, globalVars, po)}
+                          </td>
+                          <td className="p-1.5 border-r border-black align-top whitespace-nowrap">
+                            {applyVariables(item.unit, globalVars, po)}
+                          </td>
+                          <td className="p-1.5 border-r border-black align-top whitespace-nowrap">
+                            {applyVariables(item.qty, globalVars, po)}
+                          </td>
+                          <td className="p-1.5 border-r border-black align-top whitespace-nowrap">
+                            {applyVariables(item.rate, globalVars, po)}
+                          </td>
+                          <td className="p-1.5 text-right align-top font-mono">
+                            {applyVariables(item.total, globalVars, po)}
+                          </td>
+                        </tr>
+                      ))}
+                      {fitsAmount && (
+                        <tr>
+                          <td colSpan={5} className="p-1.5 font-bold">
+                            Amount in words: {amountInWords}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+
+            currentHeight += rowsHeight;
+            if (currentListIndex < list.length) {
+              commitPage();
+            }
+          }
+        } else if (
+          sec.isCustom &&
+          sec.customData &&
+          sec.customData.contentType === 'table' &&
+          sec.customData.tableRows
+        ) {
+          const rows = sec.customData.tableRows;
+          const headers = sec.customData.tableHeaders || [];
+          let currentListIndex = 0;
+
+          while (currentListIndex < rows.length) {
+            const remainingBudget = budget - currentHeight;
+            if (remainingBudget < 50) {
+              commitPage();
+            }
+
+            const pageRows: typeof rows = [];
+            let rowsHeight = 30;
+
+            while (currentListIndex < rows.length) {
+              const r = rows[currentListIndex];
+              const maxCellLines = r.reduce((acc, cell) => Math.max(acc, cell.split('\n').length, Math.ceil(cell.length / 35)), 1);
+              const rowH = Math.max(22, maxCellLines * 15 + 8);
+              if (rowsHeight + rowH <= budget - currentHeight) {
+                pageRows.push(r);
+                rowsHeight += rowH;
+                currentListIndex++;
+              } else {
+                break;
+              }
+            }
+
+            if (pageRows.length === 0 && currentListIndex < rows.length) {
+              pageRows.push(rows[currentListIndex]);
+              rowsHeight += 30;
+              currentListIndex++;
+            }
+
+            currentPageSections.push(
+              <div key={`${sec.id}_split_${subPages.length}`} className="my-2 p-1.5 rounded relative">
+                <h2 className="text-[12.5px] font-bold text-[#404040] mb-1.5 uppercase tracking-wide">
+                  {applyVariables(sec.customData.title, globalVars, po)} {pageRows.length < rows.length || currentListIndex > pageRows.length ? '(Continued)' : ''}
+                </h2>
+                <div className="border border-black my-2">
+                  <table className="w-full border-collapse text-[10.5px]">
+                    <thead>
+                      <tr className="border-b border-black bg-gray-100 font-bold">
+                        {headers.map((h, hIdx) => (
+                          <th key={hIdx} className="p-1.5 border-r border-black last:border-r-0 text-left">
+                            {applyVariables(h, globalVars, po)}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pageRows.map((row, rIdx) => (
+                        <tr key={rIdx} className="border-b border-black last:border-b-0">
+                          {row.map((cell, cIdx) => (
+                            <td key={cIdx} className="p-1.5 border-r border-black last:border-r-0 align-top whitespace-pre-wrap">
+                              {applyVariables(cell, globalVars, po)}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+
+            currentHeight += rowsHeight;
+            if (currentListIndex < rows.length) {
+              commitPage();
+            }
+          }
+        } else {
+          commitPage();
+          currentPageSections.push(renderSectionItem(sec, true, group.pageNum === 1));
+          currentHeight = estimatedHeight;
+        }
+      }
+    });
+
+    if (currentPageSections.length > 0) {
+      commitPage();
+    }
+
+    return subPages;
+  };
+
+  const paginatedPages = useMemo(() => {
+    const pages: {
+      groupId: string;
+      pageNum: number;
+      groupTitle: string;
+      sections: React.ReactNode[];
+    }[] = [];
+
+    let curPageNum = 1;
+
+    outlineGroups.forEach((group) => {
+      const subPages = partitionGroupSections(group);
+      subPages.forEach((sp, spIdx) => {
+        pages.push({
+          groupId: `${group.groupId}_p${spIdx}`,
+          pageNum: curPageNum++,
+          groupTitle: spIdx > 0 ? `${group.groupTitle} (Continued)` : group.groupTitle,
+          sections: sp.sections,
+        });
+      });
+    });
+
+    return pages;
+  }, [outlineGroups, po, globalVars, activeSectionId, hoveredSectionId, doc.title, doc]);
+
   return (
-    <div ref={printRef} className="space-y-12 print-area">
-      {outlineGroups.map((group, pageIdx) => (
+    <div ref={printRef} className="space-y-12 print-area flex flex-col items-center select-text">
+      {paginatedPages.map((page, pageIdx) => (
         <div
-          key={`page_${group.pageNum}_${pageIdx}`}
+          key={`page_${page.groupId}`}
           style={pageStyle}
           className="latex-paper bg-white text-black p-10 shadow-2xl relative flex flex-col justify-between text-[11.5px] leading-normal"
         >
           {/* Header & Page Sections */}
-          <div className="flex-1 flex flex-col">
-            <LetterHeader
-              po={po}
-              globalVars={globalVars}
-              companyProfile={companyProfile}
-              isActive={isHeaderActive}
-              isHovered={isHeaderHovered}
-              onHover={(h) => onHoverSection?.(h ? 'letterhead' : null)}
-              onSelect={() => onSelectSection?.('letterhead')}
-            />
+          <div className="flex-1 flex flex-col min-h-0">
+            <div className="shrink-0">
+              <LetterHeader
+                po={po}
+                globalVars={globalVars}
+                companyProfile={companyProfile}
+                isActive={isHeaderActive}
+                isHovered={isHeaderHovered}
+                onHover={(h) => onHoverSection?.(h ? 'letterhead' : null)}
+                onSelect={() => onSelectSection?.('letterhead')}
+              />
+            </div>
 
-            <div className="flex-1 space-y-2">
-              {group.sections.length === 0 ? (
+            <div className="flex-1 space-y-2 min-h-0">
+              {page.sections.length === 0 ? (
                 <div className="py-20 text-center text-gray-400 italic text-xs border-2 border-dashed border-gray-200 rounded my-8">
                   Empty Page / Section Group &bull; Drag sections here from the Document Outline
                 </div>
               ) : (
-                group.sections.map((sec, idx) =>
-                  renderSectionItem(sec, idx === 0, group.pageNum === 1)
-                )
+                page.sections.map((secNode) => secNode)
               )}
             </div>
           </div>
 
           {/* Constant Standard Footer with Page Number */}
-          <LetterFooter
-            po={po}
-            globalVars={globalVars}
-            companyProfile={companyProfile}
-            pageIndex={pageIdx}
-            totalPages={outlineGroups.length}
-          />
+          <div className="shrink-0">
+            <LetterFooter
+              po={po}
+              globalVars={globalVars}
+              companyProfile={companyProfile}
+              pageIndex={pageIdx}
+              totalPages={paginatedPages.length}
+            />
+          </div>
         </div>
       ))}
     </div>

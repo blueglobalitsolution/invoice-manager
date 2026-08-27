@@ -161,18 +161,11 @@ export const QUOTATION_BUILTIN_SECTIONS: BuiltinSectionDef[] = [
     description: 'Project timeline milestones & Site readiness checklist',
   },
   {
-    id: 'q_vendors_part1',
-    label: 'Approved Vendor List (Part 1: 1-14)',
+    id: 'q_vendors',
+    label: 'Approved Vendor List Table',
     icon: CheckCircle2,
     defaultPage: 6,
-    description: 'Primary structural steel, purlins & roofing sheet vendors',
-  },
-  {
-    id: 'q_vendors_part2',
-    label: 'Approved Vendor List (Part 2: 15-25)',
-    icon: CheckCircle2,
-    defaultPage: 7,
-    description: 'Secondary hardware, bolts, primer, paint & ventilator makes',
+    description: 'Comprehensive approved make & brand list for all materials, roofing & accessories',
   },
   {
     id: 'q_taxes_notes',
@@ -224,8 +217,8 @@ export const QUOTATION_DEFAULT_PAGE_TITLES: Record<number, string> = {
   3: 'Page 3: Material Specifications',
   4: 'Page 4: Commercial BOQ & Payment Terms',
   5: 'Page 5: Delivery Schedule & Timeline',
-  6: 'Page 6: Approved Vendors (1-14)',
-  7: 'Page 7: Vendors (15-25) & Delivery',
+  6: 'Page 6: Approved Vendor List',
+  7: 'Page 7: Taxes, Notes & Delivery',
   8: 'Page 8: Commercial Terms (1-7)',
   9: 'Page 9: Commercial Terms (8-13)',
   10: 'Page 10: Terms (14-17) & Exclusions',
@@ -372,11 +365,17 @@ export function getQuotationSectionPageNumber(secId: string, q: QuotationData): 
   if (q.sectionPageMap && q.sectionPageMap[secId] !== undefined) {
     return q.sectionPageMap[secId];
   }
+  if ((secId === 'q_vendors_part1' || secId === 'q_vendors_part2') && q.sectionPageMap && q.sectionPageMap['q_vendors'] !== undefined) {
+    return q.sectionPageMap['q_vendors'];
+  }
   const custom = q.customSections?.find((s) => s.id === secId);
   if (custom) return custom.pageNumber;
 
   const builtin = QUOTATION_BUILTIN_SECTIONS.find((b) => b.id === secId);
-  return builtin ? builtin.defaultPage : 1;
+  if (builtin) return builtin.defaultPage;
+  if (secId === 'q_vendors_part1') return 6;
+  if (secId === 'q_vendors_part2') return 7;
+  return 1;
 }
 
 /**
@@ -593,5 +592,65 @@ export function moveSectionToPage(
     customSections: currentSections,
     sectionOrder: order,
   };
+}
+
+/**
+ * Moves a section UP within its page in PurchaseOrderData
+ */
+export function moveSectionUp(po: PurchaseOrderData, secId: string): PurchaseOrderData {
+  const groups = getDocumentOutlineGroups(po);
+  const currentGroup = groups.find((g) => g.sections.some((s) => s.id === secId));
+  if (!currentGroup) return po;
+
+  const secIdx = currentGroup.sections.findIndex((s) => s.id === secId);
+  if (secIdx <= 0) return po;
+
+  const prevSec = currentGroup.sections[secIdx - 1];
+  return moveSectionToPage(po, secId, currentGroup.pageNum, prevSec.id, false);
+}
+
+/**
+ * Moves a section DOWN within its page in PurchaseOrderData
+ */
+export function moveSectionDown(po: PurchaseOrderData, secId: string): PurchaseOrderData {
+  const groups = getDocumentOutlineGroups(po);
+  const currentGroup = groups.find((g) => g.sections.some((s) => s.id === secId));
+  if (!currentGroup) return po;
+
+  const secIdx = currentGroup.sections.findIndex((s) => s.id === secId);
+  if (secIdx === -1 || secIdx >= currentGroup.sections.length - 1) return po;
+
+  const nextSec = currentGroup.sections[secIdx + 1];
+  return moveSectionToPage(po, secId, currentGroup.pageNum, nextSec.id, true);
+}
+
+/**
+ * Moves a section UP within its page in QuotationData
+ */
+export function moveQuotationSectionUp(q: QuotationData, secId: string): QuotationData {
+  const groups = getQuotationOutlineGroups(q);
+  const currentGroup = groups.find((g) => g.sections.some((s) => s.id === secId));
+  if (!currentGroup) return q;
+
+  const secIdx = currentGroup.sections.findIndex((s) => s.id === secId);
+  if (secIdx <= 0) return q;
+
+  const prevSec = currentGroup.sections[secIdx - 1];
+  return moveQuotationSectionToPage(q, secId, currentGroup.pageNum, prevSec.id, false);
+}
+
+/**
+ * Moves a section DOWN within its page in QuotationData
+ */
+export function moveQuotationSectionDown(q: QuotationData, secId: string): QuotationData {
+  const groups = getQuotationOutlineGroups(q);
+  const currentGroup = groups.find((g) => g.sections.some((s) => s.id === secId));
+  if (!currentGroup) return q;
+
+  const secIdx = currentGroup.sections.findIndex((s) => s.id === secId);
+  if (secIdx === -1 || secIdx >= currentGroup.sections.length - 1) return q;
+
+  const nextSec = currentGroup.sections[secIdx + 1];
+  return moveQuotationSectionToPage(q, secId, currentGroup.pageNum, nextSec.id, true);
 }
 

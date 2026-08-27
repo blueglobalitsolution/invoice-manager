@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Building,
   DollarSign,
@@ -18,6 +18,7 @@ import { LatexDocument, TaxInvoiceData, TaxInvoiceItem } from '@/types/document'
 interface TaxInvoiceFormEditorProps {
   document: LatexDocument;
   activeSectionId: string;
+  onSelectSection?: (sectionId: string) => void;
   onChange: (updatedDoc: LatexDocument) => void;
   onOpenGlobalVariables?: () => void;
 }
@@ -25,17 +26,29 @@ interface TaxInvoiceFormEditorProps {
 export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
   document: doc,
   activeSectionId,
+  onSelectSection,
   onChange,
   onOpenGlobalVariables,
 }) => {
   const inv = doc.taxInvoice!;
 
-  const [activeTab, setActiveTab] = useState<'client' | 'items' | 'company' | 'bank'>(() => {
-    if (activeSectionId === 'items' || activeSectionId === 'rate_items') return 'items';
-    if (activeSectionId === 'header_footer') return 'company';
-    if (activeSectionId === 'statutory' || activeSectionId === 'terms') return 'bank';
+  const [activeTab, setActiveTab] = useState<'client' | 'items' | 'bank'>(() => {
+    if (activeSectionId === 'items' || activeSectionId === 'rate_items' || activeSectionId === 'invoice_items') return 'items';
+    if (activeSectionId === 'statutory' || activeSectionId === 'terms' || activeSectionId === 'bank' || activeSectionId === 'signatures') return 'bank';
     return 'client';
   });
+
+  // Keep active tab in sync whenever user clicks on a section in the live preview
+  useEffect(() => {
+    if (!activeSectionId) return;
+    if (activeSectionId === 'items' || activeSectionId === 'rate_items' || activeSectionId === 'invoice_items') {
+      setActiveTab('items');
+    } else if (activeSectionId === 'statutory' || activeSectionId === 'terms' || activeSectionId === 'bank' || activeSectionId === 'signatures') {
+      setActiveTab('bank');
+    } else if (activeSectionId === 'client_info' || activeSectionId === 'client' || activeSectionId === 'info' || activeSectionId === 'invoice_meta') {
+      setActiveTab('client');
+    }
+  }, [activeSectionId]);
 
   const updateInv = (fields: Partial<TaxInvoiceData>) => {
     onChange({
@@ -137,9 +150,12 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
       </div>
 
       {/* Navigation Sub-Tabs */}
-      <div className="grid grid-cols-4 bg-[#080d1a] border-b border-[#141f33] text-[11px] shrink-0 font-medium">
+      <div className="grid grid-cols-3 bg-[#080d1a] border-b border-[#141f33] text-[11px] shrink-0 font-medium">
         <button
-          onClick={() => setActiveTab('client')}
+          onClick={() => {
+            setActiveTab('client');
+            onSelectSection?.('client_info');
+          }}
           className={`py-2 px-1 text-center transition-colors cursor-pointer border-b-2 ${
             activeTab === 'client'
               ? 'border-[#2563eb] text-blue-300 font-bold bg-[#0b1426]'
@@ -149,7 +165,10 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
           1. Client & Meta
         </button>
         <button
-          onClick={() => setActiveTab('items')}
+          onClick={() => {
+            setActiveTab('items');
+            onSelectSection?.('items');
+          }}
           className={`py-2 px-1 text-center transition-colors cursor-pointer border-b-2 ${
             activeTab === 'items'
               ? 'border-[#2563eb] text-blue-300 font-bold bg-[#0b1426]'
@@ -159,7 +178,10 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
           2. Items & Tax
         </button>
         <button
-          onClick={() => setActiveTab('bank')}
+          onClick={() => {
+            setActiveTab('bank');
+            onSelectSection?.('statutory');
+          }}
           className={`py-2 px-1 text-center transition-colors cursor-pointer border-b-2 ${
             activeTab === 'bank'
               ? 'border-[#2563eb] text-blue-300 font-bold bg-[#0b1426]'
@@ -167,16 +189,6 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
           }`}
         >
           3. Bank & Terms
-        </button>
-        <button
-          onClick={() => setActiveTab('company')}
-          className={`py-2 px-1 text-center transition-colors cursor-pointer border-b-2 ${
-            activeTab === 'company'
-              ? 'border-[#2563eb] text-blue-300 font-bold bg-[#0b1426]'
-              : 'border-transparent text-gray-400 hover:text-gray-200'
-          }`}
-        >
-          4. Company
         </button>
       </div>
 
@@ -388,12 +400,6 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   <Calculator className="w-3.5 h-3.5" />
                   <span>GST & Net Calculations</span>
                 </span>
-                <button
-                  onClick={() => handleRecalculateTotals()}
-                  className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold"
-                >
-                  Recalculate
-                </button>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
@@ -600,191 +606,6 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-semibold"
                   placeholder="For, GLOBAL INDUSTRIES"
                 />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ================= TAB 4: COMPANY HEADER & FOOTER ================= */}
-        {activeTab === 'company' && (
-          <div className="space-y-4">
-            <div className="bg-[#152238] border border-[#141f33] rounded p-3 space-y-3">
-              <h3 className="font-bold text-blue-300 text-xs flex items-center space-x-1.5">
-                <Building className="w-3.5 h-3.5" />
-                <span>Company Letterhead</span>
-              </h3>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-[10px] text-gray-400 mb-1">Company Name</label>
-                  <input
-                    type="text"
-                    value={inv.companyName}
-                    onChange={(e) => updateInv({ companyName: e.target.value })}
-                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-bold"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] text-gray-400 mb-1">Subtitle</label>
-                  <input
-                    type="text"
-                    value={inv.companySubtitle}
-                    onChange={(e) => updateInv({ companySubtitle: e.target.value })}
-                    className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-bold"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[10px] text-gray-400 mb-1">Company GST NO.</label>
-                <input
-                  type="text"
-                  value={inv.companyGstNo}
-                  onChange={(e) => updateInv({ companyGstNo: e.target.value })}
-                  className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-blue-200 font-mono"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] text-gray-400 mb-1">Header Address</label>
-                <input
-                  type="text"
-                  value={inv.companyAddressHeader || ''}
-                  onChange={(e) => updateInv({ companyAddressHeader: e.target.value })}
-                  className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200"
-                  placeholder="Regd. Off. : SO7B / 2nd floor..."
-                />
-              </div>
-
-              {/* 2-Column Services / Offerings */}
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#141f33]/80">
-                {/* Left Services */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-400 text-[10px] uppercase">
-                      Left Services ({(inv.leftServices || []).length})
-                    </span>
-                    <button
-                      onClick={() =>
-                        updateInv({ leftServices: [...(inv.leftServices || []), '• NEW SERVICE'] })
-                      }
-                      className="p-0.5 text-blue-400 hover:text-blue-300 rounded cursor-pointer"
-                      title="Add Left Service"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
-                  </div>
-                  {(inv.leftServices || []).map((svc, idx) => (
-                    <div key={idx} className="flex items-center space-x-1">
-                      <input
-                        type="text"
-                        value={svc}
-                        onChange={(e) => {
-                          const updated = [...(inv.leftServices || [])];
-                          updated[idx] = e.target.value;
-                          updateInv({ leftServices: updated });
-                        }}
-                        className="w-full bg-[#0e1624] border border-[#16233a] rounded px-2 py-1 text-[10.5px] text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
-                      />
-                      {(inv.leftServices || []).length > 1 && (
-                        <button
-                          onClick={() =>
-                            updateInv({
-                              leftServices: (inv.leftServices || []).filter((_, i) => i !== idx),
-                            })
-                          }
-                          className="p-1 text-gray-500 hover:text-red-400 cursor-pointer"
-                        >
-                          <Trash2 className="w-2.5 h-2.5" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Right Services */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-400 text-[10px] uppercase">
-                      Right Services ({(inv.rightServices || []).length})
-                    </span>
-                    <button
-                      onClick={() =>
-                        updateInv({ rightServices: [...(inv.rightServices || []), '• NEW SERVICE'] })
-                      }
-                      className="p-0.5 text-blue-400 hover:text-blue-300 rounded cursor-pointer"
-                      title="Add Right Service"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
-                  </div>
-                  {(inv.rightServices || []).map((svc, idx) => (
-                    <div key={idx} className="flex items-center space-x-1">
-                      <input
-                        type="text"
-                        value={svc}
-                        onChange={(e) => {
-                          const updated = [...(inv.rightServices || [])];
-                          updated[idx] = e.target.value;
-                          updateInv({ rightServices: updated });
-                        }}
-                        className="w-full bg-[#0e1624] border border-[#16233a] rounded px-2 py-1 text-[10.5px] text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
-                      />
-                      {(inv.rightServices || []).length > 1 && (
-                        <button
-                          onClick={() =>
-                            updateInv({
-                              rightServices: (inv.rightServices || []).filter((_, i) => i !== idx),
-                            })
-                          }
-                          className="p-1 text-gray-500 hover:text-red-400 cursor-pointer"
-                        >
-                          <Trash2 className="w-2.5 h-2.5" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[10px] text-gray-400 mb-1">Phone</label>
-                <input
-                  type="text"
-                  value={inv.companyPhone}
-                  onChange={(e) => updateInv({ companyPhone: e.target.value })}
-                  className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] text-gray-400 mb-1">Address (Footer)</label>
-                <textarea
-                  rows={2}
-                  value={inv.companyAddressFooter}
-                  onChange={(e) => updateInv({ companyAddressFooter: e.target.value })}
-                  className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-[10px] text-gray-400 mb-1">Email</label>
-                  <input
-                    type="text"
-                    value={inv.companyEmail}
-                    onChange={(e) => updateInv({ companyEmail: e.target.value })}
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] text-gray-400 mb-1">Website</label>
-                  <input
-                    type="text"
-                    value={inv.companyWebsite}
-                    onChange={(e) => updateInv({ companyWebsite: e.target.value })}
-                    className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200"
-                  />
-                </div>
               </div>
             </div>
           </div>

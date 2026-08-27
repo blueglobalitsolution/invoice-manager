@@ -1,7 +1,15 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { LatexDocument, QuotationData, CustomSectionItem } from '@/types/document';
+import {
+  LatexDocument,
+  QuotationData,
+  CustomSectionItem,
+  QuotationTechnicalItem,
+  QuotationSpecItem,
+  QuotationVendorItem,
+  QuotationCommercialItem,
+} from '@/types/document';
 import { CompanyProfile } from '@/types/project';
 import { applyVariables } from '@/lib/variables';
 import {
@@ -38,15 +46,20 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
   const pProfile = companyProfile || ({} as Partial<CompanyProfile>);
   const companyName = applyVariables(pProfile.companyName || q.companyName || 'GLOBAL', globalVars);
   const companySubtitle = applyVariables(pProfile.companySubtitle || q.companySubtitle || 'INDUSTRIES', globalVars);
-  const leftServices = pProfile.leftServices || q.leftServices || [];
-  const rightServices = pProfile.rightServices || q.rightServices || [];
-  
-  const companyAddressHeader = pProfile.companyAddressHeader || q.companyAddressHeader || 'Regd. Off. : SO7B / 2nd floor, ...';
-  const companyGstNo = pProfile.companyGstNo || q.companyGstNo || '24AA...';
-  const companyPhone = pProfile.companyPhone || q.companyPhone || '+91 9000000000';
-  const companyAddressFooter = pProfile.companyAddressFooter || q.companyAddressFooter || 'Block No. 1068, ...';
-  const companyEmail = pProfile.companyEmail || q.companyEmail || 'info@company.com';
-  const companyWebsite = pProfile.companyWebsite || q.companyWebsite || 'www.company.com';
+  const leftServices: string[] = pProfile.leftServices || q.leftServices || [];
+  const rightServices: string[] = pProfile.rightServices || q.rightServices || [];
+  const companyAddressHeader = applyVariables(
+    pProfile.companyAddressHeader || q.companyAddressHeader || 'Regd. Off. : SO7B / 2nd floor / Phase 2, Indiabulls, Jetalpur road, Vadodara',
+    globalVars
+  );
+  const companyAddressFooter = applyVariables(
+    pProfile.companyAddressFooter || q.companyAddressFooter || 'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243',
+    globalVars
+  );
+  const companyPhone = applyVariables(pProfile.companyPhone || q.companyPhone || '+91 97254 45370', globalVars);
+  const companyEmail = applyVariables(pProfile.companyEmail || q.companyEmail || 'info@globalindustries.co', globalVars);
+  const companyWebsite = applyVariables(pProfile.companyWebsite || q.companyWebsite || 'www.globalindustries.co', globalVars);
+  const companyGstNo = applyVariables(pProfile.companyGstNo || q.companyGstNo || '24CLNPS9550H1ZI', globalVars);
 
   const isHeaderActive = activeSectionId === 'header_footer';
   const isHeaderHovered = hoveredSectionId === 'header_footer' && !isHeaderActive;
@@ -56,19 +69,53 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
     return getQuotationOutlineGroups(q);
   }, [q]);
 
-  // Dynamic layout partitioner logic (heuristic-based Word/LaTeX style auto-pagination)
-  const paddingHeight = 80;
-  const headerHeight = 125;
-  const footerHeight = 45;
-  const maxPageHeight = 1123;
-
   const getSectionHighlightClass = (sectionId: string) => {
     const isActive = activeSectionId === sectionId;
     const isHovered = hoveredSectionId === sectionId && !isActive;
-    if (isActive) return 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs';
-    if (isHovered) return 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs';
-    return 'hover:ring-1 hover:ring-emerald-300/40';
+    if (isActive) return 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
+    if (isHovered) return 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
+    return 'hover:ring-1 hover:ring-emerald-300/40 print:ring-0 print:bg-transparent print:shadow-none';
   };
+
+  // Accurate line counting that prevents double-counting \n and text-wrapping
+  const countRenderedLines = (text: string, charsPerLine: number = 70) => {
+    if (!text) return 1;
+    return text.split('\n').reduce((acc, line) => {
+      return acc + Math.max(1, Math.ceil(line.length / charsPerLine));
+    }, 0);
+  };
+
+  const getSpecItemHeight = (spec: QuotationSpecItem) => {
+    const titleLines = countRenderedLines(spec.title || '', 30);
+    const detailLines = countRenderedLines(spec.details || '', 65);
+    const lines = Math.max(titleLines, detailLines);
+    return Math.max(24, lines * 16 + 10);
+  };
+
+  const getTechItemHeight = (td: { label: string; value: string }) => {
+    const labelLines = countRenderedLines(td.label || '', 35);
+    const valueLines = countRenderedLines(td.value || '', 55);
+    const lines = Math.max(labelLines, valueLines);
+    return Math.max(20, lines * 14 + 6);
+  };
+
+  const getVendorItemHeight = (v: QuotationVendorItem) => {
+    const brandLines = countRenderedLines(v.brand || '', 45);
+    const descLines = countRenderedLines(v.description || '', 30);
+    const lines = Math.max(brandLines, descLines);
+    return Math.max(20, lines * 14 + 6);
+  };
+
+  const getBoqItemHeight = (item: QuotationCommercialItem) => {
+    const lines = countRenderedLines(item.description || '', 65);
+    return Math.max(22, lines * 15 + 8);
+  };
+
+  // Dynamic layout partitioner logic (heuristic-based Word/LaTeX style auto-pagination)
+  const paddingHeight = 80;
+  const headerHeight = 110;
+  const footerHeight = 45;
+  const maxPageHeight = 1123;
 
   const partitionGroupSections = (group: OutlineGroup) => {
     const subPages: { sections: React.ReactNode[] }[] = [];
@@ -82,62 +129,59 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
     };
 
     const getAvailableHeight = () => {
-      // In Quotation, every page gets renderHeader and renderFooter.
-      return maxPageHeight - paddingHeight - headerHeight - footerHeight;
+      return maxPageHeight - paddingHeight - headerHeight - footerHeight; // 888px available budget
     };
 
     const budget = getAvailableHeight();
 
     group.sections.forEach((sec) => {
-      let estimatedHeight = 50; // default minimum
+      let estimatedHeight = 35; // default minimum
       
       if (sec.id === 'q_cover_info') {
-        estimatedHeight = 150;
+        estimatedHeight = 110;
       } else if (sec.id === 'q_cover_intro') {
-        estimatedHeight = 260 + q.introParagraphs.reduce((acc, p) => acc + Math.ceil(p.length / 90) * 16 + 12, 0);
+        estimatedHeight = 80 + q.introParagraphs.reduce((acc, p) => acc + countRenderedLines(p, 85) * 14 + 6, 0);
       } else if (sec.id === 'q_tech_details') {
-        estimatedHeight = 35 + q.technicalDetails.length * 35;
+        estimatedHeight = 30 + q.technicalDetails.reduce((acc, td) => acc + getTechItemHeight(td), 0);
       } else if (sec.id === 'q_mat_specs') {
-        estimatedHeight = 35 + q.specifications.reduce((acc, spec) => acc + Math.max(40, Math.ceil(spec.details.length / 80) * 16), 0);
+        estimatedHeight = 30 + q.specifications.reduce((acc, spec) => acc + getSpecItemHeight(spec), 0);
       } else if (sec.id === 'q_boq_items') {
-        estimatedHeight = 150 + q.commercialItems.reduce((acc, item) => acc + Math.max(30, Math.ceil(item.description.length / 50) * 16), 0);
+        estimatedHeight = 85 + q.commercialItems.reduce((acc, item) => acc + getBoqItemHeight(item), 0);
       } else if (sec.id === 'q_payment_terms_fab') {
-        estimatedHeight = 35 + q.paymentTermsFab.length * 20;
+        estimatedHeight = 22 + q.paymentTermsFab.reduce((acc, p) => acc + countRenderedLines(p, 85) * 14 + 4, 0);
       } else if (sec.id === 'q_payment_terms_civil') {
-        estimatedHeight = 30 + q.paymentTermsCivil.length * 20;
+        estimatedHeight = 22 + q.paymentTermsCivil.reduce((acc, p) => acc + countRenderedLines(p, 85) * 14 + 4, 0);
       } else if (sec.id === 'q_delivery_schedule') {
-        estimatedHeight = 150 + q.deliverySchedule.length * 40;
-      } else if (sec.id === 'q_vendors_part1') {
-        estimatedHeight = 45 + q.vendorList.slice(0, 14).reduce((acc, v) => acc + Math.max(30, Math.ceil(v.description.length / 30) * 15, Math.ceil(v.brand.length / 35) * 15), 0);
-      } else if (sec.id === 'q_vendors_part2') {
-        estimatedHeight = 35 + q.vendorList.slice(14).reduce((acc, v) => acc + Math.max(30, Math.ceil(v.description.length / 30) * 15, Math.ceil(v.brand.length / 35) * 15), 0);
+        estimatedHeight = 30 + q.deliverySchedule.reduce((acc, p) => acc + countRenderedLines(p, 85) * 14 + 6, 0);
+      } else if (sec.id === 'q_vendors' || sec.id === 'q_vendors_part1' || sec.id === 'q_vendors_part2') {
+        estimatedHeight = 30 + q.vendorList.reduce((acc, v) => acc + getVendorItemHeight(v), 0);
       } else if (sec.id === 'q_taxes_notes') {
-        estimatedHeight = 40 + q.notes.length * 20;
+        estimatedHeight = 35 + q.notes.length * 15 + q.deliveryChecklist.length * 14;
       } else if (sec.id === 'q_terms_part1') {
-        estimatedHeight = 30 + q.commercialTerms.slice(0, 7).reduce((acc, t) => acc + Math.ceil(t.content.length / 80) * 15 + 20, 0);
+        estimatedHeight = 25 + q.commercialTerms.slice(0, 7).reduce((acc, t) => acc + countRenderedLines(t.content, 85) * 13 + 10, 0);
       } else if (sec.id === 'q_terms_part2') {
-        estimatedHeight = 30 + q.commercialTerms.slice(7, 13).reduce((acc, t) => acc + Math.ceil(t.content.length / 80) * 15 + 20, 0);
+        estimatedHeight = 25 + q.commercialTerms.slice(7, 13).reduce((acc, t) => acc + countRenderedLines(t.content, 85) * 13 + 10, 0);
       } else if (sec.id === 'q_terms_part3') {
-        estimatedHeight = 30 + q.commercialTerms.slice(13).reduce((acc, t) => acc + Math.ceil(t.content.length / 80) * 15 + 20, 0);
+        estimatedHeight = 25 + q.commercialTerms.slice(13).reduce((acc, t) => acc + countRenderedLines(t.content, 85) * 13 + 10, 0);
       } else if (sec.id === 'q_exclusions') {
-        estimatedHeight = 30 + q.exclusions.length * 20;
+        estimatedHeight = 25 + q.exclusions.length * 15;
       } else if (sec.id === 'q_signatures') {
-        estimatedHeight = 220;
+        estimatedHeight = 150;
       } else if (sec.isCustom && sec.customData) {
         const cs = sec.customData;
-        estimatedHeight = 30;
+        estimatedHeight = 25;
         if (cs.contentType === 'bullet_list' && cs.bullets) {
-          estimatedHeight += cs.bullets.reduce((acc, b) => acc + Math.ceil(b.length / 70) * 15 + 8, 0);
+          estimatedHeight += cs.bullets.reduce((acc, b) => acc + countRenderedLines(b, 80) * 13 + 6, 0);
         } else if (cs.contentType === 'paragraphs' && cs.paragraphs) {
-          estimatedHeight += cs.paragraphs.reduce((acc, p) => acc + Math.ceil(p.length / 80) * 15 + 10, 0);
+          estimatedHeight += cs.paragraphs.reduce((acc, p) => acc + countRenderedLines(p, 85) * 13 + 8, 0);
         } else if (cs.contentType === 'legal_clause' && cs.paragraphs) {
-          estimatedHeight += cs.paragraphs.reduce((acc, p) => acc + Math.ceil(p.length / 70) * 15 + 12, 0);
+          estimatedHeight += cs.paragraphs.reduce((acc, p) => acc + countRenderedLines(p, 80) * 13 + 10, 0);
         } else if (cs.contentType === 'table' && cs.tableRows) {
-          estimatedHeight += 30 + cs.tableRows.length * 25;
+          estimatedHeight += 25 + cs.tableRows.length * 20;
         } else if (cs.contentType === 'key_value' && cs.keyValuePairs) {
-          estimatedHeight += cs.keyValuePairs.length * 25;
+          estimatedHeight += cs.keyValuePairs.length * 20;
         } else if (cs.contentType === 'callout') {
-          estimatedHeight += 50;
+          estimatedHeight += 45;
         }
       }
 
@@ -146,25 +190,37 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
         currentHeight += estimatedHeight;
       } else {
         // Handle Splittable elements to partition them row-by-row or item-by-item
-        if (sec.id === 'q_boq_items' || sec.id === 'q_vendors_part1' || sec.id === 'q_vendors_part2' || (sec.isCustom && sec.customData && (sec.customData.contentType === 'table' || sec.customData.contentType === 'bullet_list' || sec.customData.contentType === 'paragraphs' || sec.customData.contentType === 'legal_clause'))) {
-          if (sec.id === 'q_vendors_part1' || sec.id === 'q_vendors_part2') {
-            const list = sec.id === 'q_vendors_part1' ? q.vendorList.slice(0, 14) : q.vendorList.slice(14);
+        if (
+          sec.id === 'q_boq_items' ||
+          sec.id === 'q_mat_specs' ||
+          sec.id === 'q_tech_details' ||
+          sec.id === 'q_vendors_part1' ||
+          sec.id === 'q_vendors_part2' ||
+          (sec.isCustom &&
+            sec.customData &&
+            (sec.customData.contentType === 'table' ||
+              sec.customData.contentType === 'bullet_list' ||
+              sec.customData.contentType === 'paragraphs' ||
+              sec.customData.contentType === 'legal_clause'))
+        ) {
+          if (sec.id === 'q_mat_specs') {
+            const list = q.specifications;
             let currentListIndex = 0;
 
             while (currentListIndex < list.length) {
               const remainingBudget = budget - currentHeight;
-              if (remainingBudget < 75) {
+              if (remainingBudget < 50) {
                 commitPage();
               }
-              
+
               const pageRows: typeof list = [];
-              let rowsHeight = 45;
-              
+              let rowsHeight = 25;
+
               while (currentListIndex < list.length) {
-                const v = list[currentListIndex];
-                const rowH = Math.max(30, Math.ceil(v.description.length / 30) * 15, Math.ceil(v.brand.length / 35) * 15);
+                const spec = list[currentListIndex];
+                const rowH = getSpecItemHeight(spec);
                 if (rowsHeight + rowH <= budget - currentHeight) {
-                  pageRows.push(v);
+                  pageRows.push(spec);
                   rowsHeight += rowH;
                   currentListIndex++;
                 } else {
@@ -172,26 +228,33 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                 }
               }
 
+              if (pageRows.length === 0 && currentListIndex < list.length) {
+                pageRows.push(list[currentListIndex]);
+                rowsHeight += getSpecItemHeight(list[currentListIndex]);
+                currentListIndex++;
+              }
+
               currentPageSections.push(
-                <div key={`${sec.id}_split_${subPages.length}`} className={`p-1.5 rounded relative ${getSectionHighlightClass(sec.id)}`}>
-                  <div className="text-center font-bold text-[13px] uppercase">
-                    {sec.id === 'q_vendors_part1' ? 'APPROVED VENDOR LIST (PART 1)' : 'APPROVED VENDOR LIST (PART 2)'} {pageRows.length < list.length ? '(Continued)' : ''}
+                <div
+                  key={`${sec.id}_split_${subPages.length}`}
+                  className={`p-1.5 rounded relative ${getSectionHighlightClass(sec.id)}`}
+                >
+                  <div className="mt-1 mb-2 font-bold text-[13px] uppercase tracking-wide text-[#404040]">
+                    Material Specifications {pageRows.length < list.length || currentListIndex > pageRows.length ? '(Continued)' : ''}:
                   </div>
-                  <table className="w-full border-collapse border border-black text-[10.5px] mt-2">
-                    <thead>
-                      <tr className="border-b border-black bg-gray-100 font-bold">
-                        <th className="w-[45px] px-1.5 py-1 text-center border-r border-black">Sr. No</th>
-                        <th className="w-[180px] px-2 py-1 text-center border-r border-black">Description</th>
-                        <th className="px-2 py-1 text-center">Brand/Make/Company Name</th>
-                      </tr>
-                    </thead>
+                  <table className="w-full border-collapse border border-black text-[11px]">
                     <tbody>
-                      {pageRows.map((v, rIdx) => (
-                        <tr key={rIdx} className="border-b border-black">
-                          <td className="px-1 py-1 text-center border-r border-black align-top">{v.srNo}</td>
-                          <td className="px-2 py-1 border-r border-black align-top font-medium">{v.description}</td>
-                          <td className="px-2 py-1 align-top whitespace-pre-line leading-snug">
-                            {v.brand.replace(/\\newline/g, '\n').replace(/\\textbf{([^}]+)}/g, '$1').replace(/\\&/g, '&')}
+                      {pageRows.map((spec, idx) => (
+                        <tr key={idx} className="border-b border-black">
+                          <td className="w-[32%] font-bold px-3 py-2 border-r border-black align-top bg-gray-50/50 whitespace-pre-line">
+                            {spec.title.replace(/\\newline/g, '\n').replace(/\\textbf{([^}]+)}/g, '$1')}
+                          </td>
+                          <td className="px-3 py-2 align-top text-[11px] leading-relaxed whitespace-pre-line">
+                            {spec.details
+                              .replace(/\\newline/g, '\n')
+                              .replace(/\\textbf{([^}]+)}/g, '$1')
+                              .replace(/\\&/g, '&')
+                              .replace(/\\\$/g, '$')}
                           </td>
                         </tr>
                       ))}
@@ -205,22 +268,152 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                 commitPage();
               }
             }
+          } else if (sec.id === 'q_tech_details') {
+            const list = q.technicalDetails;
+            let currentListIndex = 0;
+
+            while (currentListIndex < list.length) {
+              const remainingBudget = budget - currentHeight;
+              if (remainingBudget < 50) {
+                commitPage();
+              }
+
+              const pageRows: typeof list = [];
+              let rowsHeight = 25;
+
+              while (currentListIndex < list.length) {
+                const td = list[currentListIndex];
+                const rowH = getTechItemHeight(td);
+                if (rowsHeight + rowH <= budget - currentHeight) {
+                  pageRows.push(td);
+                  rowsHeight += rowH;
+                  currentListIndex++;
+                } else {
+                  break;
+                }
+              }
+
+              if (pageRows.length === 0 && currentListIndex < list.length) {
+                pageRows.push(list[currentListIndex]);
+                rowsHeight += getTechItemHeight(list[currentListIndex]);
+                currentListIndex++;
+              }
+
+              currentPageSections.push(
+                <div
+                  key={`${sec.id}_split_${subPages.length}`}
+                  className={`p-1.5 rounded relative ${getSectionHighlightClass(sec.id)}`}
+                >
+                  <div className="mt-1 mb-2 font-bold text-[13px] uppercase tracking-wide text-[#404040]">
+                    Technical Details {pageRows.length < list.length || currentListIndex > pageRows.length ? '(Continued)' : ''}:
+                  </div>
+                  <table className="w-full border-collapse border border-black text-[11.5px]">
+                    <tbody>
+                      {pageRows.map((td, idx) => (
+                        <tr key={idx} className="border-b border-black">
+                          <td className="w-[38%] font-bold px-3 py-1.5 border-r border-black align-top bg-gray-50/50">
+                            {td.label}
+                          </td>
+                          <td className="px-3 py-1.5 align-top leading-snug">
+                            {applyVariables(td.value, globalVars)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              );
+
+              currentHeight += rowsHeight;
+              if (currentListIndex < list.length) {
+                commitPage();
+              }
+            }
+          } else if (sec.id === 'q_vendors_part1' || sec.id === 'q_vendors_part2' || sec.id === 'q_vendors') {
+            // When q_vendors_part2 is encountered in an outline where part1 already partitioned everything, skip to avoid duplicate
+            if (sec.id === 'q_vendors_part2' && group.sections.some(s => s.id === 'q_vendors_part1' || s.id === 'q_vendors')) {
+              // already handled
+            } else {
+              const list = q.vendorList;
+              let currentListIndex = 0;
+
+              while (currentListIndex < list.length) {
+                const remainingBudget = budget - currentHeight;
+                if (remainingBudget < 40) {
+                  commitPage();
+                }
+                
+                const pageRows: typeof list = [];
+                let rowsHeight = 25;
+                
+                while (currentListIndex < list.length) {
+                  const v = list[currentListIndex];
+                  const rowH = getVendorItemHeight(v);
+                  if (rowsHeight + rowH <= budget - currentHeight) {
+                    pageRows.push(v);
+                    rowsHeight += rowH;
+                    currentListIndex++;
+                  } else {
+                    break;
+                  }
+                }
+
+                if (pageRows.length === 0 && currentListIndex < list.length) {
+                  pageRows.push(list[currentListIndex]);
+                  rowsHeight += getVendorItemHeight(list[currentListIndex]);
+                  currentListIndex++;
+                }
+
+                currentPageSections.push(
+                  <div key={`${sec.id}_split_${subPages.length}`} className={`p-1.5 rounded relative ${getSectionHighlightClass(sec.id)}`}>
+                    <div className="text-center font-bold text-[13px] uppercase">
+                      APPROVED VENDOR LIST {pageRows.length < list.length || currentListIndex > pageRows.length ? '(CONTINUED)' : ''}
+                    </div>
+                    <table className="w-full border-collapse border border-black text-[10.5px] mt-2">
+                      <thead>
+                        <tr className="border-b border-black bg-gray-100 font-bold">
+                          <th className="w-[45px] px-1.5 py-1 text-center border-r border-black">Sr. No</th>
+                          <th className="w-[180px] px-2 py-1 text-center border-r border-black">Description</th>
+                          <th className="px-2 py-1 text-center">Brand/Make/Company Name</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pageRows.map((v, rIdx) => (
+                          <tr key={rIdx} className="border-b border-black">
+                            <td className="px-1 py-1 text-center border-r border-black align-top">{v.srNo}</td>
+                            <td className="px-2 py-1 border-r border-black align-top font-medium">{v.description}</td>
+                            <td className="px-2 py-1 align-top whitespace-pre-line leading-snug">
+                              {v.brand.replace(/\\newline/g, '\n').replace(/\\textbf{([^}]+)}/g, '$1').replace(/\\&/g, '&')}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+
+                currentHeight += rowsHeight;
+                if (currentListIndex < list.length) {
+                  commitPage();
+                }
+              }
+            }
           } else if (sec.id === 'q_boq_items') {
             const list = q.commercialItems;
             let currentListIndex = 0;
 
             while (currentListIndex < list.length) {
               const remainingBudget = budget - currentHeight;
-              if (remainingBudget < 80) {
+              if (remainingBudget < 40) {
                 commitPage();
               }
 
               const pageRows: typeof list = [];
-              let rowsHeight = 50;
+              let rowsHeight = 25;
               
               while (currentListIndex < list.length) {
                 const item = list[currentListIndex];
-                const rowH = Math.max(30, Math.ceil(item.description.length / 50) * 16);
+                const rowH = getBoqItemHeight(item);
                 if (rowsHeight + rowH <= budget - currentHeight) {
                   pageRows.push(item);
                   rowsHeight += rowH;
@@ -230,8 +423,14 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                 }
               }
 
+              if (pageRows.length === 0 && currentListIndex < list.length) {
+                pageRows.push(list[currentListIndex]);
+                rowsHeight += getBoqItemHeight(list[currentListIndex]);
+                currentListIndex++;
+              }
+
               const isFinalPart = currentListIndex === list.length;
-              const totalsHeight = 100;
+              const totalsHeight = 70;
               const fitsTotals = rowsHeight + totalsHeight <= budget - currentHeight;
 
               currentPageSections.push(
@@ -309,6 +508,80 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                   </div>
                 );
                 currentHeight += totalsHeight;
+              }
+            }
+          } else if (sec.isCustom && sec.customData && sec.customData.contentType === 'table') {
+            const cs = sec.customData;
+            const headers = cs.tableHeaders || ['Item', 'Description'];
+            const rows = cs.tableRows || [];
+            let currentRowIndex = 0;
+
+            while (currentRowIndex < rows.length) {
+              const remainingBudget = budget - currentHeight;
+              if (remainingBudget < 80) {
+                commitPage();
+              }
+
+              const pageRows: typeof rows = [];
+              let rowsH = 45;
+
+              while (currentRowIndex < rows.length) {
+                const row = rows[currentRowIndex];
+                const maxCellLen = row.reduce((max, c) => Math.max(max, (c || '').length), 0);
+                const rowH = Math.max(28, Math.ceil(maxCellLen / 40) * 16 + 8);
+                if (rowsH + rowH <= budget - currentHeight) {
+                  pageRows.push(row);
+                  rowsH += rowH;
+                  currentRowIndex++;
+                } else {
+                  break;
+                }
+              }
+
+              if (pageRows.length === 0 && currentRowIndex < rows.length) {
+                pageRows.push(rows[currentRowIndex]);
+                rowsH += 35;
+                currentRowIndex++;
+              }
+
+              currentPageSections.push(
+                <div
+                  key={`${sec.id}_split_${subPages.length}`}
+                  className={`my-2 p-1.5 rounded relative ${getSectionHighlightClass(sec.id)}`}
+                >
+                  <h2 className="text-[12.5px] font-bold text-[#404040] mb-1.5 uppercase tracking-wide">
+                    {applyVariables(cs.title, globalVars)} {currentRowIndex < rows.length || currentRowIndex > pageRows.length ? '(Continued)' : ''}
+                  </h2>
+                  <div className="border border-black my-1 text-[10.5px]">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="border-b border-black bg-gray-100 font-bold">
+                          {headers.map((h, hIdx) => (
+                            <th key={hIdx} className="p-1.5 border-r border-black last:border-r-0 text-left">
+                              {applyVariables(h, globalVars)}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pageRows.map((row, rIdx) => (
+                          <tr key={rIdx} className="border-b border-black last:border-b-0">
+                            {row.map((cell, cIdx) => (
+                              <td key={cIdx} className="p-1.5 border-r border-black last:border-r-0 align-top">
+                                {applyVariables(cell, globalVars)}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              );
+
+              currentHeight += rowsH;
+              if (currentRowIndex < rows.length) {
+                commitPage();
               }
             }
           } else if (sec.isCustom && sec.customData && (sec.customData.contentType === 'bullet_list' || sec.customData.contentType === 'paragraphs' || sec.customData.contentType === 'legal_clause')) {
@@ -940,6 +1213,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
         );
       }
 
+      case 'q_vendors':
       case 'q_vendors_part1':
       case 'page_6': {
         return (
@@ -955,7 +1229,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
           >
             <div className="mt-1 text-center">
               <h3 className="font-bold text-[13px] uppercase tracking-wide">
-                APPROVED VENDOR LIST (PART 1)
+                APPROVED VENDOR LIST
               </h3>
             </div>
 
@@ -969,7 +1243,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {q.vendorList.slice(0, 14).map((v, idx) => (
+                  {q.vendorList.map((v, idx) => (
                     <tr key={idx} className="border-b border-black">
                       <td className="px-1 py-1 text-center border-r border-black align-top">{v.srNo}</td>
                       <td className="px-2 py-1 border-r border-black align-top font-medium">
@@ -990,41 +1264,8 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
         );
       }
 
-      case 'q_vendors_part2':
-      case 'page_7': {
-        return (
-          <div
-            key={sec.id}
-            id={`preview-sec-${sec.id}`}
-            onClick={() => onSelectSection?.(sec.id)}
-            onMouseEnter={() => onHoverSection?.(sec.id)}
-            onMouseLeave={() => onHoverSection?.(null)}
-            className={`p-1.5 rounded relative cursor-pointer transition-all duration-200 ${getSectionHighlightClass(
-              sec.id
-            )}`}
-          >
-            <table className="w-full border-collapse border border-black text-[10px]">
-              <thead>
-                <tr className="border-b border-black bg-gray-100 font-bold">
-                  <th className="w-[45px] px-1.5 py-0.5 text-center border-r border-black">Sr. No</th>
-                  <th className="w-[180px] px-2 py-0.5 text-center border-r border-black">Description</th>
-                  <th className="px-2 py-0.5 text-center">Brand/Make/Company Name</th>
-                </tr>
-              </thead>
-              <tbody>
-                {q.vendorList.slice(14).map((v, idx) => (
-                  <tr key={idx} className="border-b border-black">
-                    <td className="px-1 py-0.5 text-center border-r border-black align-top">{v.srNo}</td>
-                    <td className="px-2 py-0.5 border-r border-black align-top font-medium">
-                      {v.description}
-                    </td>
-                    <td className="px-2 py-0.5 align-top">{v.brand}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        );
+      case 'q_vendors_part2': {
+        return null;
       }
 
       case 'q_taxes_notes': {
@@ -1257,10 +1498,12 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
           className="latex-paper bg-white text-black p-10 shadow-2xl relative flex flex-col justify-between text-[11.5px] leading-normal"
         >
           {/* Header & Page Sections */}
-          <div className="flex-1 flex flex-col">
-            {renderHeader(page.pageNum)}
+          <div className="flex-1 flex flex-col min-h-0">
+            <div className="shrink-0">
+              {renderHeader(page.pageNum)}
+            </div>
 
-            <div className="flex-1 space-y-1">
+            <div className="flex-1 space-y-1 min-h-0">
               {page.sections.length === 0 ? (
                 <div className="py-20 text-center text-gray-400 italic text-xs border-2 border-dashed border-gray-200 rounded my-8">
                   Empty Page / Section Group &bull; Drag sections here from Document Outline
@@ -1272,7 +1515,9 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
           </div>
 
           {/* Constant Standard Footer with Page Number */}
-          {renderFooter(pageIdx, paginatedPages.length)}
+          <div className="shrink-0">
+            {renderFooter(pageIdx, paginatedPages.length)}
+          </div>
         </div>
       ))}
     </div>

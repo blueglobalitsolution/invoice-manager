@@ -25,6 +25,8 @@ import {
   ChevronDown,
   Archive,
   FolderOpen,
+  Pencil,
+  X,
 } from 'lucide-react';
 import {
   ProjectItem,
@@ -35,7 +37,7 @@ import {
 } from '@/types/project';
 import { CreateDocumentModal } from '@/components/CreateDocumentModal';
 import { DashboardSidebar } from '@/components/DashboardSidebar';
-import { SettingsModal } from '@/components/SettingsModal';
+import { ProjectSettingsModal } from '@/components/ProjectSettingsModal';
 import { useRouter } from 'next/navigation';
 
 interface StatusSelectMenuProps {
@@ -203,6 +205,7 @@ interface ProjectDetailViewProps {
   ) => void;
   onDeleteDocument: (documentId: string) => void;
   onDuplicateDocument: (documentId: string) => void;
+  onRenameDocument?: (documentId: string, newTitle: string, newDocNumber?: string) => void;
   onUpdateDocumentStatus: (documentId: string, status: ProjectDocStatus) => void;
   onUpdateProjectStatus: (status: ProjectStatus) => void;
   onDeleteProject: () => void;
@@ -211,6 +214,7 @@ interface ProjectDetailViewProps {
   currentUser?: { name: string; email: string } | null;
   onLogout?: () => void;
   onUpdateProject?: (updatedProject: ProjectItem) => void;
+  onSaveProjectSettings?: (updatedProject: ProjectItem, syncToDocs: boolean) => void;
 }
 
 export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
@@ -220,6 +224,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
   onCreateDocument,
   onDeleteDocument,
   onDuplicateDocument,
+  onRenameDocument,
   onUpdateDocumentStatus,
   onUpdateProjectStatus,
   onDeleteProject,
@@ -228,6 +233,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
   currentUser,
   onLogout,
   onUpdateProject,
+  onSaveProjectSettings,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | ProjectDocType>('all');
@@ -235,6 +241,29 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
   const [isCreateDocModalOpen, setIsCreateDocModalOpen] = useState(false);
   const router = useRouter();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // Document Inline Renaming State
+  const [editingDocId, setEditingDocId] = useState<string | null>(null);
+  const [editingTitle, setEditingTitle] = useState('');
+  const [editingDocNumber, setEditingDocNumber] = useState('');
+
+  const startRenaming = (e: React.MouseEvent, doc: ProjectDocumentItem) => {
+    e.stopPropagation();
+    setEditingDocId(doc.id);
+    setEditingTitle(doc.title);
+    setEditingDocNumber(doc.docNumber);
+  };
+
+  const handleSaveRename = (docId: string) => {
+    if (editingTitle.trim() && onRenameDocument) {
+      onRenameDocument(docId, editingTitle.trim(), editingDocNumber.trim());
+    }
+    setEditingDocId(null);
+  };
+
+  const handleCancelRename = () => {
+    setEditingDocId(null);
+  };
 
   const documents = project.documents || [];
 
@@ -568,15 +597,81 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                           onClick={() => onOpenDocument(doc.id)}
                           className="hover:bg-[#dfe7f4]/30 transition-colors cursor-pointer group"
                         >
-                          <td className="py-3.5 px-4">
-                            <div className="font-bold text-black group-hover:text-[#0d3479] transition-colors text-sm">
-                              {doc.title}
-                            </div>
-                            <div className="text-[11px] font-mono text-[#666666] mt-0.5">
-                              <span className="bg-[#dfe7f4]/60 px-1.5 py-0.5 rounded border border-[#b9c7de] font-semibold text-[10px]">
-                                {doc.docNumber}
-                              </span>
-                            </div>
+                          <td className="py-3.5 px-4" onClick={(e) => editingDocId === doc.id && e.stopPropagation()}>
+                            {editingDocId === doc.id ? (
+                              <div
+                                className="flex flex-col space-y-1.5 py-0.5"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <div className="flex items-center space-x-1.5">
+                                  <input
+                                    type="text"
+                                    value={editingTitle}
+                                    onChange={(e) => setEditingTitle(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') handleSaveRename(doc.id);
+                                      if (e.key === 'Escape') handleCancelRename();
+                                    }}
+                                    autoFocus
+                                    className="px-2 py-1 text-xs font-bold text-black bg-white border-2 border-[#0d3479] rounded-lg shadow-sm focus:outline-none w-full max-w-xs"
+                                    placeholder="Document Title"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSaveRename(doc.id)}
+                                    className="p-1.5 bg-[#0d3479] text-white hover:bg-[#092557] rounded-lg transition-colors shadow-xs cursor-pointer shrink-0"
+                                    title="Save Name"
+                                  >
+                                    <Check className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={handleCancelRename}
+                                    className="p-1.5 bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-black rounded-lg transition-colors cursor-pointer shrink-0"
+                                    title="Cancel"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <span className="text-[10px] text-gray-400 font-mono">Ref No:</span>
+                                  <input
+                                    type="text"
+                                    value={editingDocNumber}
+                                    onChange={(e) => setEditingDocNumber(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') handleSaveRename(doc.id);
+                                      if (e.key === 'Escape') handleCancelRename();
+                                    }}
+                                    className="px-1.5 py-0.5 text-[10px] font-mono text-gray-700 bg-white border border-gray-300 rounded focus:outline-none max-w-[160px]"
+                                    placeholder="Ref / Document No."
+                                  />
+                                </div>
+                              </div>
+                            ) : (
+                              <div>
+                                <div className="flex items-center space-x-1.5">
+                                  <span className="font-bold text-black group-hover:text-[#0d3479] transition-colors text-sm">
+                                    {doc.title}
+                                  </span>
+                                  {onRenameDocument && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => startRenaming(e, doc)}
+                                      className="p-1 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-[#0d3479] hover:bg-[#dfe7f4]/60 rounded-md transition-all cursor-pointer"
+                                      title="Rename Document"
+                                    >
+                                      <Pencil className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
+                                <div className="text-[11px] font-mono text-[#666666] mt-0.5">
+                                  <span className="bg-[#dfe7f4]/60 px-1.5 py-0.5 rounded border border-[#b9c7de] font-semibold text-[10px]">
+                                    {doc.docNumber}
+                                  </span>
+                                </div>
+                              </div>
+                            )}
                           </td>
                           <td className="py-3.5 px-4">
                             <span
@@ -603,6 +698,15 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                           </td>
                           <td className="py-3.5 px-4 text-right" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-end space-x-1">
+                              {onRenameDocument && (
+                                <button
+                                  onClick={(e) => startRenaming(e, doc)}
+                                  className="p-2 text-[#666666] hover:text-[#0d3479] hover:bg-white rounded-[10px] transition-colors cursor-pointer border border-transparent hover:border-[#cccccc]"
+                                  title="Rename Document"
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </button>
+                              )}
                               <button
                                 onClick={() => onDuplicateDocument(doc.id)}
                                 className="p-2 text-[#666666] hover:text-black hover:bg-white rounded-[10px] transition-colors cursor-pointer border border-transparent hover:border-[#cccccc]"
@@ -644,68 +748,19 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
           onCreateDocument={onCreateDocument}
         />
 
-        {/* Document Settings Modal */}
-        {(() => {
-          const firstDoc = project.documents?.[0];
-          const docSettings = firstDoc?.document?.settings || {
-            paperSize: 'a4paper' as const,
-            columns: 'onecolumn' as const,
-            fontSize: '11pt' as const,
-            fontFamily: 'times' as const,
-            margins: 'normal' as const,
-            showPageNumbers: true,
-            showDate: true,
-            accentColor: '#002057'
-          };
-
-          return (
-            <SettingsModal
-              isOpen={isSettingsOpen}
-              onClose={() => setIsSettingsOpen(false)}
-              settings={docSettings}
-              onUpdateSettings={(newSettings) => {
-                if (!onUpdateProject) return;
-                const updatedDocs = (project.documents || []).map((doc) => ({
-                  ...doc,
-                  document: {
-                    ...doc.document,
-                    settings: {
-                      ...doc.document.settings,
-                      ...newSettings
-                    }
-                  }
-                }));
-                onUpdateProject({
-                  ...project,
-                  documents: updatedDocs
-                });
-              }}
-              projectTitle={project.title}
-              onUpdateTitle={(newTitle) => {
-                if (!onUpdateProject) return;
-                onUpdateProject({
-                  ...project,
-                  title: newTitle
-                });
-              }}
-              document={firstDoc?.document}
-              onUpdateVariables={(newVars) => {
-                if (!onUpdateProject) return;
-                const updatedDocs = (project.documents || []).map((doc) => ({
-                  ...doc,
-                  document: {
-                    ...doc.document,
-                    globalVariables: newVars
-                  }
-                }));
-                onUpdateProject({
-                  ...project,
-                  documents: updatedDocs
-                });
-              }}
-            />
-          );
-        })()}
+        {/* Project & Master Settings Modal */}
+        <ProjectSettingsModal
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          project={project}
+          onSaveProjectSettings={(updatedProject, syncToDocs) => {
+            if (onSaveProjectSettings) {
+              onSaveProjectSettings(updatedProject, syncToDocs);
+            } else if (onUpdateProject) {
+              onUpdateProject(updatedProject);
+            }
+          }}
+        />
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ChevronUp,
   Braces,
+  Settings,
 } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 
@@ -178,23 +179,27 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                   onClick={onOpenSettings}
                   className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm text-white/90 hover:text-white hover:bg-white/10 transition-colors font-medium cursor-pointer mt-1"
                 >
-                  <Braces className="w-4 h-4 text-white/80" />
-                  <span>Project Variables</span>
+                  <Settings className="w-4 h-4 text-white/80" />
+                  <span>Project Settings</span>
                 </button>
               )}
             </div>
           )}
 
           <div className="pt-3 mt-3 border-t border-white/15 space-y-1">
-            {onOpenTemplateBuilder && (
-              <button
-                onClick={onOpenTemplateBuilder}
-                className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-[13px] text-white/80 hover:text-white hover:bg-white/10 transition-colors font-medium cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4 text-white/80" strokeWidth={1.75} />
-                <span>Template Builder</span>
-              </button>
-            )}
+            <button
+              onClick={() => {
+                if (onOpenTemplateBuilder) {
+                  onOpenTemplateBuilder();
+                } else {
+                  router.push('/template-builder');
+                }
+              }}
+              className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-[13px] text-white/80 hover:text-white hover:bg-white/10 transition-colors font-medium cursor-pointer"
+            >
+              <Sparkles className="w-4 h-4 text-white/80" strokeWidth={1.75} />
+              <span>Template Builder</span>
+            </button>
           </div>
         </nav>
       </div>

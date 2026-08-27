@@ -9,18 +9,32 @@ import { TexCodePreview } from '@/components/TexCodePreview';
 import { FooterStatus } from '@/components/FooterStatus';
 import { EditorRail } from '@/components/EditorRail';
 import { FileTreeSidebar } from '@/components/FileTreeSidebar';
-import { SettingsModal } from '@/components/SettingsModal';
-import { GlobalVariablesModal } from '@/components/GlobalVariablesModal';
+import { AddSectionModal } from '@/components/AddSectionModal';
+import { ProjectSettingsModal } from '@/components/ProjectSettingsModal';
 import { TexCodeModal } from '@/components/TexCodeModal';
 import { CreateDocumentModal } from '@/components/CreateDocumentModal';
 import { VersionHistoryPanel } from '@/components/VersionHistoryPanel';
 import { KeyboardShortcutsModal } from '@/components/KeyboardShortcutsModal';
 import { Loader } from '@/components/ui/loader';
-import { LatexDocument, DocumentSettings } from '@/types/document';
+import { LatexDocument, DocumentSettings, CustomSectionItem } from '@/types/document';
 import { ProjectItem, ProjectDocumentItem, ProjectDocStatus, ProjectDocType } from '@/types/project';
 import { LABOUR_PO_TEMPLATE, SAMPLE_TEMPLATES } from '@/lib/templates';
-import { moveQuotationSectionToPage, moveSectionToPage, getQuotationSectionPageNumber } from '@/lib/document-sections';
+import {
+  moveQuotationSectionToPage,
+  moveSectionToPage,
+  getQuotationSectionPageNumber,
+  getSectionPageNumber,
+  getDocumentOutlineGroups,
+  getQuotationOutlineGroups,
+  moveSectionUp,
+  moveSectionDown,
+  moveQuotationSectionUp,
+  moveQuotationSectionDown,
+  BUILTIN_SECTIONS,
+  QUOTATION_BUILTIN_SECTIONS,
+} from '@/lib/document-sections';
 import { exportToPdf } from '@/lib/pdf-export';
+import { createProjectDocument, syncProjectMasterToDocuments } from '@/lib/project-doc-templates';
 
 export default function EditorPage() {
   const router = useRouter();
@@ -40,6 +54,7 @@ export default function EditorPage() {
   const [isGlobalVarsOpen, setIsGlobalVarsOpen] = useState(false);
   const [isCreateDocModalOpen, setIsCreateDocModalOpen] = useState(false);
   const [isLatexCodeModalOpen, setIsLatexCodeModalOpen] = useState(false);
+  const [isAddSectionModalOpen, setIsAddSectionModalOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(85);
   const [isRecompiling, setIsRecompiling] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState('info');
@@ -47,6 +62,7 @@ export default function EditorPage() {
   const [isVersionHistoryOpen, setIsVersionHistoryOpen] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
   const [saveToast, setSaveToast] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Resize split panel states
   const [editorWidth, setEditorWidth] = useState<number>(45); // percentage
@@ -250,12 +266,16 @@ export default function EditorPage() {
   };
 
   const handleExportPdf = async () => {
+    setIsExporting(true);
+    // Yield to browser event loop to let React re-render DOM with isExporting = true and clean state
+    await new Promise((resolve) => setTimeout(resolve, 150));
     try {
       const container = document.getElementById('pdf-preview-container');
       await exportToPdf(container, `${docState.title || 'Document'}.pdf`);
     } catch (err) {
       console.error('Error generating PDF:', err);
-      window.print();
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -263,12 +283,13 @@ export default function EditorPage() {
   const handleAddPage = () => {
     if (docState.purchaseOrder) {
       const po = docState.purchaseOrder;
-      const customPages = po.customPages || [];
-      const nextNum = 3 + customPages.length + 1;
+      const currentGroups = getDocumentOutlineGroups(po);
+      const currentPages = currentGroups.map((g) => g.pageNum);
+      const nextNum = (currentPages.length > 0 ? Math.max(...currentPages) : 0) + 1;
       const newPage = {
         id: `page_${Date.now()}`,
         pageNum: nextNum,
-        title: `Annexure Page ${nextNum}`,
+        title: `Page ${nextNum}`,
         includeLetterHeader: false,
         includeLetterFooter: true,
       };
@@ -277,17 +298,19 @@ export default function EditorPage() {
         ...docState,
         purchaseOrder: {
           ...po,
-          customPages: [...customPages, newPage],
+          deletedPages: (po.deletedPages || []).filter((p) => p !== nextNum),
+          customPages: [...(po.customPages || []), newPage],
         },
       });
     } else if (docState.quotation) {
       const q = docState.quotation;
-      const customPages = q.customPages || [];
-      const nextNum = 10 + customPages.length + 1;
+      const currentGroups = getQuotationOutlineGroups(q);
+      const currentPages = currentGroups.map((g) => g.pageNum);
+      const nextNum = (currentPages.length > 0 ? Math.max(...currentPages) : 0) + 1;
       const newPage = {
         id: `page_${Date.now()}`,
         pageNum: nextNum,
-        title: `Annexure Page ${nextNum}`,
+        title: `Page ${nextNum}`,
         includeLetterHeader: false,
         includeLetterFooter: true,
       };
@@ -296,33 +319,85 @@ export default function EditorPage() {
         ...docState,
         quotation: {
           ...q,
-          customPages: [...customPages, newPage],
+          deletedPages: (q.deletedPages || []).filter((p) => p !== nextNum),
+          customPages: [...(q.customPages || []), newPage],
         },
       });
     }
   };
 
   const handleDeletePage = (pageNum: number) => {
-    if (!confirm(`Are you sure you want to delete Page ${pageNum}?`)) return;
-
     if (docState.purchaseOrder) {
       const po = docState.purchaseOrder;
-      const deleted = [...(po.deletedPages || []), pageNum];
+      const currentGroups = getDocumentOutlineGroups(po);
+      if (currentGroups.length <= 1) {
+        alert('Document must have at least one page.');
+        return;
+      }
+      if (!confirm(`Are you sure you want to delete Page ${pageNum}? All custom sections on this page will be removed.`)) return;
+
+      const deleted = Array.from(new Set([...(po.deletedPages || []), pageNum]));
+      const nextCustomSections = (po.customSections || []).filter((s) => s.pageNumber !== pageNum);
+      const builtinSectionsOnPage = BUILTIN_SECTIONS.filter((b) => getSectionPageNumber(b.id, po) === pageNum).map((b) => b.id);
+      const hidden = Array.from(new Set([...(po.hiddenSections || []), ...builtinSectionsOnPage]));
+      const nextCustomPages = (po.customPages || []).filter((p) => p.pageNum !== pageNum);
+
+      // If activeSection was on this page, reset active section to a remaining section
+      const activeIsOnPage =
+        (po.customSections || []).some((s) => s.id === activeSectionId && s.pageNumber === pageNum) ||
+        builtinSectionsOnPage.includes(activeSectionId);
+
+      if (activeIsOnPage) {
+        const remainingGroup = currentGroups.find((g) => g.pageNum !== pageNum);
+        if (remainingGroup && remainingGroup.sections.length > 0) {
+          setActiveSectionId(remainingGroup.sections[0].id);
+        }
+      }
+
       setDocState({
         ...docState,
         purchaseOrder: {
           ...po,
           deletedPages: deleted,
+          customSections: nextCustomSections,
+          hiddenSections: hidden,
+          customPages: nextCustomPages,
         },
       });
     } else if (docState.quotation) {
       const q = docState.quotation;
-      const deleted = [...(q.deletedPages || []), pageNum];
+      const currentGroups = getQuotationOutlineGroups(q);
+      if (currentGroups.length <= 1) {
+        alert('Document must have at least one page.');
+        return;
+      }
+      if (!confirm(`Are you sure you want to delete Page ${pageNum}? All custom sections on this page will be removed.`)) return;
+
+      const deleted = Array.from(new Set([...(q.deletedPages || []), pageNum]));
+      const nextCustomSections = (q.customSections || []).filter((s) => s.pageNumber !== pageNum);
+      const builtinSectionsOnPage = QUOTATION_BUILTIN_SECTIONS.filter((b) => getQuotationSectionPageNumber(b.id, q) === pageNum).map((b) => b.id);
+      const hidden = Array.from(new Set([...(q.hiddenSections || []), ...builtinSectionsOnPage]));
+      const nextCustomPages = (q.customPages || []).filter((p) => p.pageNum !== pageNum);
+
+      const activeIsOnPage =
+        (q.customSections || []).some((s) => s.id === activeSectionId && s.pageNumber === pageNum) ||
+        builtinSectionsOnPage.includes(activeSectionId);
+
+      if (activeIsOnPage) {
+        const remainingGroup = currentGroups.find((g) => g.pageNum !== pageNum);
+        if (remainingGroup && remainingGroup.sections.length > 0) {
+          setActiveSectionId(remainingGroup.sections[0].id);
+        }
+      }
+
       setDocState({
         ...docState,
         quotation: {
           ...q,
           deletedPages: deleted,
+          customSections: nextCustomSections,
+          hiddenSections: hidden,
+          customPages: nextCustomPages,
         },
       });
     }
@@ -346,14 +421,10 @@ export default function EditorPage() {
 
   const handleMoveSectionToPage = (sectionId: string, pageNum: number) => {
     if (docState.purchaseOrder) {
-      const map = { ...(docState.purchaseOrder.sectionPageMap || {}) };
-      map[sectionId] = pageNum;
+      const updatedPo = moveSectionToPage(docState.purchaseOrder, sectionId, pageNum);
       setDocState({
         ...docState,
-        purchaseOrder: {
-          ...docState.purchaseOrder,
-          sectionPageMap: map,
-        },
+        purchaseOrder: updatedPo,
       });
     } else if (docState.quotation) {
       const updatedQ = moveQuotationSectionToPage(docState.quotation, sectionId, pageNum);
@@ -361,6 +432,118 @@ export default function EditorPage() {
         ...docState,
         quotation: updatedQ,
       });
+    }
+  };
+
+  const handleMoveSectionUp = (sectionId: string) => {
+    if (docState.purchaseOrder) {
+      setDocState({
+        ...docState,
+        purchaseOrder: moveSectionUp(docState.purchaseOrder, sectionId),
+      });
+    } else if (docState.quotation) {
+      setDocState({
+        ...docState,
+        quotation: moveQuotationSectionUp(docState.quotation, sectionId),
+      });
+    }
+  };
+
+  const handleMoveSectionDown = (sectionId: string) => {
+    if (docState.purchaseOrder) {
+      setDocState({
+        ...docState,
+        purchaseOrder: moveSectionDown(docState.purchaseOrder, sectionId),
+      });
+    } else if (docState.quotation) {
+      setDocState({
+        ...docState,
+        quotation: moveQuotationSectionDown(docState.quotation, sectionId),
+      });
+    }
+  };
+
+  const handleRenameTitle = (newTitle: string) => {
+    const trimmed = newTitle.trim();
+    if (!trimmed) return;
+
+    setDocState({
+      ...docState,
+      title: trimmed,
+    });
+
+    if (project && docId) {
+      const updatedDocs = (project.documents || []).map((d) =>
+        d.id === docId ? { ...d, title: trimmed, lastModified: 'Just now' } : d
+      );
+      setProject({
+        ...project,
+        documents: updatedDocs,
+      });
+      fetch(`/api/projects/${projectId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          documents: updatedDocs,
+          lastModified: 'Just now by You',
+        }),
+      }).catch((err) => console.error('Failed to update title:', err));
+    }
+  };
+
+  const handleAddSectionItem = (newSection: CustomSectionItem) => {
+    if (docState.purchaseOrder) {
+      const po = docState.purchaseOrder;
+      const customSections = [...(po.customSections || []), newSection];
+      setDocState({
+        ...docState,
+        purchaseOrder: {
+          ...po,
+          customSections,
+        },
+      });
+      setActiveSectionId(newSection.id);
+    } else if (docState.quotation) {
+      const q = docState.quotation;
+      const customSections = [...(q.customSections || []), newSection];
+      setDocState({
+        ...docState,
+        quotation: {
+          ...q,
+          customSections,
+        },
+      });
+      setActiveSectionId(newSection.id);
+    }
+  };
+
+  const handleDeleteSection = (sectionId: string) => {
+    if (docState.purchaseOrder) {
+      const po = docState.purchaseOrder;
+      const customSections = (po.customSections || []).filter((s) => s.id !== sectionId);
+      setDocState({
+        ...docState,
+        purchaseOrder: {
+          ...po,
+          customSections,
+        },
+      });
+      if (activeSectionId === sectionId) {
+        setActiveSectionId('info');
+      }
+    } else if (docState.quotation) {
+      const q = docState.quotation;
+      const customSections = (q.customSections || []).filter((s) => s.id !== sectionId);
+      setDocState({
+        ...docState,
+        quotation: {
+          ...q,
+          customSections,
+        },
+      });
+      if (activeSectionId === sectionId) {
+        setActiveSectionId('q_cover_info');
+      }
     }
   };
 
@@ -388,6 +571,50 @@ export default function EditorPage() {
     });
   };
 
+  const handleSaveAndExit = async () => {
+    const targetUrl = projectId && projectId !== 'default' ? `/project/${projectId}` : '/dashboard';
+
+    if (!project) {
+      window.location.href = targetUrl;
+      return;
+    }
+
+    try {
+      let updatedDocs = project.documents ? [...project.documents] : [];
+      let updatedDocument = project.document || docState;
+
+      if (docId && updatedDocs.length > 0) {
+        updatedDocs = updatedDocs.map((d) =>
+          d.id === docId
+            ? { ...d, document: docState, title: docState.title, lastModified: 'Just now' }
+            : d
+        );
+        if (project.document?.id === docId) {
+          updatedDocument = docState;
+        }
+      } else {
+        updatedDocument = docState;
+      }
+
+      await fetch(`/api/projects/${projectId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          document: updatedDocument,
+          documents: updatedDocs,
+          title: project.title,
+          lastModified: 'Just now by You',
+        }),
+      });
+
+      // Direct navigation guarantees exit to project dashboard
+      window.location.href = targetUrl;
+    } catch (err) {
+      console.error('Save & Exit error:', err);
+      window.location.href = targetUrl;
+    }
+  };
+
   if (loading || !project) {
     return (
       <div className="app-shell min-h-screen flex items-center justify-center">
@@ -395,6 +622,9 @@ export default function EditorPage() {
       </div>
     );
   }
+
+  const isInvoice = !!docState.taxInvoice || docState.id === 'tax_invoice' || !!(docState.purchaseOrder as any)?.invoiceNumber;
+  const templateId = docState.quotation ? 'quotation' : docState.purchaseOrder ? 'labour_po' : undefined;
 
   return (
     <div className="app-shell flex flex-col h-screen w-full text-slate-300 font-sans overflow-hidden bg-[#070A13]">
@@ -408,10 +638,13 @@ export default function EditorPage() {
           onOpenAddDocumentModal={() => setIsCreateDocModalOpen(true)}
           onOpenLatexCode={() => setIsLatexCodeModalOpen(true)}
           onExportPdf={handleExportPdf}
+          isExporting={isExporting}
           isRecompiling={isRecompiling}
           onRecompile={handleRecompile}
           onGoBackToDashboard={() => router.push(`/project/${projectId}`)}
+          onSaveAndExit={handleSaveAndExit}
           onOpenSettings={() => setIsSettingsOpen(true)}
+          onRenameTitle={handleRenameTitle}
           currentUser={currentUser}
           onOpenAuth={() => {}}
           onLogout={() => {
@@ -445,12 +678,14 @@ export default function EditorPage() {
             onOpenSettings={() => setIsSettingsOpen(true)}
             onOpenGlobalVariables={() => setIsGlobalVarsOpen(true)}
             onOpenLatexCode={() => setIsLatexCodeModalOpen(true)}
+            onOpenAddSection={() => setIsAddSectionModalOpen(true)}
+            isInvoice={isInvoice}
             onGoBackToDashboard={() => router.push(`/project/${projectId}`)}
           />
         </div>
 
         <div className="flex flex-1 overflow-hidden print:overflow-visible">
-          {railTab === 'filetree' && (
+          {railTab === 'filetree' && !isInvoice && (
             <div className="print:hidden shrink-0 h-full">
               <FileTreeSidebar
                 document={docState}
@@ -460,9 +695,13 @@ export default function EditorPage() {
                   setRailTab('filetree');
                 }}
                 onAddPage={handleAddPage}
+                onAddSectionItem={handleAddSectionItem}
                 onDeletePage={handleDeletePage}
+                onDeleteSection={handleDeleteSection}
                 onReorderSections={handleReorderSections}
                 onMoveSectionToPage={handleMoveSectionToPage}
+                onMoveSectionUp={handleMoveSectionUp}
+                onMoveSectionDown={handleMoveSectionDown}
               />
             </div>
           )}
@@ -500,8 +739,8 @@ export default function EditorPage() {
                 companyProfile={project?.companyProfile}
                 zoomLevel={zoomLevel}
                 setZoomLevel={setZoomLevel}
-                activeSectionId={activeSectionId}
-                hoveredSectionId={hoveredSectionId}
+                activeSectionId={isExporting ? '' : activeSectionId}
+                hoveredSectionId={isExporting ? null : hoveredSectionId}
                 onHoverSection={setHoveredSectionId}
                 onSelectSection={(id) => {
                   setActiveSectionId(id);
@@ -515,23 +754,47 @@ export default function EditorPage() {
         </div>
       </main>
 
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        document={docState}
-        settings={docState.settings}
-        onUpdateSettings={handleUpdateSettings}
-        projectTitle={docState.title}
-        onUpdateTitle={handleUpdateTitle}
-        onUpdateVariables={handleUpdateVariables}
-      />
+      {project && (
+        <ProjectSettingsModal
+          isOpen={isSettingsOpen || isGlobalVarsOpen}
+          onClose={() => {
+            setIsSettingsOpen(false);
+            setIsGlobalVarsOpen(false);
+          }}
+          project={project}
+          activeDoc={docState}
+          onSaveProjectSettings={(updatedProject, syncToDocs) => {
+            let finalProject = { ...updatedProject };
+            if (syncToDocs) {
+              const syncedDocs = syncProjectMasterToDocuments(finalProject);
+              finalProject.documents = syncedDocs;
 
-      <GlobalVariablesModal
-        isOpen={isGlobalVarsOpen}
-        onClose={() => setIsGlobalVarsOpen(false)}
-        document={docState}
-        onUpdateVariables={handleUpdateVariables}
-      />
+              // Also sync current active document state in editor live
+              const activeDocUpdated =
+                (docId ? syncedDocs.find((d) => d.id === docId) : null) ||
+                syncedDocs.find((d) => d.id === docState.id) ||
+                syncedDocs[0];
+              if (activeDocUpdated?.document) {
+                setDocState(activeDocUpdated.document);
+              }
+            }
+            finalProject.lastModified = 'Just now by You';
+            setProject(finalProject);
+
+            fetch(`/api/projects/${projectId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                ...finalProject,
+                document: finalProject.documents?.[0]?.document || finalProject.document,
+              }),
+            }).catch(console.error);
+
+            setIsSettingsOpen(false);
+            setIsGlobalVarsOpen(false);
+          }}
+        />
+      )}
 
       <TexCodeModal
         isOpen={isLatexCodeModalOpen}
@@ -545,31 +808,30 @@ export default function EditorPage() {
           isOpen={isCreateDocModalOpen}
           onClose={() => setIsCreateDocModalOpen(false)}
           project={project}
-          onCreateDocument={(docType: ProjectDocType, customTitle?: string, customNumber?: string, customAmount?: string) => {
-            const template = docType === 'quotation' ? SAMPLE_TEMPLATES.quotation
-                           : docType === 'invoice' ? SAMPLE_TEMPLATES.tax_invoice
-                           : docType === 'work_order' ? SAMPLE_TEMPLATES.labour_po
-                           : SAMPLE_TEMPLATES.blank || LABOUR_PO_TEMPLATE;
-            
-            const newDocId = `doc_${Date.now()}`;
-            const newDocItem = {
-              id: newDocId,
-              projectId: project.id,
-              title: customTitle || `${docType.toUpperCase()} Sheet`,
+          onCreateDocument={(docType: ProjectDocType, customTitle?: string, customNumber?: string, customAmount?: string, documentFields?: Record<string, string>) => {
+            const docItem = createProjectDocument(
               docType,
-              docNumber: customNumber || `GI-${docType.substring(0,3).toUpperCase()}-${Date.now().toString().slice(-4)}`,
-              status: 'draft' as ProjectDocStatus,
-              lastModified: 'Just now',
-              amount: customAmount || '₹ 0.00',
-              document: template,
-            };
+              {
+                title: project.title,
+                clientName: project.clientName,
+                clientAddress: project.clientAddress,
+                clientGstNo: project.clientGstNo,
+                contactPerson: project.contactPerson,
+                location: project.location,
+                code: project.code,
+              },
+              customTitle,
+              customNumber,
+              customAmount,
+              documentFields
+            );
             
-            const updatedDocs = [...(project.documents || []), newDocItem];
+            const updatedDocs = [...(project.documents || []), docItem];
             
             setProject({
               ...project,
               documents: updatedDocs,
-              document: template,
+              document: docItem.document,
             });
             
             fetch(`/api/projects/${projectId}`, {
@@ -577,7 +839,7 @@ export default function EditorPage() {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 documents: updatedDocs,
-                document: template,
+                document: docItem.document,
                 lastModified: 'Just now by You',
               }),
             }).catch(console.error);
@@ -620,6 +882,21 @@ export default function EditorPage() {
         isOpen={isShortcutsModalOpen}
         onClose={() => setIsShortcutsModalOpen(false)}
       />
+
+      {/* Add Section Modal Triggered from Rail */}
+      {isAddSectionModalOpen && (
+        <AddSectionModal
+          isOpen={true}
+          onClose={() => setIsAddSectionModalOpen(false)}
+          targetPageNum={1}
+          groupTitle="Select Section Preset"
+          templateId={docState.quotation ? 'quotation' : docState.purchaseOrder ? 'labour_po' : undefined}
+          onAddSectionItem={(newSection) => {
+            handleAddSectionItem(newSection);
+            setIsAddSectionModalOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }

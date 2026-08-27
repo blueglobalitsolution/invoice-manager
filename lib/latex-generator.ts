@@ -682,14 +682,30 @@ export function generateQuotationLatex(doc: LatexDocument, companyProfile?: Comp
     .map((d) => `    \\item ${d}`)
     .join('\n');
 
-  // Page 6 & 7: Vendor list (Split 14 / 11)
-  const vendorP1 = q.vendorList.slice(0, 14)
+// Page 6 & 7: Vendor list (Split dynamically if > 18)
+  const splitIdx = Math.min(18, q.vendorList.length);
+  const vendorP1 = q.vendorList.slice(0, splitIdx)
     .map((v) => `${v.srNo} & ${v.description} & ${formatLatexMultiline(v.brand)} \\\\ \\hline`)
     .join('\n');
 
-  const vendorP2 = q.vendorList.slice(14)
+  const vendorP2Rows = q.vendorList.slice(splitIdx);
+  const vendorP2 = vendorP2Rows
     .map((v) => `${v.srNo} & ${v.description} & ${formatLatexMultiline(v.brand)} \\\\ \\hline`)
     .join('\n');
+  const vendorP2Table = vendorP2Rows.length > 0 ? `
+\\begin{center}
+    {\\large \\textbf{APPROVED VENDOR LIST (CONTINUED)}}
+\\end{center}
+\\vspace{4pt}
+\\renewcommand{\\arraystretch}{1.15}
+\\noindent
+\\begin{tabularx}{\\textwidth}{|>{\\centering\\arraybackslash}p{0.7cm}|p{5.5cm}|X|}
+\\hline
+\\textbf{Sr. No} & \\centering\\arraybackslash\\textbf{Description} & \\centering\\arraybackslash\\textbf{Brand/Make/Company Name} \\\\ \\hline
+${vendorP2}
+\\end{tabularx}
+\\vspace{5pt}
+` : '';
 
   // Notes
   const notesList = q.notes
@@ -735,6 +751,28 @@ export function generateQuotationLatex(doc: LatexDocument, companyProfile?: Comp
 
   const signatoryPhonesList = q.signatoryPhones
     .map((ph) => `${ph} \\\\[2pt]`)
+    .join('\n');
+
+  const customSections = q.customSections || [];
+  const renderCustomSectionsForPage = (pageNum: number) => {
+    const list = customSections.filter((cs) => cs.pageNumber === pageNum);
+    if (list.length === 0) return '';
+    return '\n' + list.map((cs) => renderSectionToLatex(cs)).join('\n') + '\n';
+  };
+
+  const extraPages = Array.from(
+    new Set(customSections.filter((cs) => cs.pageNumber > 10).map((cs) => cs.pageNumber))
+  ).sort((a, b) => a - b);
+  const extraPagesLatex = extraPages
+    .map(
+      (pNum) => `
+\\newpage
+\\makeletterheader
+\\vspace{10pt}
+${renderCustomSectionsForPage(pNum)}
+\\makeletterfooter
+`
+    )
     .join('\n');
 
   return `\\documentclass[10pt,a4paper]{article}
@@ -954,7 +992,7 @@ ${deliveryList}
 \\vspace{4pt}
 
 \\begin{center}
-    {\\large \\textbf{APPROVED VENDOR LIST (PART 1)}}
+    {\\large \\textbf{APPROVED VENDOR LIST}}
 \\end{center}
 
 \\vspace{4pt}
@@ -976,15 +1014,7 @@ ${vendorP1}
 
 \\vspace{4pt}
 
-\\renewcommand{\\arraystretch}{1.15}
-\\noindent
-\\begin{tabularx}{\\textwidth}{|>{\\centering\\arraybackslash}p{0.7cm}|p{5.5cm}|X|}
-\\hline
-\\textbf{Sr. No} & \\centering\\arraybackslash\\textbf{Description} & \\centering\\arraybackslash\\textbf{Brand/Make/Company Name} \\\\ \\hline
-${vendorP2}
-\\end{tabularx}
-
-\\vspace{5pt}
+${vendorP2Table}
 
 \\textbf{Taxes:} ${q.taxNote}
 
@@ -1078,7 +1108,7 @@ ${specialNotesList}
 \\end{minipage}
 
 \\makeletterfooter
-
+${extraPagesLatex}
 \\end{document}`;
 }
 

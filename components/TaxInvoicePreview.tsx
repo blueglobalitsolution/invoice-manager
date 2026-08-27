@@ -63,9 +63,6 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
   const isStatutoryActive = activeSectionId === 'statutory' || activeSectionId === 'terms';
   const isStatutoryHovered = hoveredSectionId === 'statutory' && !isStatutoryActive;
 
-  const isHeaderActive = activeSectionId === 'header_footer';
-  const isHeaderHovered = hoveredSectionId === 'header_footer' && !isHeaderActive;
-
   return (
     <div
       ref={printRef}
@@ -77,21 +74,8 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
       className="latex-paper print-area bg-white text-black shadow-2xl relative flex flex-col justify-between p-[0.6in] pt-[0.4in] pb-[0.4in] box-border text-[13px] leading-[1.15]"
     >
       <div className="flex-1 flex flex-col">
-        {/* ================= HEADER ================= */}
-        <div
-          id="preview-sec-header"
-          onClick={() => onSelectSection?.('header_footer')}
-          onMouseEnter={() => onHoverSection?.('header_footer')}
-          onMouseLeave={() => onHoverSection?.(null)}
-          className={`p-1.5 rounded transition-all cursor-pointer ${
-            isHeaderActive
-              ? 'ring-2 ring-emerald-600 bg-emerald-50/20'
-              : isHeaderHovered
-              ? 'ring-2 ring-emerald-400/80 bg-emerald-50/10'
-              : 'hover:ring-1 hover:ring-emerald-300/40'
-          }`}
-          title="Click to edit Header & Footer"
-        >
+        {/* ================= HEADER (STATIC / UNSELECTABLE) ================= */}
+        <div id="preview-sec-header" className="p-1.5 select-none">
           <div className="flex items-center justify-between">
             {/* Left Brand */}
             <div className="w-[35%] pr-2">
@@ -154,10 +138,10 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`grid grid-cols-12 border-b-[0.8pt] border-black transition-all cursor-pointer ${
               isClientActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20'
+                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 print:ring-0 print:bg-transparent print:shadow-none'
                 : isClientHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-50/10'
-                : 'hover:bg-gray-50/50'
+                ? 'ring-2 ring-emerald-400/80 bg-emerald-50/10 print:ring-0 print:bg-transparent print:shadow-none'
+                : 'hover:bg-gray-50/50 print:bg-transparent'
             }`}
             title="Click to edit Client and Invoice details"
           >
@@ -209,10 +193,10 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`divide-y-[0.8pt] divide-black transition-all cursor-pointer ${
               isItemsActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20'
+                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 print:ring-0 print:bg-transparent print:shadow-none'
                 : isItemsHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-50/10'
-                : 'hover:bg-gray-50/40'
+                ? 'ring-2 ring-emerald-400/80 bg-emerald-50/10 print:ring-0 print:bg-transparent print:shadow-none'
+                : 'hover:bg-gray-50/40 print:bg-transparent'
             }`}
             title="Click to edit Invoice Items and Taxes"
           >
@@ -283,10 +267,10 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`border-t-[0.8pt] border-black grid grid-cols-12 divide-x-[0.8pt] divide-black transition-all cursor-pointer ${
               isStatutoryActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20'
+                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 print:ring-0 print:bg-transparent print:shadow-none'
                 : isStatutoryHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-50/10'
-                : 'hover:bg-gray-50/30'
+                ? 'ring-2 ring-emerald-400/80 bg-emerald-50/10 print:ring-0 print:bg-transparent print:shadow-none'
+                : 'hover:bg-gray-50/30 print:bg-transparent'
             }`}
             title="Click to edit Terms, Bank details and Signatory"
           >
@@ -326,25 +310,8 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
         </div>
       </div>
 
-      {/* ================= FOOTER ================= */}
-      <div
-        onClick={() => onSelectSection?.('header_footer')}
-        onMouseEnter={() => onHoverSection?.('header_footer')}
-        onMouseLeave={() => onHoverSection?.(null)}
-        className={`mt-auto pt-4 border-t-[0.8pt] border-black text-[10px] leading-tight text-black p-1 rounded relative cursor-pointer transition-all duration-200 ${
-          isHeaderActive
-            ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
-            : isHeaderHovered
-            ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-            : 'hover:ring-1 hover:ring-emerald-300/40'
-        }`}
-        title="Header & Footer (Click to edit)"
-      >
-        {isHeaderHovered && !isHeaderActive && (
-          <span className="absolute -top-6 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
-            Header & Footer
-          </span>
-        )}
+      {/* ================= FOOTER (STATIC / UNSELECTABLE) ================= */}
+      <div className="mt-auto pt-4 border-t-[0.8pt] border-black text-[10px] leading-tight text-black p-1 select-none">
         <div className="font-medium">Phone: {applyVariables(companyPhone, globalVars)}</div>
         <div className="font-medium mt-0.5">
           {applyVariables(companyAddressFooter, globalVars)}

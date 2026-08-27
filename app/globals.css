@@ -228,6 +228,33 @@
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
+
+  /* Completely strip all interactive selection rings, focus borders, outlines, and tints from print/PDF */
+  .latex-paper,
+  .latex-paper *,
+  .print-area,
+  .print-area * {
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    --tw-ring-offset-shadow: 0 0 #0000 !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+    --tw-shadow: 0 0 #0000 !important;
+    --tw-shadow-colored: 0 0 #0000 !important;
+    --tw-ring-color: transparent !important;
+  }
+
+  /* Neutralize any selection highlight backgrounds */
+  .latex-paper .bg-emerald-50\/20,
+  .latex-paper .bg-emerald-50\/10,
+  .latex-paper .bg-emerald-500\/\[0\.05\],
+  .print-area .bg-emerald-50\/20,
+  .print-area .bg-emerald-50\/10,
+  .print-area .bg-emerald-500\/\[0\.05\],
+  .latex-paper [class*="bg-emerald"],
+  .print-area [class*="bg-emerald"] {
+    background-color: transparent !important;
+  }
 }
 
 /* Scrollbar styles for dark/light panes */

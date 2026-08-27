@@ -47,6 +47,9 @@ export default function DashboardPage() {
     title,
     code,
     clientName,
+    clientAddress,
+    clientGstNo,
+    contactPerson,
     location,
     category,
     budget,
@@ -56,6 +59,9 @@ export default function DashboardPage() {
     title: string;
     code: string;
     clientName: string;
+    clientAddress?: string;
+    clientGstNo?: string;
+    contactPerson?: string;
     location: string;
     category: string;
     budget: string;
@@ -69,6 +75,9 @@ export default function DashboardPage() {
       const docItem = createProjectDocument(docType as any, {
         title,
         clientName,
+        clientAddress,
+        clientGstNo,
+        contactPerson,
         location,
         code,
       });
@@ -89,6 +98,9 @@ export default function DashboardPage() {
       title,
       code,
       clientName,
+      clientAddress,
+      clientGstNo,
+      contactPerson,
       location,
       category,
       budget,

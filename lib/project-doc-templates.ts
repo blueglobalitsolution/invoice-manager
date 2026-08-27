@@ -60,15 +60,19 @@ export function createProjectDocument(
   projectInfo: {
     title: string;
     clientName?: string;
+    clientAddress?: string;
+    clientGstNo?: string;
+    contactPerson?: string;
     location?: string;
     code?: string;
   },
   customTitle?: string,
   customNumber?: string,
-  customAmount?: string
+  customAmount?: string,
+  documentFields?: Record<string, string>
 ): ProjectDocumentItem {
   const now = new Date();
-  const dateStr = now.toLocaleDateString('en-GB'); // DD/MM/YYYY
+  const dateStr = documentFields?.DOC_DATE || now.toLocaleDateString('en-GB'); // DD/MM/YYYY
   const year = now.getFullYear();
   const randomSuffix = Math.floor(100 + Math.random() * 900);
   const docId = `doc_${docType}_${Date.now()}`;
@@ -78,21 +82,27 @@ export function createProjectDocument(
   let docAmount = customAmount || '₹0.00';
   let initialLatexDoc: LatexDocument;
 
-  const client = projectInfo.clientName || 'Mohammad Kamil Shaikh';
+  const client = projectInfo.clientName || 'M/s. ALEMBIC LTD';
   const projectName = projectInfo.title || 'Civil Construction Project';
   const location = projectInfo.location || 'Sevasi TP-1, Vadodara, Gujarat';
+  const clientAddr = projectInfo.clientAddress || 'Alembic Road, Gorwa, Vadodara, Gujarat';
+  const clientGst = projectInfo.clientGstNo || '24AABCA7950P1ZB';
+  const contact = projectInfo.contactPerson || 'Mr. Apurvabhai Patel';
 
   switch (docType) {
     case 'quotation': {
-      docNumber = `GI/QT/${year}/${randomSuffix}`;
+      if (!docNumber) docNumber = `GI-PRE-FAB-EQ-${randomSuffix}/1002`;
       if (!docTitle) docTitle = `Commercial Quotation - ${projectName}`;
-      docAmount = '₹8,45,000.00';
+      if (!docAmount || docAmount === '₹0.00') docAmount = '₹8,45,000.00';
 
       const qData = JSON.parse(JSON.stringify(QUOTATION_TEMPLATE.quotation!));
-      qData.toRecipient = client;
-      qData.toAddress = location;
+      qData.toRecipient = contact ? `${contact}` : client;
+      qData.toAddress = `${clientAddr}`;
       qData.refNo = docNumber;
       qData.date = dateStr;
+      if (documentFields?.SUBJECT_LINE) {
+        qData.subject = documentFields.SUBJECT_LINE;
+      }
 
       initialLatexDoc = {
         ...JSON.parse(JSON.stringify(QUOTATION_TEMPLATE)),
@@ -106,12 +116,12 @@ export function createProjectDocument(
     }
 
     case 'work_order': {
-      docNumber = `GI/CIVIL/${year}/${randomSuffix}`;
+      if (!docNumber) docNumber = `GI/CIVIL/${year}/${randomSuffix}`;
       if (!docTitle) docTitle = `Civil Labour Contract Work Order - ${projectName}`;
-      docAmount = '₹4,70,000.00';
+      if (!docAmount || docAmount === '₹0.00') docAmount = '₹4,70,000.00';
 
       const poData = JSON.parse(JSON.stringify(LABOUR_PO_TEMPLATE.purchaseOrder!));
-      poData.contractorName = client;
+      poData.contractorName = documentFields?.CONTRACTOR_NAME || client;
       poData.projectName = projectName;
       poData.projectLocation = location;
       poData.poNumber = docNumber;
@@ -133,9 +143,9 @@ export function createProjectDocument(
     }
 
     case 'purchase_order': {
-      docNumber = `GI/PO/${year}/${randomSuffix}`;
+      if (!docNumber) docNumber = `GI/PO/${year}/${randomSuffix}`;
       if (!docTitle) docTitle = `Material Purchase Order - ${projectName}`;
-      docAmount = '₹14,20,000.00';
+      if (!docAmount || docAmount === '₹0.00') docAmount = '₹14,20,000.00';
 
       const poData: PurchaseOrderData = {
         ...JSON.parse(JSON.stringify(LABOUR_PO_TEMPLATE.purchaseOrder!)),
@@ -214,16 +224,20 @@ export function createProjectDocument(
     }
 
     case 'invoice': {
-      docNumber = `TI/${year.toString().slice(-2)}-${(year + 1).toString().slice(-2)}/${randomSuffix.toString().padStart(5, '0')}`;
+      if (!docNumber) docNumber = `TI/${year.toString().slice(-2)}-${(year + 1).toString().slice(-2)}/${randomSuffix.toString().padStart(5, '0')}`;
       if (!docTitle) docTitle = `Tax Invoice - ${projectName}`;
-      docAmount = '₹4,71,731.00';
+      if (!docAmount || docAmount === '₹0.00') docAmount = '₹4,71,731.00';
 
       const taxInvData: TaxInvoiceData = {
         ...JSON.parse(JSON.stringify(TAX_INVOICE_TEMPLATE.taxInvoice!)),
-        clientName: `M/s. ${client},`,
+        clientName: client.startsWith('M/s.') ? `${client},` : `M/s. ${client},`,
+        clientAddress: clientAddr.split(', ').map(s => s.trim()),
+        clientGst: clientGst,
         projectName: projectName,
         invoiceNo: docNumber,
         invoiceDate: dateStr,
+        poNo: documentFields?.CLIENT_PO_NUMBER || '1300000567',
+        poDate: documentFields?.CLIENT_PO_DATE || dateStr,
       };
 
       initialLatexDoc = {
@@ -378,4 +392,101 @@ export function createProjectDocument(
     description: `${PROJECT_DOC_TEMPLATES.find((t) => t.type === docType)?.name || 'Document'} for ${projectName}`,
     document: initialLatexDoc,
   };
+}
+
+/**
+ * Syncs project master settings (Company Profile, Client Info, Project Details)
+ * across all existing documents in a project.
+ */
+export function syncProjectMasterToDocuments(project: import('@/types/project').ProjectItem): ProjectDocumentItem[] {
+  const docs = project.documents || [];
+  const cp = project.companyProfile;
+  const clientName = project.clientName || '';
+  const clientAddr = project.clientAddress || '';
+  const clientGst = project.clientGstNo || '';
+  const contact = project.contactPerson || '';
+  const projectName = project.title || '';
+  const location = project.location || '';
+
+  return docs.map((docItem) => {
+    if (!docItem.document) return docItem;
+
+    const doc = JSON.parse(JSON.stringify(docItem.document)) as LatexDocument;
+
+    // 1. Sync Purchase Order / Work Order
+    if (doc.purchaseOrder) {
+      if (clientName) doc.purchaseOrder.contractorName = clientName;
+      if (projectName) doc.purchaseOrder.projectName = projectName;
+      if (location) doc.purchaseOrder.projectLocation = location;
+
+      if (cp) {
+        if (cp.companyName) {
+          doc.purchaseOrder.companyName = cp.companyName;
+          doc.purchaseOrder.tableCompanyName = cp.companyName;
+        }
+        if (cp.companySubtitle !== undefined) {
+          doc.purchaseOrder.companySubtitle = cp.companySubtitle;
+          doc.purchaseOrder.tableCompanySubtitle = cp.companySubtitle;
+        }
+        if (cp.companyGstNo) doc.purchaseOrder.gstNo = cp.companyGstNo;
+        if (cp.companyPhone) doc.purchaseOrder.companyPhone = cp.companyPhone;
+        if (cp.companyEmail) doc.purchaseOrder.companyEmail = cp.companyEmail;
+        if (cp.companyWebsite) doc.purchaseOrder.companyWebsite = cp.companyWebsite;
+        if (cp.companyAddressFooter) doc.purchaseOrder.companyAddressFooter = cp.companyAddressFooter;
+        if (cp.companyAddressHeader) {
+          const addrLines = cp.companyAddressHeader.split('\n').map((l) => l.trim()).filter(Boolean);
+          if (addrLines.length > 0) {
+            doc.purchaseOrder.companyAddress = addrLines;
+            doc.purchaseOrder.tableCompanyAddress = addrLines;
+          }
+        }
+      }
+    }
+
+    // 2. Sync Quotation
+    if (doc.quotation) {
+      if (clientName) doc.quotation.toRecipient = contact ? `${contact} (${clientName})` : clientName;
+      if (clientAddr) doc.quotation.toAddress = clientAddr;
+
+      if (cp) {
+        if (cp.companyName) doc.quotation.companyName = cp.companyName;
+        if (cp.companySubtitle !== undefined) doc.quotation.companySubtitle = cp.companySubtitle;
+        if (cp.companyGstNo) doc.quotation.companyGstNo = cp.companyGstNo;
+        if (cp.companyPhone) doc.quotation.companyPhone = cp.companyPhone;
+        if (cp.companyEmail) doc.quotation.companyEmail = cp.companyEmail;
+        if (cp.companyWebsite) doc.quotation.companyWebsite = cp.companyWebsite;
+        if (cp.companyAddressHeader) doc.quotation.companyAddressHeader = cp.companyAddressHeader;
+        if (cp.companyAddressFooter) doc.quotation.companyAddressFooter = cp.companyAddressFooter;
+      }
+    }
+
+    // 3. Sync Tax Invoice
+    if (doc.taxInvoice) {
+      if (clientName) doc.taxInvoice.clientName = clientName.startsWith('M/s.') ? `${clientName},` : `M/s. ${clientName},`;
+      if (clientAddr) {
+        doc.taxInvoice.clientAddressLine1 = clientAddr;
+      }
+      if (clientGst) doc.taxInvoice.clientGstNo = clientGst;
+      if (projectName) doc.taxInvoice.projectName = projectName;
+
+      if (cp) {
+        if (cp.companyName) doc.taxInvoice.companyName = cp.companyName;
+        if (cp.companySubtitle) doc.taxInvoice.companySubtitle = cp.companySubtitle;
+        if (cp.companyGstNo) doc.taxInvoice.companyGstNo = cp.companyGstNo;
+        if (cp.companyPanNo) doc.taxInvoice.companyPanNo = cp.companyPanNo;
+        if (cp.companyEpfNo) doc.taxInvoice.companyEpfNo = cp.companyEpfNo;
+        if (cp.companyPhone) doc.taxInvoice.companyPhone = cp.companyPhone;
+        if (cp.companyEmail) doc.taxInvoice.companyEmail = cp.companyEmail;
+        if (cp.companyWebsite) doc.taxInvoice.companyWebsite = cp.companyWebsite;
+        if (cp.companyAddressHeader) doc.taxInvoice.companyAddressHeader = cp.companyAddressHeader;
+        if (cp.companyAddressFooter) doc.taxInvoice.companyAddressFooter = cp.companyAddressFooter;
+      }
+    }
+
+    return {
+      ...docItem,
+      lastModified: 'Just now',
+      document: doc,
+    };
+  });
 }

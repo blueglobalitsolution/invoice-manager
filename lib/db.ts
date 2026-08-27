@@ -87,6 +87,9 @@ function initDb() {
   const migrations = [
     "ALTER TABLE projects ADD COLUMN companyProfile TEXT;",
     "ALTER TABLE projects ADD COLUMN isFavourite INTEGER DEFAULT 0;",
+    "ALTER TABLE projects ADD COLUMN clientAddress TEXT;",
+    "ALTER TABLE projects ADD COLUMN clientGstNo TEXT;",
+    "ALTER TABLE projects ADD COLUMN contactPerson TEXT;",
   ];
   for (const migration of migrations) {
     try {

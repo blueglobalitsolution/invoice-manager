@@ -26,6 +26,7 @@ import { LatexDocument, CustomPageDef, CustomSectionItem, PurchaseOrderData, Sec
 import { LABOUR_PO_TEMPLATE, SAMPLE_TEMPLATES } from '@/lib/templates';
 import { PREDEFINED_SECTION_TYPES, createSectionFromPreset } from '@/lib/section-presets';
 import { DocumentPreview } from '@/components/DocumentPreview';
+import { SectionLibraryManager } from '@/components/SectionLibraryManager';
 
 interface TemplateBuilderStudioProps {
   onBack: () => void;
@@ -73,6 +74,7 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
   );
 
   const [activeTab, setActiveTab] = useState<'basics' | 'sections' | 'style' | 'variables'>('basics');
+  const [viewMode, setViewMode] = useState<'studio' | 'library'>('studio');
   const [previewZoom, setPreviewZoom] = useState<number>(90);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [copiedVariable, setCopiedVariable] = useState<string | null>(null);
@@ -266,9 +268,53 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
   };
 
   if (isSelectingBase) {
+    if (viewMode === 'library') {
+      return (
+        <div className="flex flex-col h-screen w-full bg-[#0e1724] text-gray-100 font-sans overflow-hidden">
+          {/* Header with Mode Switcher */}
+          <header className="h-14 bg-[#161f2e] border-b border-gray-800 px-6 flex items-center justify-between shrink-0 shadow-md">
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={onBack}
+                className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors flex items-center space-x-1.5 cursor-pointer text-xs font-medium"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Back to Dashboard</span>
+              </button>
+              <div className="h-4 w-px bg-gray-700"></div>
+              <span className="text-sm font-bold text-white uppercase tracking-wider">Template Builder Studio</span>
+            </div>
+
+            {/* Mode Switcher Tabs */}
+            <div className="flex items-center bg-[#0d1420] border border-gray-700/80 rounded-lg p-0.5">
+              <button
+                onClick={() => setViewMode('studio')}
+                className="px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer flex items-center space-x-1.5 text-gray-400 hover:text-white hover:bg-gray-800/60"
+              >
+                <Building2 className="w-3.5 h-3.5" />
+                <span>Document Blueprints</span>
+              </button>
+              <button
+                onClick={() => setViewMode('library')}
+                className="px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer flex items-center space-x-1.5 bg-emerald-600 text-white shadow"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+                <span>Category & Section Presets</span>
+              </button>
+            </div>
+          </header>
+
+          {/* Full Screen Section Library Manager */}
+          <div className="flex-1 flex overflow-hidden">
+            <SectionLibraryManager />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex flex-col h-screen w-full bg-[#0e1724] text-gray-100 font-sans overflow-hidden">
-        {/* Header */}
+        {/* Header with Mode Switcher */}
         <header className="h-14 bg-[#161f2e] border-b border-gray-800 px-6 flex items-center justify-between shrink-0 shadow-md">
           <div className="flex items-center space-x-3">
             <button
@@ -281,6 +327,24 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
             <div className="h-4 w-px bg-gray-700"></div>
             <span className="text-sm font-bold text-white uppercase tracking-wider">Template Builder Studio</span>
           </div>
+
+          {/* Mode Switcher Tabs */}
+          <div className="flex items-center bg-[#0d1420] border border-gray-700/80 rounded-lg p-0.5">
+            <button
+              onClick={() => setViewMode('studio')}
+              className="px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer flex items-center space-x-1.5 bg-emerald-600 text-white shadow"
+            >
+              <Building2 className="w-3.5 h-3.5" />
+              <span>Document Blueprints</span>
+            </button>
+            <button
+              onClick={() => setViewMode('library')}
+              className="px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer flex items-center space-x-1.5 text-gray-400 hover:text-white hover:bg-gray-800/60"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+              <span>Category & Section Presets</span>
+            </button>
+          </div>
         </header>
 
         {/* Blueprint Selector Panel */}
@@ -291,11 +355,41 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
             </div>
             <h1 className="text-2xl font-black text-white tracking-tight">Choose a Template Blueprint to Customize</h1>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Select one of the standard business layouts below as a baseline layout. You can customize branding, colors, variables, pages, and sections.
+              Select one of the standard business layouts below to edit, or customize reusable section categories in the preset manager.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full pt-4">
+          {/* Featured Section & Preset Library Card */}
+          <div
+            onClick={() => setViewMode('library')}
+            className="w-full bg-gradient-to-r from-[#142338] via-[#102a3d] to-[#12232e] border-2 border-emerald-500/50 hover:border-emerald-400 rounded-2xl p-5 shadow-xl cursor-pointer transition-all hover:scale-[1.01] flex items-center justify-between group"
+          >
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-600/30 border border-emerald-500/60 flex items-center justify-center text-emerald-300 shrink-0 shadow-md">
+                <Layers className="w-6 h-6" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center space-x-2">
+                  <h3 className="text-base font-bold text-white group-hover:text-emerald-300 transition-colors">
+                    Section & Preset Library
+                  </h3>
+                  <span className="text-[9px] uppercase font-mono tracking-wider bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/40">
+                    Template Presets
+                  </span>
+                </div>
+                <p className="text-xs text-gray-300 max-w-xl leading-relaxed">
+                  Customize pre-filled section contents, tables, clauses, and specifications across document templates.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-1.5 text-xs font-bold text-emerald-400 bg-emerald-950/80 border border-emerald-800/80 px-3 py-2 rounded-xl shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow">
+              <span>Open Preset Library</span>
+              <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full pt-2">
             {Object.entries(SAMPLE_TEMPLATES).map(([key, tmpl]) => {
               const normalTitle = 
                 key === 'tax_invoice' 
@@ -315,7 +409,7 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
                     setTemplateDesc(`Custom template based on the standard ${normalTitle} layout.`);
                     setIsSelectingBase(false);
                   }}
-                  className="bg-[#131d2d]/80 border border-gray-800 rounded-xl p-5 text-left hover:border-emerald-500/50 hover:bg-[#152338]/60 transition-all shadow-md group/card cursor-pointer flex flex-col justify-between h-44"
+                  className="bg-[#131d2d]/80 border border-gray-800 rounded-xl p-5 text-left hover:border-emerald-500/50 hover:bg-[#152338]/60 transition-all shadow-md group/card cursor-pointer flex flex-col justify-between h-40"
                 >
                   <div>
                     <div className="flex items-center justify-between">
@@ -323,10 +417,10 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
                         {key === 'quotation' ? 'Quotation Layout' : key === 'tax_invoice' ? 'Invoice Layout' : key === 'labour_po' ? 'Labour PO Layout' : 'Blank Layout'}
                       </span>
                     </div>
-                    <h3 className="text-base font-bold text-white mt-3 group-hover/card:text-emerald-400 transition-colors">
+                    <h3 className="text-base font-bold text-white mt-2 group-hover/card:text-emerald-400 transition-colors">
                       {normalTitle}
                     </h3>
-                    <p className="text-xs text-gray-400 mt-2 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">
                       {key === 'quotation' 
                         ? '10-page commercial quotation with specifications, pricing BOQ, vendor listing table, and standard terms.'
                         : key === 'tax_invoice'
@@ -336,7 +430,7 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
                         : 'Create a customized document blueprint from scratch.'}
                     </p>
                   </div>
-                  <div className="flex items-center text-xs text-emerald-400 font-semibold group-hover/card:translate-x-1.5 transition-transform mt-3">
+                  <div className="flex items-center text-xs text-emerald-400 font-semibold group-hover/card:translate-x-1.5 transition-transform mt-2">
                     <span>Start Customizing</span>
                     <ArrowRight className="w-3.5 h-3.5 ml-1" />
                   </div>
@@ -344,8 +438,6 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
               );
             })}
           </div>
-
-
         </div>
       </div>
     );
@@ -390,6 +482,34 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
 
         {/* Studio Top Actions */}
         <div className="flex items-center space-x-2">
+          {/* Mode Switcher Tabs */}
+          <div className="flex items-center bg-[#0d1420] border border-gray-700/80 rounded-lg p-0.5">
+            <button
+              onClick={() => setViewMode('studio')}
+              className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer flex items-center space-x-1.5 ${
+                viewMode === 'studio'
+                  ? 'bg-emerald-600 text-white shadow'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/60'
+              }`}
+            >
+              <Building2 className="w-3.5 h-3.5" />
+              <span>Document Studio</span>
+            </button>
+            <button
+              onClick={() => setViewMode('library')}
+              className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer flex items-center space-x-1.5 ${
+                viewMode === 'library'
+                  ? 'bg-emerald-600 text-white shadow'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/60'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+              <span>Category & Section Presets</span>
+            </button>
+          </div>
+
+          <div className="h-4 w-px bg-gray-700 hidden sm:block"></div>
+
           {/* Import / Export */}
           <label className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors cursor-pointer text-xs flex items-center space-x-1">
             <Upload className="w-3.5 h-3.5" />
@@ -428,8 +548,14 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
         </div>
       </header>
 
-      {/* Main 2-Pane Workspace */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* When in Library Mode, render SectionLibraryManager full screen */}
+      {viewMode === 'library' ? (
+        <div className="flex-1 flex overflow-hidden">
+          <SectionLibraryManager />
+        </div>
+      ) : (
+        /* Main 2-Pane Workspace */
+        <div className="flex-1 flex overflow-hidden">
         {/* Left Config Studio Panel */}
         <div className="w-full md:w-[480px] lg:w-[540px] bg-[#161f2e] border-r border-gray-800 flex flex-col shrink-0 h-full overflow-hidden">
           {/* Navigation Tabs */}
@@ -649,8 +775,17 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
                 </div>
 
                 {/* Predefined Presets Quick Add */}
-                <div className="pt-2">
-                  <h4 className="font-semibold text-gray-300 mb-2">Add Preset Module:</h4>
+                <div className="pt-2 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold text-gray-300">Quick Add Preset Module:</h4>
+                    <button
+                      onClick={() => setViewMode('library')}
+                      className="text-[10px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center space-x-1 hover:underline cursor-pointer"
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      <span>Manage Categories & Sections →</span>
+                    </button>
+                  </div>
                   <div className="grid grid-cols-2 gap-2">
                     {PREDEFINED_SECTION_TYPES.map((preset) => (
                       <button
@@ -853,6 +988,7 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
           </div>
         </div>
       </div>
+      )}
 
       {/* Floating Toast Notification */}
       {toastMessage && (

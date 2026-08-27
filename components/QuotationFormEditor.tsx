@@ -30,6 +30,9 @@ import {
   FileSpreadsheet,
   FileSignature,
   Edit3,
+  BookmarkCheck,
+  ChevronUp,
+  ChevronDown,
 } from 'lucide-react';
 import {
   LatexDocument,
@@ -37,13 +40,14 @@ import {
   QuotationTechnicalItem,
   QuotationCommercialItem,
   QuotationVendorItem,
+  CustomSectionItem,
 } from '@/types/document';
 import {
   getQuotationSectionPageNumber,
   getQuotationOutlineGroups,
   moveQuotationSectionToPage,
 } from '@/lib/document-sections';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { PREDEFINED_SECTION_TYPES } from '@/lib/section-presets';
 
 interface QuotationFormEditorProps {
   document: LatexDocument;
@@ -59,6 +63,8 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
   onOpenGlobalVariables,
 }) => {
   const q = doc.quotation!;
+  const outlineGroups = React.useMemo(() => getQuotationOutlineGroups(q), [q]);
+  const availablePages = React.useMemo(() => outlineGroups.map((g) => g.pageNum), [outlineGroups]);
   const [collapsedSections, setCollapsedSections] = React.useState<Record<string, boolean>>({});
 
   const toggleSection = (id: string) => {
@@ -249,6 +255,8 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
     },
   };
 
+  const customSection = q.customSections?.find((s) => s.id === activeSectionId);
+
   const isGlobalHeader =
     activeSectionId === 'header_footer' ||
     activeSectionId === 'letterhead' ||
@@ -256,38 +264,45 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
 
   const currentSectionPage = isGlobalHeader
     ? 'Global'
+    : customSection
+    ? customSection.pageNumber
     : getQuotationSectionPageNumber(activeSectionId, q);
-  const outlineGroups = getQuotationOutlineGroups(q);
 
-  const currentMeta = sectionMeta[activeSectionId] || sectionMeta.q_cover_info;
+  const currentMeta = customSection
+    ? {
+        title: customSection.title,
+        subtitle: `Custom ${customSection.contentType.replace('_', ' ')} Layout`,
+        page: customSection.pageNumber,
+        icon: BookmarkCheck,
+      }
+    : sectionMeta[activeSectionId] || sectionMeta.q_cover_info;
   const CurrentIcon = currentMeta.icon;
+
+  const handleUpdateCustomSection = (fields: Partial<CustomSectionItem>) => {
+    if (!customSection) return;
+    const updatedList = (q.customSections || []).map((s) =>
+      s.id === customSection.id ? { ...s, ...fields } : s
+    );
+    updateQuotation({ customSections: updatedList });
+  };
 
   return (
     <aside className="w-full bg-[#070A13] text-slate-200 flex flex-col h-full shrink-0 select-none overflow-hidden">
       {/* Single Unified Header */}
-      <div className="px-5 py-3.5 border-b border-[#151C2C] bg-[#0A0E1A] flex items-center justify-between shrink-0">
-        <div className="flex items-center space-x-3.5 min-w-0">
-          <div className="w-10 h-10 rounded-2xl bg-[#4F46E5]/20 border border-[#6366F1]/40 text-[#818CF8] flex items-center justify-center shrink-0">
-            <CurrentIcon className="w-5 h-5" />
+      <div className="px-3.5 py-2 border-b border-[#151C2C] bg-[#0A0E1A] flex items-center justify-between shrink-0 h-[49px]">
+        <div className="flex items-center space-x-2.5 min-w-0">
+          <div className="w-7 h-7 rounded-lg bg-[#4F46E5]/20 border border-[#6366F1]/40 text-[#818CF8] flex items-center justify-center shrink-0">
+            <CurrentIcon className="w-3.5 h-3.5" />
           </div>
           <div className="truncate">
-            <div className="text-sm font-bold text-white tracking-tight truncate">{currentMeta.title}</div>
-            <div className="text-xs text-slate-400 truncate">{currentMeta.subtitle}</div>
+            <div className="text-xs font-bold text-white leading-tight tracking-tight truncate">{currentMeta.title}</div>
+            <div className="text-[10px] text-slate-400 leading-tight truncate">{currentMeta.subtitle}</div>
           </div>
         </div>
 
         <div className="flex items-center space-x-2 shrink-0">
-          {onOpenGlobalVariables && (
-            <button
-              onClick={onOpenGlobalVariables}
-              className="px-2.5 py-1 bg-[#4F46E5]/20 hover:bg-[#4F46E5]/40 text-indigo-300 hover:text-white border border-[#6366F1]/40 rounded-lg text-[10px] font-mono font-bold flex items-center space-x-1 transition-colors cursor-pointer"
-              title="Open Global Variables panel"
-            >
-              <span>{`{{Vars}}`}</span>
-            </button>
-          )}
-          <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 bg-[#2C1D54] text-[#A78BFA] border border-[#7C3AED]/40 rounded-lg">
-            {typeof currentSectionPage === 'number' ? `PAGE ${currentSectionPage}` : currentSectionPage}
+          <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-[#4F46E5]/30 text-indigo-200 border border-[#6366F1]/50 rounded-md font-semibold">
+            {typeof currentSectionPage === 'number' ? `Page ${currentSectionPage}` : currentSectionPage}
           </span>
         </div>
       </div>
@@ -1149,15 +1164,15 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
         )}
 
         {/* =========================================================================
-            APPROVED VENDOR LIST (PART 1: 1-14) (PAGE 6)
+            APPROVED VENDOR LIST (PAGE 6)
             ========================================================================= */}
-        {(activeSectionId === 'q_vendors_part1' || activeSectionId === 'page_6') && (
+        {(activeSectionId === 'q_vendors' || activeSectionId === 'q_vendors_part1' || activeSectionId === 'q_vendors_part2' || activeSectionId === 'page_6') && (
           <div className="space-y-4">
             <div className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
               <div className="flex justify-between items-center">
                 <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
                   <CheckSquare className="w-3.5 h-3.5" />
-                  <span>Approved Vendor List (Part 1: 1-14)</span>
+                  <span>Approved Vendor List Table ({q.vendorList.length} items)</span>
                 </h3>
                 <button
                   onClick={() => {
@@ -1174,21 +1189,34 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   className="px-2 py-1 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[11px] font-semibold flex items-center space-x-1 cursor-pointer"
                 >
                   <Plus className="w-3 h-3" />
-                  <span>Add Vendor</span>
+                  <span>Add Vendor Item</span>
                 </button>
               </div>
 
-              <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
-                {q.vendorList.slice(0, 14).map((v, idx) => (
+              <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
+                {q.vendorList.map((v, idx) => (
                   <div key={idx} className="bg-[#070c18] p-2 rounded border border-[#16233a] space-y-1.5">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-mono text-gray-400">Sr. {v.srNo}</span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-[10px] font-mono text-gray-400">Sr.</span>
+                        <input
+                          type="text"
+                          value={v.srNo}
+                          onChange={(e) => {
+                            const updated = [...q.vendorList];
+                            updated[idx] = { ...updated[idx], srNo: e.target.value };
+                            updateQuotation({ vendorList: updated });
+                          }}
+                          className="w-10 px-1 py-0.5 bg-[#0b1426] border border-[#16233a] rounded text-[10px] text-white font-mono text-center"
+                        />
+                      </div>
                       <button
                         onClick={() => {
                           const updated = q.vendorList.filter((_, i) => i !== idx);
                           updateQuotation({ vendorList: updated });
                         }}
                         className="text-red-400 hover:text-red-300 p-0.5 cursor-pointer"
+                        title="Delete item"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -1211,7 +1239,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                         <label className="block text-[10px] text-gray-500">Brand / Make</label>
                         <input
                           type="text"
-                          value={v.brand}
+                          value={cleanDisplayValue(v.brand)}
                           onChange={(e) => {
                             const updated = [...q.vendorList];
                             updated[idx] = { ...updated[idx], brand: e.target.value };
@@ -1229,92 +1257,13 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
         )}
 
         {/* =========================================================================
-            APPROVED VENDORS PART 2 & TAXES (PAGE 7)
+            TAXES, NOTES & DELIVERY CONDITIONS (PAGE 7)
             ========================================================================= */}
-        {(activeSectionId === 'q_vendors_part2' || activeSectionId === 'q_taxes_notes' || activeSectionId === 'page_7') && (
+        {(activeSectionId === 'q_taxes_notes' || activeSectionId === 'page_7') && (
           <div className="space-y-4">
-            {(activeSectionId === 'q_vendors_part2' || activeSectionId === 'page_7') && (
-              <div className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
-                    <CheckSquare className="w-3.5 h-3.5" />
-                    <span>Approved Vendor List (Part 2: 15-25)</span>
-                  </h3>
-                  <button
-                    onClick={() => {
-                      const updated = [
-                        ...q.vendorList,
-                        {
-                          srNo: `${q.vendorList.length + 1}`,
-                          description: 'New Material / Component',
-                          brand: 'Standard Make / Approved Brand',
-                        },
-                      ];
-                      updateQuotation({ vendorList: updated });
-                    }}
-                    className="px-2 py-1 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[11px] font-semibold flex items-center space-x-1 cursor-pointer"
-                  >
-                    <Plus className="w-3 h-3" />
-                    <span>Add Vendor Item</span>
-                  </button>
-                </div>
-
-                <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                  {q.vendorList.slice(14).map((v, relativeIdx) => {
-                    const actualIdx = relativeIdx + 14;
-                    return (
-                      <div key={actualIdx} className="bg-[#070c18] p-2 rounded border border-[#16233a] space-y-1.5">
-                        <div className="flex justify-between items-center">
-                          <span className="text-[10px] font-mono text-gray-400">Sr. {v.srNo}</span>
-                          <button
-                            onClick={() => {
-                              const updated = q.vendorList.filter((_, i) => i !== actualIdx);
-                              updateQuotation({ vendorList: updated });
-                            }}
-                            className="text-red-400 hover:text-red-300 p-0.5 cursor-pointer"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <label className="block text-[10px] text-gray-500">Description</label>
-                            <input
-                              type="text"
-                              value={v.description}
-                              onChange={(e) => {
-                                const updated = [...q.vendorList];
-                                updated[actualIdx] = { ...updated[actualIdx], description: e.target.value };
-                                updateQuotation({ vendorList: updated });
-                              }}
-                              className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[10px] text-gray-500">Brand / Make</label>
-                            <input
-                              type="text"
-                              value={cleanDisplayValue(v.brand)}
-                              onChange={(e) => {
-                                const updated = [...q.vendorList];
-                                updated[actualIdx] = { ...updated[actualIdx], brand: e.target.value };
-                                updateQuotation({ vendorList: updated });
-                              }}
-                              className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {(activeSectionId === 'q_taxes_notes' || activeSectionId === 'page_7') && (
-              <div className="bg-[#0b1426] p-3.5 rounded-2xl border border-[#141f33] space-y-4">
-                <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide">
-                  Taxes, Notes & Delivery Conditions
+            <div className="bg-[#0b1426] p-3.5 rounded-2xl border border-[#141f33] space-y-4">
+              <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide">
+                Taxes, Notes & Delivery Conditions
                 </h3>
 
                 <div>
@@ -1419,7 +1368,6 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   />
                 </div>
               </div>
-            )}
           </div>
         )}
 
@@ -1748,6 +1696,442 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                       onChange={(e) => updateQuotation({ finalSignatoryTitle: e.target.value })}
                       className="w-full px-2 py-1.5 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
                     />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* =========================================================================
+            DYNAMIC CUSTOM SECTION EDITOR
+            ========================================================================= */}
+        {customSection && (
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <label className="block font-bold text-gray-300 uppercase text-[10px]">
+                Section Title
+              </label>
+              <input
+                type="text"
+                value={customSection.title}
+                onChange={(e) => handleUpdateCustomSection({ title: e.target.value })}
+                className="w-full bg-[#0F1523] border border-[#1E293B] rounded-xl px-3 py-2 text-white font-bold focus:border-indigo-500 focus:outline-none text-xs"
+              />
+            </div>
+
+            {/* Page Number Selector */}
+            <div className="space-y-1">
+              <label className="block font-bold text-gray-300 uppercase text-[10px]">
+                Assigned Page Number
+              </label>
+              <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
+                {availablePages.map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    type="button"
+                    onClick={() => {
+                      const updatedQ = moveQuotationSectionToPage(q, customSection.id, pageNum);
+                      updateQuotation(updatedQ);
+                    }}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${
+                      customSection.pageNumber === pageNum
+                        ? 'bg-indigo-600 border-indigo-500 text-white'
+                        : 'bg-[#0F1523] border-[#1E293B] text-gray-300 hover:text-white'
+                    }`}
+                  >
+                    P{pageNum}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-gray-400">
+                Move this section to another page or drag it in the Document Outline.
+              </p>
+            </div>
+
+            {/* Content Type Selector */}
+            <div className="space-y-1.5 bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B]">
+              <div className="flex items-center justify-between mb-2">
+                <label className="block font-bold text-gray-300 uppercase text-[10px]">
+                  Section Layout Type
+                </label>
+                <div className="relative group/preset">
+                  <select
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (!val) return;
+                      const [type, presetIdxStr] = val.split(':');
+                      const presetIdx = parseInt(presetIdxStr, 10);
+                      const opt = PREDEFINED_SECTION_TYPES.find((t) => t.type === type);
+                      if (opt && opt.presets[presetIdx]) {
+                        const template = opt.presets[presetIdx].factory();
+                        handleUpdateCustomSection({
+                          contentType: type as any,
+                          bullets: template.bullets,
+                          paragraphs: template.paragraphs,
+                          tableHeaders: template.tableHeaders,
+                          tableRows: template.tableRows,
+                          keyValuePairs: template.keyValuePairs,
+                          calloutText: template.calloutText,
+                          calloutType: template.calloutType,
+                        });
+                      }
+                      e.target.value = '';
+                    }}
+                    defaultValue=""
+                    className="bg-[#1F293D] text-indigo-300 border border-indigo-700/60 rounded px-2 py-0.5 text-[10px] font-bold cursor-pointer"
+                  >
+                    <option value="" disabled>
+                      ⚡ Insert Preset Template...
+                    </option>
+                    {PREDEFINED_SECTION_TYPES.map((opt, optIdx) => (
+                      <optgroup key={`${opt.label}-${opt.type}-${optIdx}`} label={opt.label}>
+                        {opt.presets.map((p, idx) => (
+                          <option key={`${p.name}-${idx}`} value={`${opt.type}:${idx}`}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-5 gap-1.5">
+                {(
+                  [
+                    { type: 'bullet_list', label: 'List' },
+                    { type: 'legal_clause', label: 'Legal' },
+                    { type: 'table', label: 'Table' },
+                    { type: 'key_value', label: 'Key-Val' },
+                    { type: 'callout', label: 'Notice' },
+                  ] as const
+                ).map(({ type, label }) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => {
+                      if (customSection.contentType !== type) {
+                        const opt = PREDEFINED_SECTION_TYPES.find((t) => t.type === type);
+                        const template = opt?.presets[0]?.factory() || {};
+                        handleUpdateCustomSection({
+                          contentType: type as any,
+                          ...template,
+                        });
+                      }
+                    }}
+                    className={`px-1.5 py-1.5 rounded-lg text-[10.5px] font-medium border cursor-pointer text-center truncate transition-colors ${
+                      customSection.contentType === type
+                        ? 'bg-indigo-600 border-indigo-500 text-white font-bold'
+                        : 'bg-[#111827] border-[#1E293B] text-gray-300 hover:text-white'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Bullet List Editor */}
+            {customSection.contentType === 'bullet_list' && (
+              <div className="space-y-2 bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B]">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-gray-300 text-[10.5px]">
+                    Bullet Items ({(customSection.bullets || []).length})
+                  </span>
+                  <button
+                    onClick={() => {
+                      const cur = customSection.bullets || [];
+                      handleUpdateCustomSection({
+                        bullets: [...cur, 'New bullet item text...'],
+                      });
+                    }}
+                    className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Add Bullet</span>
+                  </button>
+                </div>
+                {(customSection.bullets || []).map((b, idx) => (
+                  <div key={idx} className="flex items-center space-x-1.5">
+                    <input
+                      type="text"
+                      value={b}
+                      onChange={(e) => {
+                        const cur = [...(customSection.bullets || [])];
+                        cur[idx] = e.target.value;
+                        handleUpdateCustomSection({ bullets: cur });
+                      }}
+                      className="w-full bg-[#111827] border border-[#1E293B] rounded-xl px-2.5 py-1.5 text-xs text-white"
+                    />
+                    <button
+                      onClick={() => {
+                        const cur = (customSection.bullets || []).filter((_, i) => i !== idx);
+                        handleUpdateCustomSection({ bullets: cur });
+                      }}
+                      className="p-1.5 text-gray-500 hover:text-red-400 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Legal Clause / Paragraphs Editor */}
+            {(customSection.contentType === 'legal_clause' ||
+              customSection.contentType === 'paragraphs') && (
+              <div className="space-y-2 bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B]">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-gray-300 text-[10.5px]">
+                    {customSection.contentType === 'legal_clause'
+                      ? 'Legal Numbered Clauses'
+                      : 'Paragraphs'}{' '}
+                    ({(customSection.paragraphs || []).length})
+                  </span>
+                  <button
+                    onClick={() => {
+                      const cur = customSection.paragraphs || [];
+                      handleUpdateCustomSection({
+                        paragraphs: [...cur, 'Enter text for this clause or paragraph...'],
+                      });
+                    }}
+                    className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Add Paragraph</span>
+                  </button>
+                </div>
+                {(customSection.paragraphs || []).map((p, idx) => (
+                  <div key={idx} className="flex items-start space-x-1.5">
+                    <span className="text-[10px] font-mono text-gray-500 mt-2 w-5 text-right">
+                      {idx + 1}.
+                    </span>
+                    <textarea
+                      rows={2}
+                      value={p}
+                      onChange={(e) => {
+                        const cur = [...(customSection.paragraphs || [])];
+                        cur[idx] = e.target.value;
+                        handleUpdateCustomSection({ paragraphs: cur });
+                      }}
+                      className="w-full bg-[#111827] border border-[#1E293B] rounded-xl p-2 text-xs text-white"
+                    />
+                    <button
+                      onClick={() => {
+                        const cur = (customSection.paragraphs || []).filter((_, i) => i !== idx);
+                        handleUpdateCustomSection({ paragraphs: cur });
+                      }}
+                      className="p-1.5 text-gray-500 hover:text-red-400 cursor-pointer mt-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Key-Value Matrix Editor */}
+            {customSection.contentType === 'key_value' && (
+              <div className="space-y-2 bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B]">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-gray-300 text-[10.5px]">
+                    Key-Value Rows ({(customSection.keyValuePairs || []).length})
+                  </span>
+                  <button
+                    onClick={() => {
+                      const cur = customSection.keyValuePairs || [];
+                      handleUpdateCustomSection({
+                        keyValuePairs: [...cur, { key: 'Parameter Name', value: 'Specific Value' }],
+                      });
+                    }}
+                    className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Add Row</span>
+                  </button>
+                </div>
+                {(customSection.keyValuePairs || []).map((kv, idx) => (
+                  <div key={idx} className="flex items-center space-x-1.5">
+                    <input
+                      type="text"
+                      placeholder="Key / Label"
+                      value={kv.key}
+                      onChange={(e) => {
+                        const cur = [...(customSection.keyValuePairs || [])];
+                        cur[idx] = { ...cur[idx], key: e.target.value };
+                        handleUpdateCustomSection({ keyValuePairs: cur });
+                      }}
+                      className="w-1/3 bg-[#1F293D] border border-[#1E293B] rounded-xl px-2.5 py-1.5 text-xs font-semibold text-indigo-200"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Value"
+                      value={kv.value}
+                      onChange={(e) => {
+                        const cur = [...(customSection.keyValuePairs || [])];
+                        cur[idx] = { ...cur[idx], value: e.target.value };
+                        handleUpdateCustomSection({ keyValuePairs: cur });
+                      }}
+                      className="w-2/3 bg-[#111827] border border-[#1E293B] rounded-xl px-2.5 py-1.5 text-xs text-white"
+                    />
+                    <button
+                      onClick={() => {
+                        const cur = (customSection.keyValuePairs || []).filter((_, i) => i !== idx);
+                        handleUpdateCustomSection({ keyValuePairs: cur });
+                      }}
+                      className="p-1.5 text-gray-500 hover:text-red-400 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Callout Notice Editor */}
+            {customSection.contentType === 'callout' && (
+              <div className="space-y-2 bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B]">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-gray-300 text-[10.5px]">
+                    Notice Callout Settings
+                  </span>
+                  <select
+                    value={customSection.calloutType || 'warning'}
+                    onChange={(e) =>
+                      handleUpdateCustomSection({
+                        calloutType: e.target.value as 'info' | 'warning' | 'important',
+                      })
+                    }
+                    className="bg-[#1F293D] text-amber-300 border border-amber-700/60 rounded px-2 py-0.5 text-[10px] font-bold cursor-pointer"
+                  >
+                    <option value="warning">Warning Directive</option>
+                    <option value="important">Important Notice</option>
+                    <option value="info">General Info</option>
+                  </select>
+                </div>
+                <textarea
+                  rows={4}
+                  value={customSection.calloutText || ''}
+                  onChange={(e) => handleUpdateCustomSection({ calloutText: e.target.value })}
+                  placeholder="Enter notice text or mandatory directive..."
+                  className="w-full bg-[#111827] border border-amber-800/60 rounded-xl p-2.5 text-xs text-amber-200"
+                />
+              </div>
+            )}
+
+            {/* Table Editor */}
+            {customSection.contentType === 'table' && (
+              <div className="space-y-3 bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B]">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-gray-300 text-[10.5px]">
+                    Table Headers ({(customSection.tableHeaders || []).length} columns)
+                  </span>
+                  <button
+                    onClick={() => {
+                      const curH = customSection.tableHeaders || ['Item', 'Description', 'Remarks'];
+                      const curR = customSection.tableRows || [];
+                      handleUpdateCustomSection({
+                        tableHeaders: [...curH, 'New Header'],
+                        tableRows: curR.map((row) => [...row, '-']),
+                      });
+                    }}
+                    className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[10px] font-bold cursor-pointer"
+                  >
+                    + Add Column
+                  </button>
+                </div>
+
+                <div className="space-y-1.5">
+                  {(customSection.tableHeaders || []).map((header, hIdx) => (
+                    <div key={hIdx} className="flex items-center space-x-1.5">
+                      <span className="text-[10px] text-gray-400 w-16">Col {hIdx + 1}:</span>
+                      <input
+                        type="text"
+                        value={header}
+                        onChange={(e) => {
+                          const cur = [...(customSection.tableHeaders || [])];
+                          cur[hIdx] = e.target.value;
+                          handleUpdateCustomSection({ tableHeaders: cur });
+                        }}
+                        className="flex-1 bg-[#111827] border border-[#1E293B] rounded-xl px-2.5 py-1 text-xs text-white"
+                      />
+                      {(customSection.tableHeaders || []).length > 1 && (
+                        <button
+                          onClick={() => {
+                            const curH = (customSection.tableHeaders || []).filter((_, i) => i !== hIdx);
+                            const curR = (customSection.tableRows || []).map((row) =>
+                              row.filter((_, i) => i !== hIdx)
+                            );
+                            handleUpdateCustomSection({
+                              tableHeaders: curH,
+                              tableRows: curR,
+                            });
+                          }}
+                          className="p-1 text-gray-500 hover:text-red-400"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-2 border-t border-[#1E293B]">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-bold text-gray-300 text-[10.5px]">
+                      Table Data ({(customSection.tableRows || []).length} rows)
+                    </span>
+                    <button
+                      onClick={() => {
+                        const curH = customSection.tableHeaders || ['Item', 'Description', 'Remarks'];
+                        const curR = customSection.tableRows || [];
+                        handleUpdateCustomSection({
+                          tableRows: [...curR, curH.map(() => 'Sample Text')],
+                        });
+                      }}
+                      className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[10px] font-bold cursor-pointer"
+                    >
+                      + Add Row
+                    </button>
+                  </div>
+
+                  <div className="space-y-2">
+                    {(customSection.tableRows || []).map((row, rIdx) => (
+                      <div key={rIdx} className="p-2.5 bg-[#111827] rounded-xl border border-[#1E293B] space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold text-indigo-400">Row {rIdx + 1}</span>
+                          <button
+                            onClick={() => {
+                              const cur = (customSection.tableRows || []).filter((_, i) => i !== rIdx);
+                              handleUpdateCustomSection({ tableRows: cur });
+                            }}
+                            className="text-gray-500 hover:text-red-400 text-xs"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        {row.map((cell, cIdx) => (
+                          <div key={cIdx} className="flex items-center space-x-1.5">
+                            <span className="text-[9px] text-gray-400 w-16 truncate">
+                              {(customSection.tableHeaders || [])[cIdx] || `Col ${cIdx + 1}`}:
+                            </span>
+                            <input
+                              type="text"
+                              value={cell}
+                              onChange={(e) => {
+                                const cur = [...(customSection.tableRows || [])];
+                                const curRow = [...cur[rIdx]];
+                                curRow[cIdx] = e.target.value;
+                                cur[rIdx] = curRow;
+                                handleUpdateCustomSection({ tableRows: cur });
+                              }}
+                              className="flex-1 bg-[#1F293D] border border-[#1E293B] rounded-lg px-2 py-1 text-xs text-white"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>

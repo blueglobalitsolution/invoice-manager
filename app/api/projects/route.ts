@@ -36,6 +36,9 @@ export async function GET(request: Request) {
         title: row.title,
         code: row.code,
         clientName: row.clientName,
+        clientAddress: row.clientAddress || '',
+        clientGstNo: row.clientGstNo || '',
+        contactPerson: row.contactPerson || '',
         location: row.location,
         category: row.category,
         budget: row.budget || '',
@@ -70,8 +73,8 @@ export async function POST(request: Request) {
 
     // Insert project record
     const stmt = db.prepare(`
-      INSERT INTO projects (id, userId, title, code, clientName, location, category, budget, status, owner, lastModified, tags, companyProfile, isArchived)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO projects (id, userId, title, code, clientName, clientAddress, clientGstNo, contactPerson, location, category, budget, status, owner, lastModified, tags, companyProfile, isArchived)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     stmt.run(
@@ -80,6 +83,9 @@ export async function POST(request: Request) {
       newProject.title,
       newProject.code || '',
       newProject.clientName || '',
+      newProject.clientAddress || '',
+      newProject.clientGstNo || '',
+      newProject.contactPerson || '',
       newProject.location || '',
       newProject.category || '',
       newProject.budget || '',

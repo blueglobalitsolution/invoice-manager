@@ -1,18 +1,20 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   FilePlus,
   FileSpreadsheet,
   FileCheck,
-  Package,
   Receipt,
-  Layers,
   FileText,
-  DollarSign,
+  Calendar,
   Hash,
   Sparkles,
+  Building,
+  User,
+  MapPin,
+  DollarSign,
 } from 'lucide-react';
 import { ProjectDocType, ProjectItem } from '@/types/project';
 import { PROJECT_DOC_TEMPLATES } from '@/lib/project-doc-templates';
@@ -26,7 +28,7 @@ interface CreateDocumentModalProps {
     customTitle?: string,
     customNumber?: string,
     customAmount?: string,
-    localVariables?: Record<string, string>
+    documentFields?: Record<string, string>
   ) => void;
 }
 
@@ -36,153 +38,171 @@ export const CreateDocumentModal: React.FC<CreateDocumentModalProps> = ({
   project,
   onCreateDocument,
 }) => {
+  const currentYear = new Date().getFullYear();
+  const randomSuffix = Math.floor(100 + Math.random() * 900);
+  const todayStr = new Date().toLocaleDateString('en-GB');
+
   const [selectedType, setSelectedType] = useState<ProjectDocType>('quotation');
   const [title, setTitle] = useState('');
   const [docNumber, setDocNumber] = useState('');
-  const [amount, setAmount] = useState('');
+  const [docDate, setDocDate] = useState(todayStr);
 
-  // Document level placeholders setup
-  const [customVars, setCustomVars] = useState<{ key: string; value: string }[]>([
-    { key: 'DELIVERY_PERIOD', value: '30 Days' },
-    { key: 'WARRANTY_TERMS', value: '12 Months' },
-  ]);
-  const [newKey, setNewKey] = useState('');
-  const [newValue, setNewValue] = useState('');
+  // Specific Form Fields per Document Type
+  // Tax Invoice specific
+  const [clientPoNumber, setClientPoNumber] = useState('1300000567');
+  const [clientPoDate, setClientPoDate] = useState(todayStr);
+  const [dispatchDocNo, setDispatchDocNo] = useState('');
+
+  // Quotation specific
+  const [subjectLine, setSubjectLine] = useState('Quotation for Construction of Round Roof System (Trussless Roof)');
+  const [buildingAreaSqft, setBuildingAreaSqft] = useState('8775.00 SQFT');
+
+  // Work Order specific
+  const [contractorName, setContractorName] = useState(project.clientName || 'Mohammad Kamil Shaikh');
+  const [agreedAmount, setAgreedAmount] = useState('₹ 4,70,000.00');
+
+  useEffect(() => {
+    if (isOpen) {
+      handleSelectType(selectedType);
+    }
+  }, [isOpen, project]);
 
   if (!isOpen) return null;
-
-  const currentTemplate = PROJECT_DOC_TEMPLATES.find((t) => t.type === selectedType) || PROJECT_DOC_TEMPLATES[0];
 
   const handleSelectType = (type: ProjectDocType) => {
     setSelectedType(type);
     const tmpl = PROJECT_DOC_TEMPLATES.find((t) => t.type === type);
-    if (tmpl) {
-      const year = new Date().getFullYear();
-      const randomSuffix = Math.floor(100 + Math.random() * 900);
-      setDocNumber(`${tmpl.defaultPrefix}/${year}/${randomSuffix}`);
-      setAmount(tmpl.defaultAmount);
-      setTitle(`${tmpl.name} - ${project.title}`);
-    }
-  };
+    const year = new Date().getFullYear();
+    const rnd = Math.floor(100 + Math.random() * 900);
 
-  const handleAddCustomVar = () => {
-    if (!newKey.trim() || !newValue.trim()) return;
-    const cleanKey = newKey.trim().toUpperCase().replace(/[{}\s]/g, '');
-    if (customVars.some(v => v.key === cleanKey)) {
-      alert('Key already exists');
-      return;
+    if (type === 'invoice') {
+      const invNo = `TI/${year.toString().slice(-2)}-${(year + 1).toString().slice(-2)}/${rnd.toString().padStart(5, '0')}`;
+      setDocNumber(invNo);
+      setTitle(`Tax Invoice - ${project.title}`);
+      setAgreedAmount('₹ 4,71,731.00');
+    } else if (type === 'quotation') {
+      const qNo = `GI-PRE-FAB-EQ-${rnd}/1002`;
+      setDocNumber(qNo);
+      setTitle(`Commercial Quotation - ${project.title}`);
+      setAgreedAmount('₹ 8,45,000.00');
+    } else if (type === 'work_order') {
+      const poNo = `GI/CIVIL/${year}/${rnd}`;
+      setDocNumber(poNo);
+      setTitle(`Civil Labour Contract Work Order - ${project.title}`);
+      setAgreedAmount('₹ 4,70,000.00');
+    } else {
+      setDocNumber(`GI/DOC/${year}/${rnd}`);
+      setTitle(`${tmpl?.name || 'Document'} - ${project.title}`);
     }
-    setCustomVars([...customVars, { key: cleanKey, value: newValue.trim() }]);
-    setNewKey('');
-    setNewValue('');
-  };
-
-  const handleRemoveCustomVar = (key: string) => {
-    setCustomVars(customVars.filter(v => v.key !== key));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Combine inputs + custom doc-level variables
-    const vars: Record<string, string> = {
+
+    // Bundle all specific document fields to pass into template instantiator
+    const fields: Record<string, string> = {
       DOC_TITLE: title.trim() || `${selectedType.toUpperCase()} Sheet`,
       DOC_NUMBER: docNumber.trim() || '',
-      DOC_AMOUNT: amount.trim() || '',
+      DOC_DATE: docDate.trim() || todayStr,
+      DOC_AMOUNT: agreedAmount.trim() || '₹ 0.00',
+      CLIENT_PO_NUMBER: clientPoNumber.trim(),
+      CLIENT_PO_DATE: clientPoDate.trim(),
+      DISPATCH_DOC_NO: dispatchDocNo.trim(),
+      SUBJECT_LINE: subjectLine.trim(),
+      BUILDING_AREA_SQFT: buildingAreaSqft.trim(),
+      CONTRACTOR_NAME: contractorName.trim() || project.clientName || 'Mohammad Kamil Shaikh',
     };
-
-    customVars.forEach((v) => {
-      if (v.key && v.value) {
-        vars[v.key] = v.value;
-      }
-    });
 
     onCreateDocument(
       selectedType,
       title.trim() || undefined,
       docNumber.trim() || undefined,
-      amount.trim() || undefined,
-      vars
+      agreedAmount.trim() || undefined,
+      fields
     );
 
-    setTitle('');
-    setCustomVars([
-      { key: 'DELIVERY_PERIOD', value: '30 Days' },
-      { key: 'WARRANTY_TERMS', value: '12 Months' },
-    ]);
     onClose();
   };
 
-  const getIcon = (type: ProjectDocType) => {
+  const getDocTypeIcon = (type: ProjectDocType) => {
     switch (type) {
       case 'quotation':
-        return <FileSpreadsheet className="w-5 h-5 text-blue-600" />;
+        return <FileSpreadsheet className="w-5 h-5 text-blue-400" />;
       case 'work_order':
-        return <FileCheck className="w-5 h-5 text-emerald-600" />;
+        return <FileCheck className="w-5 h-5 text-emerald-400" />;
       case 'invoice':
-        return <Receipt className="w-5 h-5 text-rose-600" />;
-      case 'custom':
-        return <FileText className="w-5 h-5 text-gray-600" />;
+        return <Receipt className="w-5 h-5 text-rose-400" />;
       default:
-        return <FilePlus className="w-5 h-5 text-gray-500" />;
+        return <FileText className="w-5 h-5 text-gray-400" />;
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0d3479]/18 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="glass-card rounded-[32px] w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200 select-none">
+      <div className="bg-[#111827] border border-gray-700/80 rounded-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[92vh] shadow-2xl text-gray-200">
+        
         {/* Header */}
-        <div className="px-6 py-5 border-b border-[#cccccc] flex items-center justify-between bg-white/35">
+        <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between bg-[#16202f]">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-[20px] bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479]">
+            <div className="w-10 h-10 rounded-xl bg-emerald-950/80 border border-emerald-700/60 flex items-center justify-center text-emerald-400 shadow-xs">
               <FilePlus className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-[30px] leading-[0.95]">Add Document to Project</h2>
-              <p className="text-sm text-[#666666] mt-2">
-                Inside: <span className="text-[#0d3479] font-bold">{project.title}</span>
+              <div className="flex items-center space-x-2">
+                <h2 className="text-lg font-bold text-white leading-tight">Create Document in Project</h2>
+                <span className="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded font-mono font-medium">
+                  {project.title}
+                </span>
+              </div>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Client: <span className="text-gray-200 font-semibold">{project.clientName || 'M/s. ALEMBIC LTD'}</span> • Location: <span className="text-gray-200">{project.location || 'Vadodara'}</span>
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-[#666666] hover:text-black rounded-[12px] hover:bg-white transition-colors"
+            className="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Body */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 text-xs">
-          {/* Template Selection Grid */}
+        {/* Form Body */}
+        <form onSubmit={handleSubmit} className="overflow-y-auto p-6 space-y-5 scrollbar-thin">
+          
+          {/* 1. Document Type Picker */}
           <div>
-            <label className="block text-[#666666] font-semibold mb-2">Select Document Type:</label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">
+              1. Choose Document Type
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {PROJECT_DOC_TEMPLATES.map((tmpl) => {
                 const isSelected = selectedType === tmpl.type;
                 return (
                   <div
                     key={tmpl.type}
                     onClick={() => handleSelectType(tmpl.type)}
-                    className={`p-3 rounded-[20px] border transition-all cursor-pointer flex items-start space-x-3 ${
+                    className={`p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
                       isSelected
-                        ? 'bg-[#dfe7f4] border-[#b9c7de] text-black shadow-sm'
-                        : 'bg-white/45 border-[#cccccc] text-[#666666] hover:bg-white/75 hover:text-black'
+                        ? 'bg-emerald-950/70 border-emerald-500 text-white shadow-sm ring-1 ring-emerald-500/50'
+                        : 'bg-[#16202f] border-gray-800 text-gray-400 hover:bg-[#1d2b3f] hover:border-gray-700'
                     }`}
                   >
-                    <div className="mt-0.5 shrink-0">{getIcon(tmpl.type)}</div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className={`font-semibold text-[12px] truncate ${isSelected ? 'text-[#0d3479]' : 'text-black'}`}>
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div
+                          className={`p-2 rounded-lg ${
+                            isSelected ? 'bg-emerald-600 text-white' : 'bg-gray-800 text-gray-400'
+                          }`}
+                        >
+                          {getDocTypeIcon(tmpl.type)}
+                        </div>
+                        <span className="text-[10px] font-mono font-semibold text-emerald-400">
                           {tmpl.badge}
                         </span>
-                        {isSelected && (
-                          <span className="w-2 h-2 rounded-full bg-[#0d3479]"></span>
-                        )}
                       </div>
-                      <p className="text-[10px] text-[#666666] mt-0.5 line-clamp-2 leading-relaxed">
-                        {tmpl.description}
-                      </p>
+                      <h4 className="font-bold text-xs text-white mb-0.5">{tmpl.name}</h4>
+                      <p className="text-[10px] text-gray-400 leading-snug">{tmpl.description}</p>
                     </div>
                   </div>
                 );
@@ -190,139 +210,183 @@ export const CreateDocumentModal: React.FC<CreateDocumentModalProps> = ({
             </div>
           </div>
 
-          {/* Document Title */}
-          <div>
-            <label className="block text-[#666666] font-semibold mb-2">Document Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder={`${currentTemplate.name} - ${project.title}`}
-              className="brand-input w-full px-4 py-3 text-sm"
-            />
+          {/* 2. Core Document Metadata */}
+          <div className="border-t border-gray-800 pt-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-3">
+              2. Document Title & References
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
+                <label className="block text-xs font-bold text-gray-300 mb-1.5">
+                  Document Title <span className="text-emerald-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500 font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-300 mb-1.5 flex items-center space-x-1">
+                  <Hash className="w-3.5 h-3.5 text-gray-400" />
+                  <span>Document / Ref No.</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={docNumber}
+                  onChange={(e) => setDocNumber(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500 font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-300 mb-1.5 flex items-center space-x-1">
+                  <Calendar className="w-3.5 h-3.5 text-gray-400" />
+                  <span>Document Date</span>
+                </label>
+                <input
+                  type="text"
+                  value={docDate}
+                  onChange={(e) => setDocDate(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-300 mb-1.5 flex items-center space-x-1">
+                  <DollarSign className="w-3.5 h-3.5 text-gray-400" />
+                  <span>Target Amount / Value</span>
+                </label>
+                <input
+                  type="text"
+                  value={agreedAmount}
+                  onChange={(e) => setAgreedAmount(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+            </div>
           </div>
 
-          {/* Reference Number & Amount */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[#666666] font-semibold mb-2 flex items-center space-x-1">
-                <Hash className="w-3.5 h-3.5 text-[#0d3479]" />
-                <span>Reference / Document No.</span>
-              </label>
-              <input
-                type="text"
-                value={docNumber}
-                onChange={(e) => setDocNumber(e.target.value)}
-                placeholder="e.g. GI/QT/2026/101"
-                className="brand-input w-full px-4 py-3 text-sm font-mono"
-              />
-            </div>
-            <div>
-              <label className="block text-[#666666] font-semibold mb-2 flex items-center space-x-1">
-                <DollarSign className="w-3.5 h-3.5 text-[#0d3479]" />
-                <span>Valuation / Amount</span>
-              </label>
-              <input
-                type="text"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="e.g. ₹8,45,000.00"
-                className="brand-input w-full px-4 py-3 text-sm"
-              />
-            </div>
-          </div>
+          {/* 3. Document-Specific Fields */}
+          <div className="border-t border-gray-800 pt-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-3 flex items-center space-x-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <span>3. Specific {selectedType.toUpperCase().replace('_', ' ')} Details</span>
+            </h3>
 
-          {/* Document Specific Placeholders Setup */}
-          <div className="border border-slate-200 rounded-[20px] p-4 bg-white/45 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-[#0d3479] text-xs">
-                Document Specific Placeholders (Used only in this document)
-              </span>
-              <span className="text-[10px] text-slate-500 font-mono">
-                {customVars.length + 3} Active
-              </span>
-            </div>
-
-            {/* Auto variables list */}
-            <div className="flex flex-wrap gap-1.5 pb-2">
-              <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 font-mono text-[9px] font-semibold border border-blue-100">
-                {"{{"}DOC_TITLE{"}}"}
-              </span>
-              <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 font-mono text-[9px] font-semibold border border-blue-100">
-                {"{{"}DOC_NUMBER{"}}"}
-              </span>
-              <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 font-mono text-[9px] font-semibold border border-blue-100">
-                {"{{"}DOC_AMOUNT{"}}"}
-              </span>
-            </div>
-
-            {/* Custom vars list */}
-            {customVars.length > 0 && (
-              <div className="space-y-1.5 max-h-[120px] overflow-y-auto pr-1">
-                {customVars.map((v) => (
-                  <div key={v.key} className="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200 shadow-3xs">
-                    <div className="flex items-center space-x-2">
-                      <span className="font-mono font-bold text-[#0d3479] text-[10px]">
-                        {"{{"}{v.key}{"}}"}
-                      </span>
-                      <span className="text-slate-400">&rarr;</span>
-                      <span className="text-slate-800 text-[10px] max-w-[200px] truncate">{v.value}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveCustomVar(v.key)}
-                      className="text-rose-500 hover:text-rose-700 font-bold px-1.5 py-0.5 rounded hover:bg-rose-50 transition-colors cursor-pointer"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                ))}
+            {/* If Tax Invoice */}
+            {selectedType === 'invoice' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#16202f] p-4 rounded-xl border border-gray-800">
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1.5">
+                    Client P.O. Number
+                  </label>
+                  <input
+                    type="text"
+                    value={clientPoNumber}
+                    onChange={(e) => setClientPoNumber(e.target.value)}
+                    placeholder="e.g. 1300000567"
+                    className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1.5">
+                    Client P.O. Date
+                  </label>
+                  <input
+                    type="text"
+                    value={clientPoDate}
+                    onChange={(e) => setClientPoDate(e.target.value)}
+                    placeholder="DD/MM/YYYY"
+                    className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
               </div>
             )}
 
-            {/* Add Custom Var form */}
-            <div className="flex items-center space-x-2 pt-1">
-              <input
-                type="text"
-                value={newKey}
-                onChange={(e) => setNewKey(e.target.value)}
-                placeholder="KEY (e.g. TAX_RATE)"
-                className="brand-input flex-1 px-3 py-2 text-[11px] uppercase"
-              />
-              <input
-                type="text"
-                value={newValue}
-                onChange={(e) => setNewValue(e.target.value)}
-                placeholder="Value (e.g. 18%)"
-                className="brand-input flex-1 px-3 py-2 text-[11px]"
-              />
-              <button
-                type="button"
-                onClick={handleAddCustomVar}
-                className="brand-button px-3.5 py-2 text-[11px] font-bold rounded-lg shrink-0 cursor-pointer"
-              >
-                + Add
-              </button>
-            </div>
+            {/* If Commercial Quotation */}
+            {selectedType === 'quotation' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#16202f] p-4 rounded-xl border border-gray-800">
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold text-gray-300 mb-1.5">
+                    Offer Subject Line
+                  </label>
+                  <input
+                    type="text"
+                    value={subjectLine}
+                    onChange={(e) => setSubjectLine(e.target.value)}
+                    placeholder="e.g. Quotation for Construction of Round Roof System (Trussless Roof)"
+                    className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white font-bold focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1.5">
+                    Building Total Area (SQFT)
+                  </label>
+                  <input
+                    type="text"
+                    value={buildingAreaSqft}
+                    onChange={(e) => setBuildingAreaSqft(e.target.value)}
+                    placeholder="e.g. 8775.00 SQFT"
+                    className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* If Work Order / Labour PO */}
+            {selectedType === 'work_order' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#16202f] p-4 rounded-xl border border-gray-800">
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1.5">
+                    Contractor / Agency Name
+                  </label>
+                  <input
+                    type="text"
+                    value={contractorName}
+                    onChange={(e) => setContractorName(e.target.value)}
+                    placeholder="e.g. Mohammad Kamil Shaikh"
+                    className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white font-bold focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 mb-1.5">
+                    Project Site Location
+                  </label>
+                  <input
+                    type="text"
+                    value={project.location || 'Sevasi TP-1, Vadodara, Gujarat'}
+                    disabled
+                    className="w-full px-3 py-2 bg-[#1e293b]/60 border border-gray-800 rounded-xl text-xs text-gray-400 cursor-not-allowed"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-4 border-t border-[#cccccc] flex items-center justify-end space-x-3">
+          <div className="border-t border-gray-800 pt-4 flex items-center justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-3 bg-white/65 hover:bg-white text-[#666666] rounded-[12px] font-medium transition-colors cursor-pointer border border-[#cccccc]"
+              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="brand-button active:scale-95 px-5 py-3 text-white font-semibold rounded-[12px] flex items-center space-x-2 transition-all cursor-pointer"
+              disabled={!title.trim() || !docNumber.trim()}
+              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold flex items-center space-x-2 shadow-lg shadow-emerald-900/40 transition-all cursor-pointer active:scale-95"
             >
               <FilePlus className="w-4 h-4" />
-              <span>Create & Open Document</span>
+              <span>Create Document</span>
             </button>
           </div>
+
         </form>
       </div>
     </div>

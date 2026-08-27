@@ -6,6 +6,7 @@ import { ProjectDetailView } from '@/components/ProjectDetailView';
 import { Loader } from '@/components/ui/loader';
 import { ProjectItem, ProjectDocType, ProjectDocStatus, ProjectStatus } from '@/types/project';
 import { LABOUR_PO_TEMPLATE, SAMPLE_TEMPLATES } from '@/lib/templates';
+import { createProjectDocument, syncProjectMasterToDocuments } from '@/lib/project-doc-templates';
 
 export default function ProjectDetailPage() {
   const router = useRouter();
@@ -54,27 +55,31 @@ export default function ProjectDetailPage() {
     customTitle?: string,
     customNumber?: string,
     customAmount?: string,
-    localVariables?: Record<string, string>
+    documentFields?: Record<string, string>
   ) => {
     if (!project) return;
 
-    // Clone template so we don't mutate defaults
-    const templateStr = JSON.stringify(docType === 'quotation' ? SAMPLE_TEMPLATES.quotation
-                   : docType === 'invoice' ? SAMPLE_TEMPLATES.tax_invoice
-                   : docType === 'work_order' ? SAMPLE_TEMPLATES.labour_po
-                   : SAMPLE_TEMPLATES.blank || LABOUR_PO_TEMPLATE);
-    const template = JSON.parse(templateStr);
-
-    // Merge existing project-wide variables + new local variables
-    const projectVars = project.documents?.[0]?.document?.globalVariables || {};
-    template.globalVariables = {
-      ...projectVars,
-      ...(localVariables || {})
-    };
+    const docItem = createProjectDocument(
+      docType,
+      {
+        title: project.title,
+        clientName: project.clientName,
+        clientAddress: project.clientAddress,
+        clientGstNo: project.clientGstNo,
+        contactPerson: project.contactPerson,
+        location: project.location,
+        code: project.code,
+      },
+      customTitle,
+      customNumber,
+      customAmount,
+      documentFields
+    );
 
     // Inject company profile if available
-    if (project.companyProfile) {
+    if (project.companyProfile && docItem.document) {
       const p = project.companyProfile;
+      const template = docItem.document;
       if (template.quotation) {
         if (p.companyName) template.quotation.companyName = p.companyName;
         if (p.companySubtitle) template.quotation.companySubtitle = p.companySubtitle;
@@ -109,7 +114,7 @@ export default function ProjectDetailPage() {
         if (p.companyEmail) template.purchaseOrder.companyEmail = p.companyEmail;
         if (p.companyWebsite) template.purchaseOrder.companyWebsite = p.companyWebsite;
         if (p.companyAddressHeader) {
-           template.purchaseOrder.companyAddress = [p.companyAddressHeader];
+          template.purchaseOrder.companyAddress = [p.companyAddressHeader];
         }
         if (p.companyAddressFooter) template.purchaseOrder.companyAddressFooter = p.companyAddressFooter;
         if (p.leftServices) template.purchaseOrder.leftServices = p.leftServices;
@@ -117,20 +122,7 @@ export default function ProjectDetailPage() {
       }
     }
 
-    const newDocId = `doc_${Date.now()}`;
-    const newDocItem = {
-      id: newDocId,
-      projectId: project.id,
-      title: customTitle || `${docType.toUpperCase()} Sheet`,
-      docType,
-      docNumber: customNumber || `GI-${docType.substring(0,3).toUpperCase()}-${Date.now().toString().slice(-4)}`,
-      status: 'draft' as ProjectDocStatus,
-      lastModified: 'Just now',
-      amount: customAmount || '₹ 0.00',
-      document: template,
-    };
-
-    const updatedDocs = [newDocItem, ...(project.documents || [])];
+    const updatedDocs = [docItem, ...(project.documents || [])];
 
     // Optimistically update client UI
     setProject({
@@ -144,7 +136,7 @@ export default function ProjectDetailPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         documents: updatedDocs,
-        document: template,
+        document: docItem.document,
         lastModified: 'Just now by You',
       }),
     }).catch((err) => console.error('Failed to save document:', err));
@@ -200,6 +192,61 @@ export default function ProjectDetailPage() {
         lastModified: 'Just now by You',
       }),
     }).catch((err) => console.error('Failed to duplicate document:', err));
+  };
+
+  const handleRenameDocument = (docId: string, newTitle: string, newDocNumber?: string) => {
+    if (!project) return;
+    const trimmedTitle = newTitle.trim();
+    if (!trimmedTitle) return;
+
+    const updatedDocs = (project.documents || []).map((d) => {
+      if (d.id !== docId) return d;
+      const updatedDoc = {
+        ...d,
+        title: trimmedTitle,
+        ...(newDocNumber ? { docNumber: newDocNumber.trim() } : {}),
+        lastModified: 'Just now',
+      };
+      if (updatedDoc.document) {
+        updatedDoc.document = {
+          ...updatedDoc.document,
+          title: trimmedTitle,
+        };
+        if (updatedDoc.document.purchaseOrder && newDocNumber) {
+          updatedDoc.document.purchaseOrder = {
+            ...updatedDoc.document.purchaseOrder,
+            poNumber: newDocNumber.trim(),
+          };
+        }
+        if (updatedDoc.document.quotation && newDocNumber) {
+          updatedDoc.document.quotation = {
+            ...updatedDoc.document.quotation,
+            refNo: newDocNumber.trim(),
+          };
+        }
+        if (updatedDoc.document.taxInvoice && newDocNumber) {
+          updatedDoc.document.taxInvoice = {
+            ...updatedDoc.document.taxInvoice,
+            invoiceNo: newDocNumber.trim(),
+          };
+        }
+      }
+      return updatedDoc;
+    });
+
+    setProject({
+      ...project,
+      documents: updatedDocs,
+    });
+
+    fetch(`/api/projects/${projectId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        documents: updatedDocs,
+        lastModified: 'Just now by You',
+      }),
+    }).catch((err) => console.error('Failed to rename document:', err));
   };
 
   const handleUpdateDocumentStatus = (docId: string, status: ProjectDocStatus) => {
@@ -269,6 +316,22 @@ export default function ProjectDetailPage() {
     }).catch((err) => console.error('Failed to update project settings:', err));
   };
 
+  const handleSaveProjectSettings = (updatedProject: ProjectItem, syncToDocs: boolean) => {
+    let finalProject = { ...updatedProject };
+    if (syncToDocs) {
+      const syncedDocs = syncProjectMasterToDocuments(finalProject);
+      finalProject.documents = syncedDocs;
+    }
+    finalProject.lastModified = 'Just now by You';
+    setProject(finalProject);
+
+    fetch(`/api/projects/${projectId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(finalProject),
+    }).catch((err) => console.error('Failed to update project settings:', err));
+  };
+
   const handleArchiveProject = () => {
     if (!project) return;
     const isCurrentlyArchived = Boolean(project.isArchived || project.status === 'archived');
@@ -328,12 +391,14 @@ export default function ProjectDetailPage() {
       onCreateDocument={handleCreateDocument}
       onDeleteDocument={handleDeleteDocument}
       onDuplicateDocument={handleDuplicateDocument}
+      onRenameDocument={handleRenameDocument}
       onUpdateDocumentStatus={handleUpdateDocumentStatus}
       onUpdateProjectStatus={handleUpdateProjectStatus}
       onDeleteProject={handleDeleteProject}
       onArchiveProject={handleArchiveProject}
       onUpdateCompanyProfile={handleUpdateCompanyProfile}
       onUpdateProject={handleUpdateProject}
+      onSaveProjectSettings={handleSaveProjectSettings}
     />
   );
 }

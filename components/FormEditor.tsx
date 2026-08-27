@@ -86,6 +86,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
       <TaxInvoiceFormEditor
         document={doc}
         activeSectionId={activeSectionId}
+        onSelectSection={onSelectSection}
         onChange={onChange}
         onOpenGlobalVariables={onOpenGlobalVariables}
       />
@@ -130,6 +131,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({
   }
 
   const po = doc.purchaseOrder;
+  const outlineGroups = React.useMemo(() => getDocumentOutlineGroups(po), [po]);
+  const availablePages = React.useMemo(() => outlineGroups.map((g) => g.pageNum), [outlineGroups]);
 
   // Check if activeSectionId is a custom section
   const customSection = po.customSections?.find((s) => s.id === activeSectionId);
@@ -207,7 +210,6 @@ export const FormEditor: React.FC<FormEditorProps> = ({
     activeSectionId === 'footer';
 
   const currentSectionPage = isGlobalHeader ? 'Global' : getSectionPageNumber(activeSectionId, po);
-  const outlineGroups = getDocumentOutlineGroups(po);
 
   const currentMeta =
     customSection
@@ -273,28 +275,19 @@ export const FormEditor: React.FC<FormEditorProps> = ({
   return (
     <aside className="w-full bg-[#0B0F19] text-gray-200 flex flex-col h-full shrink-0 select-none overflow-hidden">
       {/* Single Unified Header */}
-      <div className="px-4 py-4 border-b border-[#1E293B] bg-[#0F1523] flex items-center justify-between shrink-0">
+      <div className="px-3.5 py-2 border-b border-[#151C2C] bg-[#0A0E1A] flex items-center justify-between shrink-0 h-[49px]">
         <div className="flex items-center space-x-2.5 min-w-0">
-          <div className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] text-blue-300 shrink-0">
-            <CurrentIcon className="w-4 h-4" />
+          <div className="bg-[#10192C] p-1.5 rounded-lg border border-[#1E293B] text-blue-300 shrink-0">
+            <CurrentIcon className="w-3.5 h-3.5" />
           </div>
           <div className="truncate">
-            <div className="text-xs font-bold text-white truncate">{currentMeta.title}</div>
-            <div className="text-[10px] text-slate-400 truncate">{currentMeta.subtitle}</div>
+            <div className="text-xs font-bold text-white leading-tight truncate">{currentMeta.title}</div>
+            <div className="text-[10px] text-slate-400 leading-tight truncate">{currentMeta.subtitle}</div>
           </div>
         </div>
 
         <div className="flex items-center space-x-2 shrink-0">
-          {onOpenGlobalVariables && (
-            <button
-              onClick={onOpenGlobalVariables}
-              className="px-2.5 py-1 bg-[#0d3479]/20 hover:bg-[#0d3479]/50 text-blue-300 hover:text-white border border-[#0d3479]/40 rounded-lg text-[10px] font-mono font-bold flex items-center space-x-1 transition-colors cursor-pointer"
-              title="Open Global Variables panel"
-            >
-              <span>{`{{Vars}}`}</span>
-            </button>
-          )}
-          <span className="text-[10px] font-mono uppercase px-2.5 py-1 bg-[#0d3479]/40 text-blue-200 border border-[#0d3479] rounded-lg font-semibold">
+          <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-[#0d3479]/40 text-blue-200 border border-[#0d3479] rounded-md font-semibold">
             {typeof currentSectionPage === 'number' ? `Page ${currentSectionPage}` : currentSectionPage}
           </span>
         </div>
@@ -564,6 +557,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   type="text"
                   value={po.poNumber}
                   onChange={(e) => updatePO({ poNumber: e.target.value })}
+                  placeholder="PO-2026-001"
                   className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 focus:ring-1 focus:ring-emerald-500 text-white font-medium"
                 />
               </div>
@@ -576,7 +570,54 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   type="text"
                   value={po.poDate}
                   onChange={(e) => updatePO({ poDate: e.target.value })}
+                  placeholder="DD/MM/YYYY"
                   className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 focus:ring-1 focus:ring-emerald-500 text-white font-medium"
+                />
+              </div>
+            </div>
+
+            {/* Issuer Company Details Box */}
+            <div className="p-3 bg-[#16202e] border border-[#16233a]/80 rounded space-y-2.5">
+              <span className="block font-bold text-blue-300 uppercase text-[10.5px]">
+                Issuer Company Details (Table Left Side)
+              </span>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="block font-medium text-gray-400 text-[10px]">Company Name</label>
+                  <input
+                    type="text"
+                    value={po.tableCompanyName !== undefined ? po.tableCompanyName : (po.companyName ?? '')}
+                    onChange={(e) => updatePO({ tableCompanyName: e.target.value })}
+                    placeholder="Company Name"
+                    className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-semibold text-xs"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block font-medium text-gray-400 text-[10px]">Subtitle / Branch</label>
+                  <input
+                    type="text"
+                    value={po.tableCompanySubtitle !== undefined ? po.tableCompanySubtitle : (po.companySubtitle ?? '')}
+                    onChange={(e) => updatePO({ tableCompanySubtitle: e.target.value })}
+                    placeholder="Branch or Subtitle"
+                    className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-semibold text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block font-medium text-gray-400 text-[10px]">
+                  Company Full Address (Press Enter for new line)
+                </label>
+                <textarea
+                  rows={3}
+                  value={(po.tableCompanyAddress !== undefined ? po.tableCompanyAddress : (po.companyAddress || [])).join('\n')}
+                  onChange={(e) => {
+                    const lines = e.target.value.split('\n');
+                    updatePO({ tableCompanyAddress: lines });
+                  }}
+                  placeholder={'SO7B / 2nd Floor / Phase 2\nIndiabulls, Jetalpur Road\nVadodara - 390007, Gujarat'}
+                  className="w-full bg-[#1f2d40] border border-[#16233a] rounded-lg px-2.5 py-2 text-white text-xs leading-relaxed focus:border-indigo-500 focus:outline-none resize-y"
                 />
               </div>
             </div>
@@ -607,12 +648,13 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="block font-medium text-gray-400">Project Location</label>
-                <input
-                  type="text"
+                <label className="block font-medium text-gray-400">Project Location (Address)</label>
+                <textarea
+                  rows={2}
                   value={po.projectLocation}
                   onChange={(e) => updatePO({ projectLocation: e.target.value })}
-                  className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-semibold"
+                  placeholder="Site / Project Location Address"
+                  className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1.5 text-white font-semibold text-xs resize-y focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
@@ -1030,8 +1072,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               <label className="block font-bold text-gray-300 uppercase text-[10px]">
                 Assigned Page Number
               </label>
-              <div className="flex items-center space-x-1.5">
-                {[1, 2, 3, 4, 5].map((pageNum) => (
+              <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
+                {availablePages.map((pageNum) => (
                   <button
                     key={pageNum}
                     type="button"
@@ -1039,7 +1081,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                       const updatedPO = moveSectionToPage(po, customSection.id, pageNum);
                       updatePO(updatedPO);
                     }}
-                    className={`flex-1 py-1 rounded text-xs font-bold border cursor-pointer ${
+                    className={`flex-1 min-w-[38px] py-1 rounded text-xs font-bold border cursor-pointer transition-colors ${
                       currentSectionPage === pageNum
                         ? 'bg-emerald-700 border-emerald-500 text-white'
                         : 'bg-[#070c18] border-[#16233a] text-gray-300 hover:text-white'
@@ -1089,10 +1131,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     <option value="" disabled>
                       ⚡ Insert Preset Template...
                     </option>
-                    {PREDEFINED_SECTION_TYPES.map((opt) => (
-                      <optgroup key={opt.type} label={opt.label}>
+                    {PREDEFINED_SECTION_TYPES.map((opt, optIdx) => (
+                      <optgroup key={`${opt.label}-${opt.type}-${optIdx}`} label={opt.label}>
                         {opt.presets.map((p, idx) => (
-                          <option key={idx} value={`${opt.type}:${idx}`}>
+                          <option key={`${p.name}-${idx}`} value={`${opt.type}:${idx}`}>
                             {p.name}
                           </option>
                         ))}

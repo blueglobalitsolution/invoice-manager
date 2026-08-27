@@ -25,9 +25,9 @@ export const DynamicTemplatePreview: React.FC<DynamicTemplatePreviewProps> = ({
   const getSectionHighlightClass = (sectionId: string) => {
     const isActive = activeSectionId === sectionId;
     const isHovered = hoveredSectionId === sectionId && !isActive;
-    if (isActive) return 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs';
-    if (isHovered) return 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs';
-    return 'hover:ring-1 hover:ring-emerald-300/40';
+    if (isActive) return 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
+    if (isHovered) return 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
+    return 'hover:ring-1 hover:ring-emerald-300/40 print:ring-0 print:bg-transparent print:shadow-none';
   };
 
   const renderFieldValue = (value: any) => {
@@ -117,7 +117,7 @@ export const DynamicTemplatePreview: React.FC<DynamicTemplatePreviewProps> = ({
 
   return (
     <div 
-      className="bg-white mx-auto shadow-2xl relative"
+      className="latex-paper print-area bg-white mx-auto shadow-2xl relative"
       style={{
         width: '210mm',
         minHeight: '297mm',

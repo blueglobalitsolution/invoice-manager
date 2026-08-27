@@ -142,6 +142,11 @@ export interface PurchaseOrderData {
   poNumber: string;
   poDate: string;
   
+  // Specific to PO Info Table (left column)
+  tableCompanyName?: string;
+  tableCompanySubtitle?: string;
+  tableCompanyAddress?: string[];
+  
   scopeOfWork: string[];
   rateItems: PORateItem[];
   amountInWords: string;

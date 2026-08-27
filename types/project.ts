@@ -63,6 +63,9 @@ export interface ProjectItem {
   title: string;
   code?: string;
   clientName?: string;
+  clientAddress?: string;
+  clientGstNo?: string;
+  contactPerson?: string;
   location?: string;
   category?: string;
   status?: ProjectStatus;
