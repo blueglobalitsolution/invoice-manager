@@ -111,23 +111,6 @@ export const EditorRail: React.FC<EditorRailProps> = ({
           <ImageIcon className="w-5 h-5" />
         </button>
       </div>
-
-      {/* Bottom Rail Actions */}
-      <div className="flex flex-col items-center space-y-3 w-full">
-        {/* Settings modal */}
-        <button
-          onClick={onOpenSettings}
-          className="w-10 h-10 rounded-2xl text-slate-400 hover:text-white hover:bg-slate-800/40 flex items-center justify-center transition-colors cursor-pointer"
-          title="Document & Compiler Settings"
-        >
-          <Settings className="w-5 h-5" />
-        </button>
-
-        {/* User Avatar initial */}
-        <div className="w-8 h-8 rounded-full bg-[#1E2538] border border-slate-700 text-slate-300 font-semibold text-xs flex items-center justify-center">
-          N
-        </div>
-      </div>
     </div>
   );
 };

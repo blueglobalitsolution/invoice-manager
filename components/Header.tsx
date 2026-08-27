@@ -150,10 +150,10 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Back Arrow to Dashboard */}
         <button
           onClick={onGoBackToDashboard}
-          className="p-1.5 hover:bg-slate-800/60 rounded-lg text-slate-400 hover:text-white transition-colors cursor-pointer flex items-center justify-center"
+          className="p-2 hover:bg-slate-800/80 rounded-xl text-slate-300 hover:text-white transition-all cursor-pointer flex items-center justify-center border border-transparent hover:border-slate-700/60"
           title="Back to Dashboard"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4.5 h-4.5" />
         </button>
 
         {/* Document Title & Add Button */}

@@ -2,32 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ProjectItem, CompanyProfile } from '@/types/project';
+import { ProjectItem, CompanyProfile, DEFAULT_COMPANY_PROFILE } from '@/types/project';
 import { CompanyProfileEditor } from '@/components/CompanyProfileEditor';
 import { CompanyProfilePreview } from '@/components/CompanyProfilePreview';
+import { syncProjectMasterToDocuments } from '@/lib/project-doc-templates';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
-
-const defaultProfile: CompanyProfile = {
-  companyName: '',
-  companySubtitle: '',
-  companyAddressHeader: '',
-  companyAddressFooter: '',
-  companyGstNo: '',
-  companyPanNo: '',
-  companyEpfNo: '',
-  companyPhone: '',
-  companyEmail: '',
-  companyWebsite: '',
-  leftServices: [],
-  rightServices: [],
-};
 
 export default function CompanyProfilePage() {
   const { projectId } = useParams() as { projectId: string };
   const router = useRouter();
   
   const [project, setProject] = useState<ProjectItem | null>(null);
-  const [profile, setProfile] = useState<CompanyProfile>(defaultProfile);
+  const [profile, setProfile] = useState<CompanyProfile>(DEFAULT_COMPANY_PROFILE);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -39,9 +25,90 @@ export default function CompanyProfilePage() {
       })
       .then((data: ProjectItem) => {
         setProject(data);
-        if (data.companyProfile) {
-          setProfile(data.companyProfile);
-        }
+        const activeDoc = data.documents?.[0]?.document || data.document;
+        const activePO = activeDoc?.purchaseOrder;
+        const activeQ = activeDoc?.quotation;
+        const activeTax = activeDoc?.taxInvoice;
+
+        const mergedProfile: CompanyProfile = {
+          companyName:
+            data.companyProfile?.companyName ||
+            activePO?.tableCompanyName ||
+            activePO?.companyName ||
+            activeQ?.companyName ||
+            activeTax?.companyName ||
+            DEFAULT_COMPANY_PROFILE.companyName,
+          companySubtitle:
+            data.companyProfile?.companySubtitle !== undefined && data.companyProfile.companySubtitle !== ''
+              ? data.companyProfile.companySubtitle
+              : activePO?.tableCompanySubtitle ||
+                activePO?.companySubtitle ||
+                activeQ?.companySubtitle ||
+                activeTax?.companySubtitle ||
+                DEFAULT_COMPANY_PROFILE.companySubtitle,
+          companyAddressHeader:
+            data.companyProfile?.companyAddressHeader ||
+            (activePO?.tableCompanyAddress || activePO?.companyAddress
+              ? (activePO.tableCompanyAddress || activePO.companyAddress).join('\n')
+              : '') ||
+            activeQ?.companyAddressHeader ||
+            activeTax?.companyAddressHeader ||
+            DEFAULT_COMPANY_PROFILE.companyAddressHeader,
+          companyAddressFooter:
+            data.companyProfile?.companyAddressFooter ||
+            activePO?.companyAddressFooter ||
+            activeQ?.companyAddressFooter ||
+            activeTax?.companyAddressFooter ||
+            DEFAULT_COMPANY_PROFILE.companyAddressFooter,
+          companyGstNo:
+            data.companyProfile?.companyGstNo ||
+            activePO?.gstNo ||
+            activeQ?.companyGstNo ||
+            activeTax?.companyGstNo ||
+            DEFAULT_COMPANY_PROFILE.companyGstNo,
+          companyPanNo:
+            data.companyProfile?.companyPanNo ||
+            activeTax?.companyPanNo ||
+            DEFAULT_COMPANY_PROFILE.companyPanNo,
+          companyEpfNo:
+            data.companyProfile?.companyEpfNo ||
+            activeTax?.companyEpfNo ||
+            DEFAULT_COMPANY_PROFILE.companyEpfNo,
+          companyPhone:
+            data.companyProfile?.companyPhone ||
+            activePO?.companyPhone ||
+            activeQ?.companyPhone ||
+            activeTax?.companyPhone ||
+            DEFAULT_COMPANY_PROFILE.companyPhone,
+          companyEmail:
+            data.companyProfile?.companyEmail ||
+            activePO?.companyEmail ||
+            activeQ?.companyEmail ||
+            activeTax?.companyEmail ||
+            DEFAULT_COMPANY_PROFILE.companyEmail,
+          companyWebsite:
+            data.companyProfile?.companyWebsite ||
+            activePO?.companyWebsite ||
+            activeQ?.companyWebsite ||
+            activeTax?.companyWebsite ||
+            DEFAULT_COMPANY_PROFILE.companyWebsite,
+          leftServices:
+            data.companyProfile?.leftServices && data.companyProfile.leftServices.length > 0
+              ? data.companyProfile.leftServices
+              : activePO?.leftServices ||
+                activeQ?.leftServices ||
+                activeTax?.leftServices ||
+                DEFAULT_COMPANY_PROFILE.leftServices,
+          rightServices:
+            data.companyProfile?.rightServices && data.companyProfile.rightServices.length > 0
+              ? data.companyProfile.rightServices
+              : activePO?.rightServices ||
+                activeQ?.rightServices ||
+                activeTax?.rightServices ||
+                DEFAULT_COMPANY_PROFILE.rightServices,
+        };
+
+        setProfile(mergedProfile);
         setLoading(false);
       })
       .catch((err) => {
@@ -54,16 +121,24 @@ export default function CompanyProfilePage() {
     if (!project) return;
     setSaving(true);
     try {
+      const updatedProject: ProjectItem = {
+        ...project,
+        companyProfile: profile,
+        lastModified: 'Just now by You',
+      };
+      const syncedDocs = syncProjectMasterToDocuments(updatedProject);
+      updatedProject.documents = syncedDocs;
+      if (syncedDocs[0]?.document) {
+        updatedProject.document = syncedDocs[0].document;
+      }
+
       const res = await fetch(`/api/projects/${projectId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          companyProfile: profile,
-          lastModified: 'Just now by You',
-        }),
+        body: JSON.stringify(updatedProject),
       });
       if (!res.ok) throw new Error('Failed to save');
-      // Briefly show success or redirect back
+      // Redirect back to project detail view
       router.push(`/project/${projectId}`);
     } catch (err) {
       console.error(err);

@@ -14,6 +14,16 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { LatexDocument, TaxInvoiceData, TaxInvoiceItem } from '@/types/document';
+import { numberToIndianWords } from '@/lib/number-to-words';
+import {
+  validateGstNumber,
+  formatGstInput,
+  formatPanInput,
+  formatHsnInput,
+  formatDateInput,
+  sanitizePhoneInput,
+  sanitizeNumericInput,
+} from '@/lib/validation';
 
 interface TaxInvoiceFormEditorProps {
   document: LatexDocument;
@@ -70,7 +80,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
     currentItems.forEach((item) => {
       const q = parseFloat(item.qty) || 0;
       const r = parseFloat(item.rate) || 0;
-      const t = parseFloat(item.total) || q * r;
+      const t = (q !== 0 && r !== 0) ? (q * r) : (parseFloat(item.total) || 0);
       subtotal += isNaN(t) ? 0 : t;
     });
 
@@ -78,6 +88,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
     const cgstAmt = (subtotal * cgstPct) / 100;
     const netAmt = subtotal + sgstAmt + cgstAmt;
     const roundedAmt = Math.round(netAmt);
+    const amountWords = numberToIndianWords(roundedAmt, 'Rupee: ');
 
     updateInv({
       items: currentItems,
@@ -88,19 +99,25 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
       cgstAmount: cgstAmt.toFixed(2),
       netAmount: netAmt.toFixed(2),
       finalAmount: roundedAmt.toFixed(2),
+      amountInWords: amountWords,
     });
   };
 
   const handleUpdateItem = (index: number, field: keyof TaxInvoiceItem, val: string) => {
+    let sanitizedVal = val;
+    if (field === 'qty' || field === 'rate') {
+      sanitizedVal = sanitizeNumericInput(val, true);
+    } else if (field === 'hsn') {
+      sanitizedVal = formatHsnInput(val);
+    }
+
     const updated = [...inv.items];
-    updated[index] = { ...updated[index], [field]: val };
+    updated[index] = { ...updated[index], [field]: sanitizedVal };
 
     if (field === 'qty' || field === 'rate') {
-      const q = parseFloat(field === 'qty' ? val : updated[index].qty) || 0;
-      const r = parseFloat(field === 'rate' ? val : updated[index].rate) || 0;
-      if (q && r) {
-        updated[index].total = (q * r).toFixed(2);
-      }
+      const q = parseFloat(updated[index].qty) || 0;
+      const r = parseFloat(updated[index].rate) || 0;
+      updated[index].total = (q * r).toFixed(2);
     }
 
     handleRecalculateTotals(updated);
@@ -265,11 +282,13 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-gray-400 mb-1">Invoice Date</label>
+                  <label className="block text-[11px] text-gray-400 mb-1">Invoice Date (DD/MM/YYYY)</label>
                   <input
                     type="text"
                     value={inv.invoiceDate}
-                    onChange={(e) => updateInv({ invoiceDate: e.target.value })}
+                    onChange={(e) => updateInv({ invoiceDate: formatDateInput(e.target.value) })}
+                    placeholder="DD/MM/YYYY"
+                    maxLength={10}
                     className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
                   />
                 </div>
@@ -286,11 +305,13 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-gray-400 mb-1">P.O. Date</label>
+                  <label className="block text-[11px] text-gray-400 mb-1">P.O. Date (DD/MM/YYYY)</label>
                   <input
                     type="text"
                     value={inv.poDate}
-                    onChange={(e) => updateInv({ poDate: e.target.value })}
+                    onChange={(e) => updateInv({ poDate: formatDateInput(e.target.value) })}
+                    placeholder="DD/MM/YYYY"
+                    maxLength={10}
                     className="w-full px-2 py-1.5 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
                   />
                 </div>
@@ -429,7 +450,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   <input
                     type="text"
                     value={inv.sgstRate}
-                    onChange={(e) => handleRecalculateTotals(undefined, e.target.value, undefined)}
+                    onChange={(e) => handleRecalculateTotals(undefined, sanitizeNumericInput(e.target.value, true), undefined)}
                     className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono"
                     placeholder="9%"
                   />
@@ -439,7 +460,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   <input
                     type="text"
                     value={inv.sgstAmount}
-                    onChange={(e) => updateInv({ sgstAmount: e.target.value })}
+                    onChange={(e) => updateInv({ sgstAmount: sanitizeNumericInput(e.target.value, true) })}
                     className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono text-right"
                   />
                 </div>
@@ -451,7 +472,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                   <input
                     type="text"
                     value={inv.cgstRate}
-                    onChange={(e) => handleRecalculateTotals(undefined, undefined, e.target.value)}
+                    onChange={(e) => handleRecalculateTotals(undefined, undefined, sanitizeNumericInput(e.target.value, true))}
                     className="w-full px-2 py-1 bg-[#0e1624] border border-[#16233a] rounded text-gray-200 font-mono"
                     placeholder="9%"
                   />
@@ -472,13 +493,31 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
                 <input
                   type="text"
                   value={inv.finalAmount}
-                  onChange={(e) => updateInv({ finalAmount: e.target.value })}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const words = numberToIndianWords(val, 'Rupee: ');
+                    updateInv({ finalAmount: val, amountInWords: words });
+                  }}
                   className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-emerald-600 rounded text-blue-300 font-mono font-bold text-sm text-right"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] text-gray-400 mb-1">Amount In Words</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-[10px] text-gray-400">Amount In Words</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const words = numberToIndianWords(inv.finalAmount || inv.netAmount || '0', 'Rupee: ');
+                      updateInv({ amountInWords: words });
+                    }}
+                    className="text-[10px] text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 cursor-pointer font-medium"
+                    title="Auto generate words from Final Amount"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    <span>Auto-Convert</span>
+                  </button>
+                </div>
                 <textarea
                   rows={2}
                   value={inv.amountInWords}

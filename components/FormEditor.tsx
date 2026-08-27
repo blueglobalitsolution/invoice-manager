@@ -20,6 +20,7 @@ import {
   Mail,
   Globe,
   MapPin,
+  Sparkles,
 } from 'lucide-react';
 import {
   LatexDocument,
@@ -27,6 +28,13 @@ import {
   PORateItem,
   CustomSectionItem,
 } from '@/types/document';
+import { numberToIndianWords } from '@/lib/number-to-words';
+import {
+  sanitizeNumericInput,
+  formatDateInput,
+  sanitizePhoneInput,
+  formatGstInput,
+} from '@/lib/validation';
 import { TaxInvoiceFormEditor } from './TaxInvoiceFormEditor';
 import { QuotationFormEditor } from './QuotationFormEditor';
 import { PREDEFINED_SECTION_TYPES } from '@/lib/section-presets';
@@ -229,22 +237,36 @@ export const FormEditor: React.FC<FormEditorProps> = ({
   const CurrentIcon = currentMeta.icon;
 
   // Rate item CRUD
+  const calculateTotalWords = (items: PORateItem[]) => {
+    let sum = 0;
+    items.forEach((item) => {
+      const q = parseFloat(item.qty) || 0;
+      const r = parseFloat(item.rate) || 0;
+      const t = parseFloat(item.total.replace(/[^0-9.]/g, '')) || (q * r);
+      sum += isNaN(t) ? 0 : t;
+    });
+    return numberToIndianWords(sum, 'Rupees ');
+  };
+
   const handleRateChange = (id: string, field: keyof PORateItem, val: string) => {
+    let sanitizedVal = val;
+    if (field === 'qty' || field === 'rate') {
+      sanitizedVal = sanitizeNumericInput(val, true);
+    }
     const updated = po.rateItems.map((item) => {
       if (item.id === id) {
-        const next = { ...item, [field]: val };
+        const next = { ...item, [field]: sanitizedVal };
         if (field === 'qty' || field === 'rate') {
-          const q = parseFloat(field === 'qty' ? val : next.qty) || 0;
-          const r = parseFloat(field === 'rate' ? val : next.rate) || 0;
-          if (q && r) {
-            next.total = `${(q * r).toLocaleString('en-IN')}/-`;
-          }
+          const q = parseFloat(field === 'qty' ? sanitizedVal : next.qty) || 0;
+          const r = parseFloat(field === 'rate' ? sanitizedVal : next.rate) || 0;
+          next.total = `${(q * r).toLocaleString('en-IN')}/-`;
         }
         return next;
       }
       return item;
     });
-    updatePO({ rateItems: updated });
+    const words = calculateTotalWords(updated);
+    updatePO({ rateItems: updated, amountInWords: words });
   };
 
   const handleAddRateRow = () => {
@@ -256,11 +278,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({
       rate: '50',
       total: '5,000/-',
     };
-    updatePO({ rateItems: [...po.rateItems, newItem] });
+    const nextList = [...po.rateItems, newItem];
+    const words = calculateTotalWords(nextList);
+    updatePO({ rateItems: nextList, amountInWords: words });
   };
 
   const handleDeleteRateRow = (id: string) => {
-    updatePO({ rateItems: po.rateItems.filter((i) => i.id !== id) });
+    const nextList = po.rateItems.filter((i) => i.id !== id);
+    const words = calculateTotalWords(nextList);
+    updatePO({ rateItems: nextList, amountInWords: words });
   };
 
   // Custom section update helper
@@ -481,9 +507,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                 <input
                   type="text"
                   value={po.companyPhone}
-                  onChange={(e) => updatePO({ companyPhone: e.target.value })}
-                  placeholder="+91 98765 43210"
-                  className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white text-xs"
+                  onChange={(e) => updatePO({ companyPhone: sanitizePhoneInput(e.target.value) })}
+                  className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-xs text-white"
                 />
               </div>
 
@@ -564,14 +589,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({
 
               <div className="space-y-1">
                 <label className="block font-bold text-gray-300 uppercase text-[10px]">
-                  PO Date
+                  PO Date (DD/MM/YYYY)
                 </label>
                 <input
                   type="text"
                   value={po.poDate}
-                  onChange={(e) => updatePO({ poDate: e.target.value })}
+                  onChange={(e) => updatePO({ poDate: formatDateInput(e.target.value) })}
                   placeholder="DD/MM/YYYY"
-                  className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 focus:ring-1 focus:ring-emerald-500 text-white font-medium"
+                  maxLength={10}
+                  className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 focus:ring-1 focus:ring-emerald-500 text-white font-medium font-mono"
                 />
               </div>
             </div>
@@ -805,9 +831,23 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             </div>
 
             <div className="space-y-1 pt-2 border-t border-[#141f33]">
-              <label className="block font-medium text-gray-400">
-                Amount in Words
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="block font-medium text-gray-400">
+                  Amount in Words
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const words = calculateTotalWords(po.rateItems);
+                    updatePO({ amountInWords: words });
+                  }}
+                  className="text-[10px] text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 cursor-pointer font-medium"
+                  title="Auto generate words from Line Items total"
+                >
+                  <Sparkles className="w-3 h-3" />
+                  <span>Auto-Convert</span>
+                </button>
+              </div>
               <input
                 type="text"
                 value={po.amountInWords}

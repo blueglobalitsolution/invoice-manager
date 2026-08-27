@@ -12,6 +12,7 @@ import {
   ChevronUp,
   Braces,
   Settings,
+  ArrowLeft,
 } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 
@@ -31,7 +32,7 @@ interface DashboardSidebarProps {
 }
 
 export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
-  activeTab,
+  activeTab = 'all',
   setActiveTab,
   projectsCount = 0,
   onOpenTemplateBuilder,
@@ -62,17 +63,17 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     <aside className="hidden lg:flex w-64 bg-[#002057] border-r border-[#15428a] flex-col justify-between shrink-0 p-4 h-full min-h-screen lg:min-h-0 self-stretch sticky top-0 select-none text-white z-20 overflow-y-auto">
       <div className="space-y-6">
         {projectId ? (
-          <div className="px-3 py-2 space-y-3">
+          <div className="px-2 py-2 space-y-3">
             <button
               onClick={() => router.push('/dashboard')}
-              className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors text-sm font-medium cursor-pointer"
+              className="flex items-center space-x-2.5 text-white/90 hover:text-white transition-all text-sm font-semibold cursor-pointer group py-1.5 px-2 -ml-1 rounded-xl hover:bg-white/10"
             >
-              <div className="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center border border-white/20 text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              <div className="w-8 h-8 rounded-lg bg-white/10 group-hover:bg-white/20 flex items-center justify-center border border-white/20 group-hover:border-white/40 text-white transition-all shadow-xs shrink-0">
+                <ArrowLeft className="w-4.5 h-4.5 stroke-[2.5]" />
               </div>
-              <span>Back to Dashboard</span>
+              <span className="text-[14.5px] font-semibold tracking-tight">Back to Dashboard</span>
             </button>
-            <div className="pt-2">
+            <div className="pt-2 px-1">
               <div className="text-[10px] text-white/60 font-medium tracking-wider uppercase">
                 Project Name
               </div>

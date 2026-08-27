@@ -21,6 +21,11 @@ import {
 } from 'lucide-react';
 import { ProjectItem, CompanyProfile } from '@/types/project';
 import { LatexDocument } from '@/types/document';
+import {
+  formatGstInput,
+  formatPanInput,
+  sanitizePhoneInput,
+} from '@/lib/validation';
 
 interface ProjectSettingsModalProps {
   isOpen: boolean;
@@ -41,152 +46,234 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
   const [syncToAllDocs, setSyncToAllDocs] = useState(true);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  // Project Info Form State
-  const [projectTitle, setProjectTitle] = useState(project.title || '');
-  const [projectCode, setProjectCode] = useState(project.code || '');
-  const [projectLocation, setProjectLocation] = useState(project.location || '');
-  const [projectBudget, setProjectBudget] = useState(project.budget || '');
+  const effectiveDoc = activeDoc || project?.documents?.[0]?.document || project?.document;
+  const activePO = effectiveDoc?.purchaseOrder;
+  const activeQ = effectiveDoc?.quotation;
+  const activeTax = effectiveDoc?.taxInvoice;
+  const pCp = project?.companyProfile || ({} as Partial<CompanyProfile>);
 
-  // Client Info Form State
-  const [clientName, setClientName] = useState(project.clientName || '');
-  const [clientAddress, setClientAddress] = useState(project.clientAddress || '');
-  const [clientGstNo, setClientGstNo] = useState(project.clientGstNo || '');
-  const [contactPerson, setContactPerson] = useState(project.contactPerson || '');
+  // Compute live initial values matching real Header & Footer
+  const initCompName =
+    pCp.companyName ||
+    activePO?.tableCompanyName ||
+    activePO?.companyName ||
+    activeQ?.companyName ||
+    activeTax?.companyName ||
+    'GLOBAL INDUSTRIES';
 
-  // Company Profile Form State
-  const cp = project.companyProfile || ({} as Partial<CompanyProfile>);
-  const [companyName, setCompanyName] = useState(cp.companyName || 'BLUE GLOBAL');
-  const [companySubtitle, setCompanySubtitle] = useState(cp.companySubtitle || 'ENGINEERING & INFRASTRUCTURE');
-  const [companyGstNo, setCompanyGstNo] = useState(cp.companyGstNo || '24AAAAB1234C1Z1');
-  const [companyPanNo, setCompanyPanNo] = useState(cp.companyPanNo || 'AAAAB1234C');
-  const [companyEpfNo, setCompanyEpfNo] = useState(cp.companyEpfNo || 'GJ/VAD/1234567/000');
-  const [companyPhone, setCompanyPhone] = useState(cp.companyPhone || '+91 98765 43210');
-  const [companyEmail, setCompanyEmail] = useState(cp.companyEmail || 'info@blueglobal.in');
-  const [companyWebsite, setCompanyWebsite] = useState(cp.companyWebsite || 'www.blueglobal.in');
-  const [companyAddressHeader, setCompanyAddressHeader] = useState(
-    cp.companyAddressHeader || '402-404, Blue Corporate Tower, Near Alkapuri Circle, Vadodara - 390007, Gujarat, India'
+  const initCompSubtitle =
+    pCp.companySubtitle !== undefined
+      ? pCp.companySubtitle
+      : activePO?.tableCompanySubtitle ||
+        activePO?.companySubtitle ||
+        activeQ?.companySubtitle ||
+        activeTax?.companySubtitle ||
+        '';
+
+  const initGstNo =
+    pCp.companyGstNo ||
+    activePO?.gstNo ||
+    activeQ?.companyGstNo ||
+    activeTax?.companyGstNo ||
+    '24CLNPS9550H1ZI';
+
+  const initPanNo = pCp.companyPanNo || activeTax?.companyPanNo || 'CLNPS9550H';
+  const initEpfNo = pCp.companyEpfNo || activeTax?.companyEpfNo || 'GJ/VAD/1234567/000';
+  const initPhone =
+    pCp.companyPhone ||
+    activePO?.companyPhone ||
+    activeQ?.companyPhone ||
+    activeTax?.companyPhone ||
+    '+91 97254 45370';
+
+  const initEmail =
+    pCp.companyEmail ||
+    activePO?.companyEmail ||
+    activeQ?.companyEmail ||
+    activeTax?.companyEmail ||
+    'info@globalindustries.co';
+
+  const initWebsite =
+    pCp.companyWebsite ||
+    activePO?.companyWebsite ||
+    activeQ?.companyWebsite ||
+    activeTax?.companyWebsite ||
+    'www.globalindustries.co';
+
+  const initAddrHeader =
+    pCp.companyAddressHeader ||
+    (activePO?.tableCompanyAddress || activePO?.companyAddress
+      ? (activePO.tableCompanyAddress || activePO.companyAddress).join('\n')
+      : '') ||
+    activeQ?.companyAddressHeader ||
+    activeTax?.companyAddressHeader ||
+    'SO70 / 2nd Floor / Phase 2 Indiabulls, Jetalpur Road\nVadodara, Gujarat';
+
+  const initAddrFooter =
+    pCp.companyAddressFooter ||
+    activePO?.companyAddressFooter ||
+    activeQ?.companyAddressFooter ||
+    activeTax?.companyAddressFooter ||
+    'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243';
+
+  // Form States initialized with accurate defaults
+  const [projectTitle, setProjectTitle] = useState(
+    project?.title || activePO?.projectName || effectiveDoc?.title || ''
   );
-  const [companyAddressFooter, setCompanyAddressFooter] = useState(
-    cp.companyAddressFooter || 'Regd. Off: 402, Blue Corporate Tower, Vadodara, Gujarat - 390007'
+  const [projectCode, setProjectCode] = useState(
+    project?.code || activePO?.poNumber || activeQ?.refNo || ''
   );
+  const [projectLocation, setProjectLocation] = useState(
+    project?.location || activePO?.projectLocation || activeQ?.toAddress || ''
+  );
+  const [projectBudget, setProjectBudget] = useState(project?.budget || '');
 
-  // Sync state whenever project prop updates
+  const [clientName, setClientName] = useState(
+    project?.clientName ||
+      activePO?.contractorName ||
+      activeQ?.toRecipient ||
+      activeTax?.clientName ||
+      ''
+  );
+  const [clientAddress, setClientAddress] = useState(
+    project?.clientAddress || activeQ?.toAddress || activeTax?.clientAddressLine1 || ''
+  );
+  const [clientGstNo, setClientGstNo] = useState(
+    project?.clientGstNo || activeTax?.clientGstNo || ''
+  );
+  const [contactPerson, setContactPerson] = useState(project?.contactPerson || '');
+
+  const [companyName, setCompanyName] = useState(initCompName);
+  const [companySubtitle, setCompanySubtitle] = useState(initCompSubtitle);
+  const [companyGstNo, setCompanyGstNo] = useState(initGstNo);
+  const [companyPanNo, setCompanyPanNo] = useState(initPanNo);
+  const [companyEpfNo, setCompanyEpfNo] = useState(initEpfNo);
+  const [companyPhone, setCompanyPhone] = useState(initPhone);
+  const [companyEmail, setCompanyEmail] = useState(initEmail);
+  const [companyWebsite, setCompanyWebsite] = useState(initWebsite);
+  const [companyAddressHeader, setCompanyAddressHeader] = useState(initAddrHeader);
+  const [companyAddressFooter, setCompanyAddressFooter] = useState(initAddrFooter);
+
+  // Sync state whenever project, activeDoc, or modal open state updates
   useEffect(() => {
-    if (project) {
-      const pCp = project.companyProfile || ({} as Partial<CompanyProfile>);
-      const activePO = activeDoc?.purchaseOrder;
-      const activeQ = activeDoc?.quotation;
-      const activeTax = activeDoc?.taxInvoice;
+    if (project || effectiveDoc) {
+      const liveDoc = activeDoc || project?.documents?.[0]?.document || project?.document;
+      const livePO = liveDoc?.purchaseOrder;
+      const liveQ = liveDoc?.quotation;
+      const liveTax = liveDoc?.taxInvoice;
+      const liveCp = project?.companyProfile || ({} as Partial<CompanyProfile>);
 
       // Project Title
-      const titleVal = project.title || activePO?.projectName || activeDoc?.title || '';
+      const titleVal = project?.title || livePO?.projectName || liveDoc?.title || '';
       setProjectTitle(titleVal);
 
       // Project Code
-      const codeVal = project.code || activePO?.poNumber || activeQ?.refNo || '';
+      const codeVal = project?.code || livePO?.poNumber || liveQ?.refNo || '';
       setProjectCode(codeVal);
 
       // Location
-      const locVal = project.location || activePO?.projectLocation || activeQ?.toAddress || '';
+      const locVal = project?.location || livePO?.projectLocation || liveQ?.toAddress || '';
       setProjectLocation(locVal);
 
       // Budget
-      setProjectBudget(project.budget || '');
+      setProjectBudget(project?.budget || '');
 
       // Client Name
-      const clientVal = project.clientName || activePO?.contractorName || activeQ?.toRecipient || activeTax?.clientName || '';
+      const clientVal =
+        project?.clientName ||
+        livePO?.contractorName ||
+        liveQ?.toRecipient ||
+        liveTax?.clientName ||
+        '';
       setClientName(clientVal);
 
       // Client Address
       const clientAddrVal =
-        project.clientAddress ||
-        activeQ?.toAddress ||
-        activeTax?.clientAddressLine1 ||
-        '';
+        project?.clientAddress || liveQ?.toAddress || liveTax?.clientAddressLine1 || '';
       setClientAddress(clientAddrVal);
 
       // Client GST No
-      const clientGstVal = project.clientGstNo || activeTax?.clientGstNo || '';
+      const clientGstVal = project?.clientGstNo || liveTax?.clientGstNo || '';
       setClientGstNo(clientGstVal);
 
       // Contact Person
-      setContactPerson(project.contactPerson || '');
+      setContactPerson(project?.contactPerson || '');
 
       // Company Info
-      const compName =
-        pCp.companyName ||
-        activePO?.tableCompanyName ||
-        activePO?.companyName ||
-        activeQ?.companyName ||
-        activeTax?.companyName ||
+      const compNameVal =
+        liveCp.companyName ||
+        livePO?.tableCompanyName ||
+        livePO?.companyName ||
+        liveQ?.companyName ||
+        liveTax?.companyName ||
         'GLOBAL INDUSTRIES';
-      setCompanyName(compName);
+      setCompanyName(compNameVal);
 
-      const compSubtitle =
-        pCp.companySubtitle !== undefined && pCp.companySubtitle !== ''
-          ? pCp.companySubtitle
-          : activePO?.tableCompanySubtitle ||
-            activePO?.companySubtitle ||
-            activeQ?.companySubtitle ||
-            activeTax?.companySubtitle ||
+      const compSubtitleVal =
+        liveCp.companySubtitle !== undefined
+          ? liveCp.companySubtitle
+          : livePO?.tableCompanySubtitle ||
+            livePO?.companySubtitle ||
+            liveQ?.companySubtitle ||
+            liveTax?.companySubtitle ||
             '';
-      setCompanySubtitle(compSubtitle);
+      setCompanySubtitle(compSubtitleVal);
 
-      const compGst =
-        pCp.companyGstNo ||
-        activePO?.gstNo ||
-        activeQ?.companyGstNo ||
-        activeTax?.companyGstNo ||
-        '24CLNP525501HZI';
-      setCompanyGstNo(compGst);
+      const compGstVal =
+        liveCp.companyGstNo ||
+        livePO?.gstNo ||
+        liveQ?.companyGstNo ||
+        liveTax?.companyGstNo ||
+        '24CLNPS9550H1ZI';
+      setCompanyGstNo(compGstVal);
 
-      const compPan = pCp.companyPanNo || activeTax?.companyPanNo || 'AAAAB1234C';
-      setCompanyPanNo(compPan);
+      const compPanVal = liveCp.companyPanNo || liveTax?.companyPanNo || 'CLNPS9550H';
+      setCompanyPanNo(compPanVal);
 
-      const compEpf = pCp.companyEpfNo || activeTax?.companyEpfNo || 'GJ/VAD/1234567/000';
-      setCompanyEpfNo(compEpf);
+      const compEpfVal = liveCp.companyEpfNo || liveTax?.companyEpfNo || 'GJ/VAD/1234567/000';
+      setCompanyEpfNo(compEpfVal);
 
-      const compPhone =
-        pCp.companyPhone ||
-        activePO?.companyPhone ||
-        activeQ?.companyPhone ||
-        activeTax?.companyPhone ||
-        '+91 98765 43210';
-      setCompanyPhone(compPhone);
+      const compPhoneVal =
+        liveCp.companyPhone ||
+        livePO?.companyPhone ||
+        liveQ?.companyPhone ||
+        liveTax?.companyPhone ||
+        '+91 97254 45370';
+      setCompanyPhone(compPhoneVal);
 
-      const compEmail =
-        pCp.companyEmail ||
-        activePO?.companyEmail ||
-        activeQ?.companyEmail ||
-        activeTax?.companyEmail ||
-        'info@globalindustries.in';
-      setCompanyEmail(compEmail);
+      const compEmailVal =
+        liveCp.companyEmail ||
+        livePO?.companyEmail ||
+        liveQ?.companyEmail ||
+        liveTax?.companyEmail ||
+        'info@globalindustries.co';
+      setCompanyEmail(compEmailVal);
 
-      const compWeb =
-        pCp.companyWebsite ||
-        activePO?.companyWebsite ||
-        activeQ?.companyWebsite ||
-        activeTax?.companyWebsite ||
-        'www.globalindustries.in';
-      setCompanyWebsite(compWeb);
+      const compWebVal =
+        liveCp.companyWebsite ||
+        livePO?.companyWebsite ||
+        liveQ?.companyWebsite ||
+        liveTax?.companyWebsite ||
+        'www.globalindustries.co';
+      setCompanyWebsite(compWebVal);
 
-      const compAddrH =
-        pCp.companyAddressHeader ||
-        (activePO?.tableCompanyAddress || activePO?.companyAddress
-          ? (activePO.tableCompanyAddress || activePO.companyAddress).join('\n')
+      const compAddrHVal =
+        liveCp.companyAddressHeader ||
+        (livePO?.tableCompanyAddress || livePO?.companyAddress
+          ? (livePO.tableCompanyAddress || livePO.companyAddress).join('\n')
           : '') ||
-        activeQ?.companyAddressHeader ||
-        activeTax?.companyAddressHeader ||
+        liveQ?.companyAddressHeader ||
+        liveTax?.companyAddressHeader ||
         'SO70 / 2nd Floor / Phase 2 Indiabulls, Jetalpur Road\nVadodara, Gujarat';
-      setCompanyAddressHeader(compAddrH);
+      setCompanyAddressHeader(compAddrHVal);
 
-      const compAddrF =
-        pCp.companyAddressFooter ||
-        activePO?.companyAddressFooter ||
-        activeQ?.companyAddressFooter ||
-        activeTax?.companyAddressFooter ||
-        'SO70 / 2nd Floor / Phase 2, Indiabulls, Jetalpur Road, Vadodara';
-      setCompanyAddressFooter(compAddrF);
+      const compAddrFVal =
+        liveCp.companyAddressFooter ||
+        livePO?.companyAddressFooter ||
+        liveQ?.companyAddressFooter ||
+        liveTax?.companyAddressFooter ||
+        'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243';
+      setCompanyAddressFooter(compAddrFVal);
     }
   }, [project, activeDoc, isOpen]);
 
@@ -390,8 +477,9 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                   <input
                     type="text"
                     value={clientGstNo}
-                    onChange={(e) => setClientGstNo(e.target.value.toUpperCase())}
+                    onChange={(e) => setClientGstNo(formatGstInput(e.target.value))}
                     placeholder="e.g. 24AAAAA1234A1Z5"
+                    maxLength={15}
                     className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 font-mono placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                   />
                 </div>
@@ -464,8 +552,9 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                   <input
                     type="text"
                     value={companyGstNo}
-                    onChange={(e) => setCompanyGstNo(e.target.value.toUpperCase())}
+                    onChange={(e) => setCompanyGstNo(formatGstInput(e.target.value))}
                     placeholder="e.g. 24AAAAB1234C1Z1"
+                    maxLength={15}
                     className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 font-mono placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                   />
                 </div>
@@ -477,8 +566,9 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                   <input
                     type="text"
                     value={companyPanNo}
-                    onChange={(e) => setCompanyPanNo(e.target.value.toUpperCase())}
+                    onChange={(e) => setCompanyPanNo(formatPanInput(e.target.value))}
                     placeholder="e.g. AAAAB1234C"
+                    maxLength={10}
                     className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 font-mono placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                   />
                 </div>
@@ -491,7 +581,7 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                   <input
                     type="text"
                     value={companyPhone}
-                    onChange={(e) => setCompanyPhone(e.target.value)}
+                    onChange={(e) => setCompanyPhone(sanitizePhoneInput(e.target.value))}
                     placeholder="e.g. +91 98765 43210"
                     className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                   />

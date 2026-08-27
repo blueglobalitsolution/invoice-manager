@@ -15,6 +15,32 @@ export interface CompanyProfile {
   rightServices: string[];
 }
 
+export const DEFAULT_COMPANY_PROFILE: CompanyProfile = {
+  companyName: 'GLOBAL',
+  companySubtitle: 'INDUSTRIES',
+  companyAddressHeader: 'SO7B / 2nd Floor / Phase 2, Indiabulls, Jetalpur Road, Vadodara',
+  companyAddressFooter: 'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243',
+  companyGstNo: '24CLNPS9550H1ZI',
+  companyPanNo: 'CLNPS9550H',
+  companyEpfNo: 'GJ/VAD/1234567/000',
+  companyPhone: '+91 97254 45370',
+  companyEmail: 'info@globalindustries.co',
+  companyWebsite: 'www.globalindustries.co',
+  leftServices: [
+    '• Pre Engineering Building',
+    '• Roofing Solution',
+    '• Engineering Project & Designing',
+    '• "Z" & "C" Purlins',
+    '• UPVC Roofing Sheet',
+  ],
+  rightServices: [
+    '• Infra Materials',
+    '• Puf Panels & Insulation Roofing',
+    '• Skylight Sheets',
+    '• Air Ventilators',
+  ],
+};
+
 export type ProjectDocType =
   | 'quotation'
   | 'work_order'

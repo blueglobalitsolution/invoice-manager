@@ -90,13 +90,13 @@ function createStackedPlanesBufferGeometry(n: number, width: number, height: num
   return geometry;
 }
 
-function makeMaterial(speedV: number, noiseIntensityV: number, scaleV: number) {
+function makeMaterial(speedV: number, noiseIntensityV: number, scaleV: number, beamColorV: string = '#0d3479') {
   const physical = THREE.ShaderLib.physical as any;
   const baseUniforms = THREE.UniformsUtils.clone(physical.uniforms);
   const defaults = new THREE.MeshStandardMaterial();
-  baseUniforms.diffuse.value = new THREE.Color(0, 0, 0);
-  baseUniforms.roughness.value = 0.3;
-  baseUniforms.metalness.value = 0.3;
+  baseUniforms.diffuse.value = new THREE.Color(beamColorV);
+  baseUniforms.roughness.value = 0.25;
+  baseUniforms.metalness.value = 0.35;
   baseUniforms.envMapIntensity.value = 10;
 
   const uniforms = {
@@ -160,6 +160,7 @@ interface BeamsProps {
   beamHeight?: number;
   beamNumber?: number;
   lightColor?: string;
+  beamColor?: string;
   speed?: number;
   noiseIntensity?: number;
   scale?: number;
@@ -171,7 +172,8 @@ export default function Beams({
   beamWidth = 2,
   beamHeight = 15,
   beamNumber = 12,
-  lightColor = '#ffffff',
+  lightColor = '#60a5fa',
+  beamColor = '#0d3479',
   speed = 2,
   noiseIntensity = 1.75,
   scale = 0.2,
@@ -215,7 +217,7 @@ export default function Beams({
     group.rotation.z = (rotation * Math.PI) / 180;
     scene.add(group);
 
-    let material = makeMaterial(speed, noiseIntensity, scale);
+    let material = makeMaterial(speed, noiseIntensity, scale, beamColor);
     let geometry = createStackedPlanesBufferGeometry(beamNumber, beamWidth, beamHeight, 0, 100);
     let mesh = new THREE.Mesh(geometry, material);
     group.add(mesh);
@@ -242,6 +244,7 @@ export default function Beams({
       material.uniforms.uSpeed.value = speed;
       material.uniforms.uNoiseIntensity.value = noiseIntensity;
       material.uniforms.uScale.value = scale;
+      material.uniforms.diffuse.value.set(beamColor);
       (dir.color as THREE.Color).set(lightColor);
       group.rotation.z = (rotation * Math.PI) / 180;
 

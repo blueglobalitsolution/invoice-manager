@@ -26,6 +26,7 @@ import {
   Archive,
   FolderOpen,
   Pencil,
+  Settings,
   X,
 } from 'lucide-react';
 import {
@@ -384,77 +385,133 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
 
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
           {/* Project Header Banner & Overview */}
-          <div className="glass-card rounded-[32px] p-5 md:p-6 shadow-sm relative overflow-hidden">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-[#cccccc]">
+          <div className="glass-card rounded-[32px] p-6 md:p-7 shadow-sm space-y-5">
+            {/* Top Row: Meta Tags, Status & Quick Action Buttons */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#cccccc]/70">
               <div>
-                <div className="flex items-center space-x-2 flex-wrap gap-y-1">
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de]">
+                <div className="flex items-center space-x-2 flex-wrap gap-y-1.5">
+                  <span className="px-2.5 py-1 rounded-full text-[10.5px] font-semibold bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de]">
                     {project.category || 'Civil & PEB'}
                   </span>
+
                   {project.code && (
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-mono text-[#666666] bg-white border border-[#cccccc]">
+                    <span className="px-2.5 py-1 rounded-full text-[10.5px] font-mono text-[#666666] bg-white border border-[#cccccc]">
                       {project.code}
                     </span>
                   )}
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border capitalize ${
-                    project.status === 'archived' || project.isArchived
-                      ? 'bg-amber-50 text-amber-800 border-amber-200'
-                      : 'bg-[#dfe7f4] text-[#0d3479] border-[#b9c7de]'
-                  }`}>
-                    {project.status === 'archived' || project.isArchived ? 'Archived' : (project.status || 'Active')}
+
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-[10.5px] font-semibold border capitalize flex items-center space-x-1.5 ${
+                      project.status === 'archived' || project.isArchived
+                        ? 'bg-amber-50 text-amber-800 border-amber-200'
+                        : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                    }`}
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        project.status === 'archived' || project.isArchived
+                          ? 'bg-amber-500'
+                          : 'bg-emerald-600'
+                      }`}
+                    />
+                    <span>
+                      {project.status === 'archived' || project.isArchived
+                        ? 'Archived'
+                        : project.status || 'Active'}
+                    </span>
                   </span>
                 </div>
-                <h1 className="text-[28px] md:text-[34px] font-bold text-black mt-2 leading-tight tracking-tight">
+
+                <h1 className="text-2xl md:text-3xl font-bold text-black tracking-tight mt-2">
                   {project.title}
                 </h1>
               </div>
+
+              {/* Quick Action Buttons */}
+              <div className="flex items-center space-x-2 shrink-0">
+                <button
+                  onClick={() => setIsSettingsOpen(true)}
+                  className="px-3.5 py-2 rounded-[12px] bg-white/70 hover:bg-white text-black font-semibold text-xs flex items-center space-x-1.5 border border-[#cccccc] shadow-xs transition-all cursor-pointer active:scale-95"
+                  title="Project Settings"
+                >
+                  <Settings className="w-3.5 h-3.5 text-[#0d3479]" />
+                  <span>Settings</span>
+                </button>
+
+                <button
+                  onClick={() => router.push(`/project/${project.id}/company-profile`)}
+                  className="px-3.5 py-2 rounded-[12px] bg-white/70 hover:bg-white text-black font-semibold text-xs flex items-center space-x-1.5 border border-[#cccccc] shadow-xs transition-all cursor-pointer active:scale-95"
+                  title="Header & Footer Settings"
+                >
+                  <Building2 className="w-3.5 h-3.5 text-[#0d3479]" />
+                  <span>Header & Footer</span>
+                </button>
+              </div>
             </div>
 
-            {/* Project Details Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-5 text-xs">
-              <div className="surface-card rounded-[24px] p-4 flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-[16px] bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479] shrink-0">
+            {/* 4 Clean Metric Cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              {/* 1. Client / Contractor */}
+              <div className="surface-card rounded-[20px] p-3.5 flex items-center space-x-3 hover:bg-white/80 transition-all">
+                <div className="w-10 h-10 rounded-[14px] bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479] shrink-0">
                   <Building2 className="w-4 h-4" />
                 </div>
-                <div className="min-w-0">
-                  <div className="text-[#666666] text-[11px] uppercase tracking-[0.12em]">Client / Contractor</div>
-                  <div className="font-bold text-black truncate mt-0.5">
+                <div className="min-w-0 flex-1">
+                  <div className="text-[#666666] text-[10.5px] font-semibold uppercase tracking-[0.14em]">
+                    Client / Contractor
+                  </div>
+                  <div
+                    className="font-bold text-[13.5px] text-black truncate mt-0.5"
+                    title={project.clientName || 'Mohammad Kamil Shaikh'}
+                  >
                     {project.clientName || 'Mohammad Kamil Shaikh'}
                   </div>
                 </div>
               </div>
 
-              <div className="surface-card rounded-[24px] p-4 flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-[16px] bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479] shrink-0">
+              {/* 2. Project Location */}
+              <div className="surface-card rounded-[20px] p-3.5 flex items-center space-x-3 hover:bg-white/80 transition-all">
+                <div className="w-10 h-10 rounded-[14px] bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479] shrink-0">
                   <MapPin className="w-4 h-4" />
                 </div>
-                <div className="min-w-0">
-                  <div className="text-[#666666] text-[11px] uppercase tracking-[0.12em]">Project Location</div>
-                  <div className="font-bold text-black truncate mt-0.5">
+                <div className="min-w-0 flex-1">
+                  <div className="text-[#666666] text-[10.5px] font-semibold uppercase tracking-[0.14em]">
+                    Project Location
+                  </div>
+                  <div
+                    className="font-bold text-[13.5px] text-black truncate mt-0.5"
+                    title={project.location || 'Vadodara, Gujarat'}
+                  >
                     {project.location || 'Vadodara, Gujarat'}
                   </div>
                 </div>
               </div>
 
-              <div className="surface-card rounded-[24px] p-4 flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-[16px] bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479] shrink-0">
+              {/* 3. Contract Budget */}
+              <div className="surface-card rounded-[20px] p-3.5 flex items-center space-x-3 hover:bg-white/80 transition-all">
+                <div className="w-10 h-10 rounded-[14px] bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479] shrink-0">
                   <DollarSign className="w-4 h-4" />
                 </div>
-                <div className="min-w-0">
-                  <div className="text-[#666666] text-[11px] uppercase tracking-[0.12em]">Contract Budget</div>
-                  <div className="font-bold text-black truncate mt-0.5">
+                <div className="min-w-0 flex-1">
+                  <div className="text-[#666666] text-[10.5px] font-semibold uppercase tracking-[0.14em]">
+                    Contract Budget
+                  </div>
+                  <div className="font-bold text-[13.5px] text-[#0d3479] truncate mt-0.5">
                     {project.budget || '₹15,00,000.00'}
                   </div>
                 </div>
               </div>
 
-              <div className="surface-card rounded-[24px] p-4 flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-[16px] bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479] shrink-0">
+              {/* 4. Total Documents */}
+              <div className="surface-card rounded-[20px] p-3.5 flex items-center space-x-3 hover:bg-white/80 transition-all">
+                <div className="w-10 h-10 rounded-[14px] bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479] shrink-0">
                   <FileText className="w-4 h-4" />
                 </div>
-                <div className="min-w-0">
-                  <div className="text-[#666666] text-[11px] uppercase tracking-[0.12em]">Total Documents</div>
-                  <div className="font-bold text-[#0d3479] mt-0.5">
+                <div className="min-w-0 flex-1">
+                  <div className="text-[#666666] text-[10.5px] font-semibold uppercase tracking-[0.14em]">
+                    Total Documents
+                  </div>
+                  <div className="font-bold text-[13.5px] text-[#0d3479] mt-0.5">
                     {documents.length} Dossier Item{documents.length !== 1 ? 's' : ''}
                   </div>
                 </div>
@@ -753,6 +810,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
           isOpen={isSettingsOpen}
           onClose={() => setIsSettingsOpen(false)}
           project={project}
+          activeDoc={project.documents?.[0]?.document || project.document}
           onSaveProjectSettings={(updatedProject, syncToDocs) => {
             if (onSaveProjectSettings) {
               onSaveProjectSettings(updatedProject, syncToDocs);

@@ -42,6 +42,13 @@ import {
   QuotationVendorItem,
   CustomSectionItem,
 } from '@/types/document';
+import { numberToIndianWords } from '@/lib/number-to-words';
+import {
+  formatDateInput,
+  sanitizePhoneInput,
+  formatGstInput,
+  sanitizeNumericInput,
+} from '@/lib/validation';
 import {
   getQuotationSectionPageNumber,
   getQuotationOutlineGroups,
@@ -542,12 +549,14 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-400">Quotation Date</label>
+                  <label className="block text-[11px] font-semibold text-gray-400">Quotation Date (DD/MM/YYYY)</label>
                   <input
                     type="text"
                     value={q.date}
-                    onChange={(e) => updateQuotation({ date: e.target.value })}
-                    className="w-full mt-1 px-2.5 py-1.5 bg-[#111827] border border-[#1E293B] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none"
+                    onChange={(e) => updateQuotation({ date: formatDateInput(e.target.value) })}
+                    placeholder="DD/MM/YYYY"
+                    maxLength={10}
+                    className="w-full mt-1 px-2.5 py-1.5 bg-[#111827] border border-[#1E293B] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none font-mono"
                   />
                 </div>
               </div>
@@ -969,7 +978,21 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400">Amount In Words</label>
+                <div className="flex items-center justify-between mb-0.5">
+                  <label className="block text-[10px] font-semibold text-gray-400">Amount In Words</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const words = numberToIndianWords(q.subTotal || '0', 'Total: ');
+                      updateQuotation({ amountInWords: words });
+                    }}
+                    className="text-[10px] text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 cursor-pointer font-medium"
+                    title="Auto generate words from Sub Total"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    <span>Auto-Convert</span>
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={q.amountInWords}

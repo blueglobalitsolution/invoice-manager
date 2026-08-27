@@ -16,9 +16,9 @@
   --shadow-deep: rgba(0, 0, 0, 0.17) 0 0.602187px 1.56569px -1.5px,
     rgba(0, 0, 0, 0.14) 0 2.28853px 5.95019px -3px,
     rgba(0, 0, 0, 0.08) 0 10px 30px -8px;
-  --radius-card: 32px;
-  --radius-card-sm: 20px;
-  --radius-button: 12px;
+  --radius-card: 6px;
+  --radius-card-sm: 4px;
+  --radius-button: 4px;
 }
 
 @layer base {
@@ -59,6 +59,7 @@
   select,
   textarea {
     font: inherit;
+    border-radius: 4px;
   }
 }
 
@@ -74,18 +75,20 @@
   border: 1px solid rgba(204, 204, 204, 0.8);
   box-shadow: var(--shadow-deep);
   backdrop-filter: blur(14px);
+  border-radius: 6px !important;
 }
 
 .surface-card {
   background: var(--color-surface-strong);
   border: 1px solid rgba(204, 204, 204, 0.9);
   box-shadow: var(--shadow-low);
+  border-radius: 4px !important;
 }
 
 .brand-button {
   background: var(--color-primary);
   color: #fff;
-  border-radius: var(--radius-button);
+  border-radius: 4px !important;
   border: 1px solid rgba(13, 52, 121, 0.15);
   box-shadow: var(--shadow-deep);
 }
@@ -98,7 +101,7 @@
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(204, 204, 204, 0.95);
   color: var(--color-text);
-  border-radius: 20px;
+  border-radius: 4px !important;
 }
 
 .brand-input::placeholder {
@@ -109,6 +112,32 @@
   outline: none;
   border-color: rgba(13, 52, 121, 0.45);
   box-shadow: 0 0 0 4px rgba(13, 52, 121, 0.08);
+}
+
+/* Crisp Square UI Enforcer across buttons, cards, modals, and fields */
+[class*="rounded-3xl"],
+[class*="rounded-2xl"],
+[class*="rounded-xl"],
+[class*="rounded-[32px]"],
+[class*="rounded-[28px]"],
+[class*="rounded-[24px]"],
+[class*="rounded-[20px]"],
+[class*="rounded-[16px]"],
+[class*="rounded-[14px]"],
+[class*="rounded-[12px]"] {
+  border-radius: 6px !important;
+}
+
+[class*="rounded-lg"],
+[class*="rounded-md"] {
+  border-radius: 4px !important;
+}
+
+/* Crisp square pills / badges (3px radius) */
+span[class*="rounded-full"],
+button[class*="rounded-full"],
+div[class*="rounded-full"]:not(.w-1):not(.w-1\.5):not(.w-2):not(.w-2\.5):not(.w-3):not(.w-4) {
+  border-radius: 3px !important;
 }
 
 /* Custom LaTeX Paper Styling */

@@ -440,6 +440,8 @@ export function syncProjectMasterToDocuments(project: import('@/types/project').
             doc.purchaseOrder.tableCompanyAddress = addrLines;
           }
         }
+        if (cp.leftServices && cp.leftServices.length > 0) doc.purchaseOrder.leftServices = cp.leftServices;
+        if (cp.rightServices && cp.rightServices.length > 0) doc.purchaseOrder.rightServices = cp.rightServices;
       }
     }
 
@@ -457,6 +459,8 @@ export function syncProjectMasterToDocuments(project: import('@/types/project').
         if (cp.companyWebsite) doc.quotation.companyWebsite = cp.companyWebsite;
         if (cp.companyAddressHeader) doc.quotation.companyAddressHeader = cp.companyAddressHeader;
         if (cp.companyAddressFooter) doc.quotation.companyAddressFooter = cp.companyAddressFooter;
+        if (cp.leftServices && cp.leftServices.length > 0) doc.quotation.leftServices = cp.leftServices;
+        if (cp.rightServices && cp.rightServices.length > 0) doc.quotation.rightServices = cp.rightServices;
       }
     }
 
@@ -480,6 +484,8 @@ export function syncProjectMasterToDocuments(project: import('@/types/project').
         if (cp.companyWebsite) doc.taxInvoice.companyWebsite = cp.companyWebsite;
         if (cp.companyAddressHeader) doc.taxInvoice.companyAddressHeader = cp.companyAddressHeader;
         if (cp.companyAddressFooter) doc.taxInvoice.companyAddressFooter = cp.companyAddressFooter;
+        if (cp.leftServices && cp.leftServices.length > 0) doc.taxInvoice.leftServices = cp.leftServices;
+        if (cp.rightServices && cp.rightServices.length > 0) doc.taxInvoice.rightServices = cp.rightServices;
       }
     }
 
