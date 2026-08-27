@@ -4,6 +4,7 @@ import React from 'react';
 import { LatexDocument, TaxInvoiceData } from '@/types/document';
 import { CompanyProfile } from '@/types/project';
 import { applyVariables } from '@/lib/variables';
+import { FormattedText } from '@/lib/format-text';
 
 interface TaxInvoicePreviewProps {
   doc: LatexDocument;
@@ -205,8 +206,8 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
                 <div className="col-span-1 border-r-[0.8pt] border-black p-2 text-center font-medium">
                   {item.srNo}
                 </div>
-                <div className="col-span-5 border-r-[0.8pt] border-black p-2 leading-relaxed">
-                  {applyVariables(item.description, globalVars)}
+                <div className="col-span-5 border-r-[0.8pt] border-black p-2 leading-relaxed whitespace-pre-line">
+                  <FormattedText text={item.description} globalVars={globalVars} />
                 </div>
                 <div className="col-span-2 border-r-[0.8pt] border-black p-2 text-center font-mono font-medium">
                   {item.hsn}
@@ -251,7 +252,7 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
           <div className="border-t-[0.8pt] border-black grid grid-cols-12 divide-x-[0.8pt] divide-black bg-gray-50/70">
             <div className="col-span-8 p-2.5 flex items-center">
               <div className="font-bold text-[11px] leading-snug">
-                {inv.amountInWords}
+                <FormattedText text={inv.amountInWords} globalVars={globalVars} />
               </div>
             </div>
             <div className="col-span-4 p-2 grid grid-cols-2 items-center">
@@ -286,7 +287,7 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
                   '2. PAYMENT SHOULD BE MADE AS PER TERMS.',
                   '3. SUBECT TO BE VADODARA JURISDICATION ONLY.',
                 ]).map((line, idx) => (
-                  <div key={idx}>{line}</div>
+                  <div key={idx}><FormattedText text={line} globalVars={globalVars} /></div>
                 ))}
                 <div>
                   4. COMPANAY&apos;S BANK DETAIS- {inv.bankDetails?.bankName || 'BANK OF BARODA'} - IFSC {inv.bankDetails?.ifsc || 'BARB0INDMAK'}

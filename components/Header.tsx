@@ -27,6 +27,7 @@ import {
   Pencil,
   Check,
   X,
+  Loader2,
 } from 'lucide-react';
 import { LatexDocument } from '@/types/document';
 import { ProjectItem, ProjectDocType } from '@/types/project';
@@ -279,8 +280,8 @@ export const Header: React.FC<HeaderProps> = ({
         >
           {isExporting ? (
             <>
-              <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>Saving PDF...</span>
+              <Loader2 className="w-4 h-4 animate-spin text-white shrink-0" />
+              <span className="tracking-wide font-medium">Saving PDF...</span>
             </>
           ) : (
             <>

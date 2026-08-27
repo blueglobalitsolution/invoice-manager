@@ -14,11 +14,15 @@ const shortcuts = [
     { keys: ['Ctrl', 'P'], description: 'Print / Export PDF' },
     { keys: ['Ctrl', '/'], description: 'Show keyboard shortcuts' },
   ]},
+  { category: 'Text Formatting (Any Field / Input)', items: [
+    { keys: ['Ctrl', 'Shift', 'B'], description: 'Bold selected text / word' },
+    { keys: ['Ctrl', 'Shift', 'I'], description: 'Italicize selected text / word' },
+    { keys: ['Ctrl', 'Shift', 'U'], description: 'Underline selected text / word' },
+  ]},
   { category: 'Editor', items: [
     { keys: ['Ctrl', 'Z'], description: 'Undo' },
     { keys: ['Ctrl', 'Shift', 'Z'], description: 'Redo' },
     { keys: ['Ctrl', 'Y'], description: 'Redo (alternative)' },
-    { keys: ['Ctrl', 'B'], description: 'Toggle file tree sidebar' },
   ]},
   { category: 'View', items: [
     { keys: ['Ctrl', 'Shift', 'L'], description: 'Toggle LaTeX code view' },

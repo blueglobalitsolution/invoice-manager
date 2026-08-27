@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { DynamicTemplateSchema, DynamicDocumentData, TemplateSection } from '@/types/template';
+import { FormattedText } from '@/lib/format-text';
 
 interface DynamicTemplatePreviewProps {
   schema: DynamicTemplateSchema;
@@ -28,11 +29,6 @@ export const DynamicTemplatePreview: React.FC<DynamicTemplatePreviewProps> = ({
     if (isActive) return 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
     if (isHovered) return 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
     return 'hover:ring-1 hover:ring-emerald-300/40 print:ring-0 print:bg-transparent print:shadow-none';
-  };
-
-  const renderFieldValue = (value: any) => {
-    if (!value) return '';
-    return value.toString();
   };
 
   const renderSection = (section: TemplateSection) => {
@@ -67,21 +63,24 @@ export const DynamicTemplatePreview: React.FC<DynamicTemplatePreviewProps> = ({
             {section.fields.map((field) => (
               <div key={field.id} className="text-[11.5px] flex flex-col md:flex-row md:space-x-2">
                 <span className="font-bold text-gray-700 w-1/4">{field.label}:</span>
-                <span className="flex-1 whitespace-pre-wrap">{renderFieldValue(data[field.name])}</span>
+                <span className="flex-1 whitespace-pre-wrap">
+                  <FormattedText text={data[field.name]?.toString() || ''} />
+                </span>
               </div>
             ))}
           </div>
         )}
 
         {section.type === 'paragraphs' && section.fields && (
-          <div className="space-y-1.5 text-justify leading-relaxed text-black text-[11.5px]">
+          <div className="space-y-1.5 text-justify leading-relaxed text-black text-[11.5px] whitespace-pre-line">
             {section.fields.map((field) => {
               const val = data[field.name];
               if (!val) return null;
-              // Split by double newline for paragraphs
               const paragraphs = typeof val === 'string' ? val.split('\n') : [val.toString()];
               return paragraphs.map((p: string, idx: number) => (
-                <p key={`${field.id}-${idx}`}>{p}</p>
+                <p key={`${field.id}-${idx}`} className="whitespace-pre-line">
+                  <FormattedText text={p} />
+                </p>
               ));
             })}
           </div>
@@ -97,7 +96,7 @@ export const DynamicTemplatePreview: React.FC<DynamicTemplatePreviewProps> = ({
                       {field.label}
                     </td>
                     <td className="p-1.5 align-top whitespace-pre-wrap">
-                      {renderFieldValue(data[field.name])}
+                      <FormattedText text={data[field.name]?.toString() || ''} />
                     </td>
                   </tr>
                 ))}

@@ -278,11 +278,25 @@ div[class*="rounded-full"]:not(.w-1):not(.w-1\.5):not(.w-2):not(.w-2\.5):not(.w-
   .latex-paper .bg-emerald-50\/10,
   .latex-paper .bg-emerald-500\/\[0\.05\],
   .print-area .bg-emerald-50\/20,
-  .print-area .bg-emerald-50\/10,
-  .print-area .bg-emerald-500\/\[0\.05\],
-  .latex-paper [class*="bg-emerald"],
-  .print-area [class*="bg-emerald"] {
-    background-color: transparent !important;
+  /* Explicit formatting overrides for document print and preview */
+  .latex-paper strong,
+  .latex-paper b,
+  .print-area strong,
+  .print-area b {
+    font-weight: 800 !important;
+  }
+
+  .latex-paper em,
+  .latex-paper i,
+  .print-area em,
+  .print-area i {
+    font-style: italic !important;
+  }
+
+  .latex-paper u,
+  .print-area u {
+    text-decoration: underline !important;
+    text-underline-offset: 2.5px !important;
   }
 }
 

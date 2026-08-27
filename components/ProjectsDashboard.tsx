@@ -213,7 +213,7 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
             </button>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div className="surface-card rounded-[24px] p-4">
               <span className="text-[#666666] text-[11px] block uppercase tracking-[0.16em]">Total Projects</span>
               <span className="text-lg font-bold mt-1 block">
@@ -224,18 +224,6 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
               <span className="text-[#666666] text-[11px] block uppercase tracking-[0.16em]">Managed Documents</span>
               <span className="text-lg font-bold text-[#0d3479] mt-1 block">
                 {totalDocsCount} Documents
-              </span>
-            </div>
-            <div className="surface-card rounded-[24px] p-4">
-              <span className="text-[#666666] text-[11px] block uppercase tracking-[0.16em]">Document Formats</span>
-              <span className="text-lg font-bold mt-1 block">
-                Quotes • POs • Invoices
-              </span>
-            </div>
-            <div className="surface-card rounded-[24px] p-4">
-              <span className="text-[#666666] text-[11px] block uppercase tracking-[0.16em]">Export Ready</span>
-              <span className="text-lg font-bold mt-1 block">
-                LaTeX & PDF A4
               </span>
             </div>
           </div>

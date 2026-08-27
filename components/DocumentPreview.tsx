@@ -482,23 +482,25 @@ const CustomSectionRenderer: React.FC<CustomSectionRendererProps> = ({
       </h2>
 
       {section.contentType === 'bullet_list' && section.bullets && (
-        <ul className="list-disc list-inside space-y-1 pl-1 text-justify">
+        <ul className="list-disc list-inside space-y-1 pl-1 text-justify whitespace-pre-line">
           {section.bullets.map((b, bIdx) => (
-            <li key={bIdx} className="text-black">
-              {applyVariables(b, globalVars, po)}
+            <li key={bIdx} className="text-black whitespace-pre-line">
+              <FormattedText text={b} globalVars={globalVars} po={po} />
             </li>
           ))}
         </ul>
       )}
 
       {section.contentType === 'legal_clause' && section.paragraphs && (
-        <div className="space-y-1.5 text-justify leading-relaxed text-black text-[11px]">
+        <div className="space-y-1.5 text-justify leading-relaxed text-black text-[11px] whitespace-pre-line">
           {section.paragraphs.map((p, pIdx) => (
             <div key={pIdx} className="flex items-start space-x-2">
               <span className="font-bold text-black font-mono shrink-0 text-[11px]">
                 {pIdx + 1}.0
               </span>
-              <p className="flex-1">{applyVariables(p, globalVars, po)}</p>
+              <p className="flex-1 whitespace-pre-line">
+                <FormattedText text={p} globalVars={globalVars} po={po} />
+              </p>
             </div>
           ))}
         </div>
@@ -521,7 +523,7 @@ const CustomSectionRenderer: React.FC<CustomSectionRendererProps> = ({
               <tr className="border-b border-black bg-gray-100 font-bold">
                 {section.tableHeaders.map((h, hIdx) => (
                   <th key={hIdx} className="p-1.5 border-r border-black last:border-r-0 text-left">
-                    {applyVariables(h, globalVars, po)}
+                    <FormattedText text={h} globalVars={globalVars} po={po} />
                   </th>
                 ))}
               </tr>
@@ -530,8 +532,8 @@ const CustomSectionRenderer: React.FC<CustomSectionRendererProps> = ({
               {section.tableRows.map((row, rIdx) => (
                 <tr key={rIdx} className="border-b border-black last:border-b-0">
                   {row.map((cell, cIdx) => (
-                    <td key={cIdx} className="p-1.5 border-r border-black last:border-r-0 align-top">
-                      {applyVariables(cell, globalVars, po)}
+                    <td key={cIdx} className="p-1.5 border-r border-black last:border-r-0 align-top whitespace-pre-line">
+                      <FormattedText text={cell} globalVars={globalVars} po={po} />
                     </td>
                   ))}
                 </tr>
@@ -548,10 +550,10 @@ const CustomSectionRenderer: React.FC<CustomSectionRendererProps> = ({
               {section.keyValuePairs.map((kv, kvIdx) => (
                 <tr key={kvIdx} className="border-b border-black last:border-b-0">
                   <td className="p-1.5 font-bold border-r border-black w-1/3 bg-gray-50/50 align-top">
-                    {applyVariables(kv.key, globalVars, po)}
+                    <FormattedText text={kv.key} globalVars={globalVars} po={po} />
                   </td>
-                  <td className="p-1.5 align-top">
-                    {applyVariables(kv.value, globalVars, po)}
+                  <td className="p-1.5 align-top whitespace-pre-line">
+                    <FormattedText text={kv.value} globalVars={globalVars} po={po} />
                   </td>
                 </tr>
               ))}
@@ -561,7 +563,7 @@ const CustomSectionRenderer: React.FC<CustomSectionRendererProps> = ({
       )}
 
       {section.contentType === 'callout' && section.calloutText && (
-        <div className="border-2 border-black p-2.5 my-2.5 bg-gray-50 text-[11px] leading-relaxed">
+        <div className="border-2 border-black p-2.5 my-2.5 bg-gray-50 text-[11px] leading-relaxed whitespace-pre-line">
           <div className="font-bold text-[11.5px] uppercase tracking-wider mb-1 text-black">
             {section.calloutType === 'warning'
               ? 'MANDATORY DIRECTIVE / WARNING'
@@ -569,7 +571,9 @@ const CustomSectionRenderer: React.FC<CustomSectionRendererProps> = ({
               ? 'IMPORTANT NOTICE'
               : 'SPECIAL NOTICE'}
           </div>
-          <p className="italic">{applyVariables(section.calloutText, globalVars, po)}</p>
+          <p className="italic whitespace-pre-line">
+            <FormattedText text={section.calloutText} globalVars={globalVars} po={po} />
+          </p>
         </div>
       )}
     </div>
@@ -774,10 +778,10 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
               </span>
             )}
             <h2 className="text-[13px] font-bold text-[#505050] mb-1">Scope of Work</h2>
-            <ul className="list-disc list-inside space-y-1 pl-1">
+            <ul className="list-disc list-inside space-y-1 pl-1 whitespace-pre-line">
               {po.scopeOfWork.map((item, i) => (
-                <li key={i} className="text-black">
-                  {applyVariables(item, globalVars, po)}
+                <li key={i} className="text-black whitespace-pre-line">
+                  <FormattedText text={item} globalVars={globalVars} po={po} />
                 </li>
               ))}
             </ul>
@@ -823,26 +827,26 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
                 <tbody>
                   {(po.rateItems || []).map((item) => (
                     <tr key={item.id} className="border-b border-black">
-                      <td className="p-1.5 border-r border-black leading-snug align-top">
-                        {applyVariables(item.description, globalVars, po)}
+                      <td className="p-1.5 border-r border-black leading-snug align-top whitespace-pre-line">
+                        <FormattedText text={item.description} globalVars={globalVars} po={po} />
                       </td>
                       <td className="p-1.5 border-r border-black align-top whitespace-nowrap">
-                        {applyVariables(item.unit, globalVars, po)}
+                        <FormattedText text={item.unit} globalVars={globalVars} po={po} />
                       </td>
                       <td className="p-1.5 border-r border-black align-top whitespace-nowrap">
-                        {applyVariables(item.qty, globalVars, po)}
+                        <FormattedText text={item.qty} globalVars={globalVars} po={po} />
                       </td>
                       <td className="p-1.5 border-r border-black align-top whitespace-nowrap">
-                        {applyVariables(item.rate, globalVars, po)}
+                        <FormattedText text={item.rate} globalVars={globalVars} po={po} />
                       </td>
                       <td className="p-1.5 text-right align-top font-mono">
-                        {applyVariables(item.total, globalVars, po)}
+                        <FormattedText text={item.total} globalVars={globalVars} po={po} />
                       </td>
                     </tr>
                   ))}
                   <tr>
-                    <td colSpan={5} className="p-1.5 font-bold">
-                      Amount in work: {amountInWords}
+                    <td colSpan={5} className="p-1.5 font-bold whitespace-pre-line">
+                      Amount in work: <FormattedText text={amountInWords} globalVars={globalVars} po={po} />
                     </td>
                   </tr>
                 </tbody>

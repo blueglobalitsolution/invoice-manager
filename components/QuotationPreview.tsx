@@ -931,12 +931,12 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
             <div className="flex justify-between items-start text-[11.5px]">
               <div>
                 <div className="font-bold">To,</div>
-                <div className="font-bold">{applyVariables(q.toRecipient, globalVars)}</div>
-                <div className="font-bold">{applyVariables(q.toAddress, globalVars)}</div>
+                <div className="font-bold"><FormattedText text={q.toRecipient} globalVars={globalVars} /></div>
+                <div className="font-bold whitespace-pre-line"><FormattedText text={q.toAddress} globalVars={globalVars} /></div>
               </div>
               <div className="text-right">
-                <div className="font-bold">Ref no.: {applyVariables(q.refNo, globalVars)}</div>
-                <div className="font-bold">Date: {applyVariables(q.date, globalVars)}</div>
+                <div className="font-bold">Ref no.: <FormattedText text={q.refNo} globalVars={globalVars} /></div>
+                <div className="font-bold">Date: <FormattedText text={q.date} globalVars={globalVars} /></div>
               </div>
             </div>
           </div>
@@ -1005,10 +1005,10 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                 {q.technicalDetails.map((td, idx) => (
                   <tr key={idx} className="border-b border-black">
                     <td className="w-[38%] font-bold px-3 py-1.5 border-r border-black align-top bg-gray-50/50">
-                      {td.label}
+                      <FormattedText text={td.label} globalVars={globalVars} />
                     </td>
-                    <td className="px-3 py-1.5 align-top leading-snug">
-                      {applyVariables(td.value, globalVars)}
+                    <td className="px-3 py-1.5 align-top leading-snug whitespace-pre-line">
+                      <FormattedText text={td.value} globalVars={globalVars} />
                     </td>
                   </tr>
                 ))}
@@ -1039,14 +1039,10 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                 {q.specifications.map((spec, idx) => (
                   <tr key={idx} className="border-b border-black">
                     <td className="w-[32%] font-bold px-3 py-2 border-r border-black align-top bg-gray-50/50 whitespace-pre-line">
-                      {spec.title.replace(/\\newline/g, '\n').replace(/\\textbf{([^}]+)}/g, '$1')}
+                      <FormattedText text={spec.title} globalVars={globalVars} />
                     </td>
                     <td className="px-3 py-2 align-top text-[11px] leading-relaxed whitespace-pre-line">
-                      {spec.details
-                        .replace(/\\newline/g, '\n')
-                        .replace(/\\textbf{([^}]+)}/g, '$1')
-                        .replace(/\\&/g, '&')
-                        .replace(/\\\$/g, '$')}
+                      <FormattedText text={spec.details} globalVars={globalVars} />
                     </td>
                   </tr>
                 ))}
@@ -1088,10 +1084,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                   {q.commercialItems.map((item, idx) => (
                     <tr key={idx} className="border-b border-black">
                       <td className="px-2 py-1 border-r border-black align-top text-justify whitespace-pre-line leading-snug">
-                        {item.description
-                          .replace(/\\newline/g, '\n')
-                          .replace(/\\textbf{([^}]+)}/g, '$1')
-                          .replace(/\\&/g, '&')}
+                        <FormattedText text={item.description} globalVars={globalVars} />
                       </td>
                       <td className="px-2 py-1 text-right align-top font-medium">{item.price}</td>
                     </tr>
@@ -1105,13 +1098,13 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                     <td className="px-2 py-0.5 text-right">{q.subTotal}</td>
                   </tr>
                   <tr className="border-b border-black font-bold">
-                    <td colSpan={2} className="px-2 py-0.5 text-[10px]">
-                      {q.amountInWords}
+                    <td colSpan={2} className="px-2 py-0.5 text-[10px] whitespace-pre-line">
+                      <FormattedText text={q.amountInWords} globalVars={globalVars} />
                     </td>
                   </tr>
                   <tr className="border-b border-black font-bold bg-gray-50/50">
-                    <td colSpan={2} className="px-2 py-0.5 text-[10px]">
-                      {q.gstNote}
+                    <td colSpan={2} className="px-2 py-0.5 text-[10px] whitespace-pre-line">
+                      <FormattedText text={q.gstNote} globalVars={globalVars} />
                     </td>
                   </tr>
                 </tbody>
@@ -1249,14 +1242,11 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                   {q.vendorList.map((v, idx) => (
                     <tr key={idx} className="border-b border-black">
                       <td className="px-1 py-1 text-center border-r border-black align-top">{v.srNo}</td>
-                      <td className="px-2 py-1 border-r border-black align-top font-medium">
-                        {v.description}
+                      <td className="px-2 py-1 border-r border-black align-top font-medium whitespace-pre-line">
+                        <FormattedText text={v.description} globalVars={globalVars} />
                       </td>
                       <td className="px-2 py-1 align-top whitespace-pre-line leading-snug">
-                        {v.brand
-                          .replace(/\\newline/g, '\n')
-                          .replace(/\\textbf{([^}]+)}/g, '$1')
-                          .replace(/\\&/g, '&')}
+                        <FormattedText text={v.brand} globalVars={globalVars} />
                       </td>
                     </tr>
                   ))}
@@ -1284,7 +1274,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
             )}`}
           >
             <div className="text-[10.5px] leading-snug">
-              <span className="font-bold">Taxes:</span> {q.taxNote}
+              <span className="font-bold">Taxes:</span> <FormattedText text={q.taxNote} globalVars={globalVars} />
             </div>
 
             <div className="mt-1.5">
@@ -1292,7 +1282,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
               <ol className="list-decimal list-inside text-[10px] space-y-0.5 pl-2 mt-0.5 whitespace-pre-line">
                 {q.notes.map((n, idx) => (
                   <li key={idx} className="leading-snug text-justify whitespace-pre-line">
-                    {n}
+                    <FormattedText text={n} globalVars={globalVars} />
                   </li>
                 ))}
               </ol>
@@ -1300,15 +1290,15 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
 
             <div className="mt-1.5">
               <div className="font-bold text-[11px] underline uppercase">DELIVERY CONDITIONS:</div>
-              <ul className="list-disc list-inside text-[10px] space-y-0.5 pl-2 mt-0.5">
+              <ul className="list-disc list-inside text-[10px] space-y-0.5 pl-2 mt-0.5 whitespace-pre-line">
                 {q.deliveryChecklist.map((dc, idx) => (
-                  <li key={idx} className="leading-snug">
-                    {dc}
+                  <li key={idx} className="leading-snug whitespace-pre-line">
+                    <FormattedText text={dc} globalVars={globalVars} />
                   </li>
                 ))}
               </ul>
               <div className="text-[10px] leading-snug text-justify whitespace-pre-line mt-1">
-                {q.deliveryNotes}
+                <FormattedText text={q.deliveryNotes} globalVars={globalVars} />
               </div>
             </div>
           </div>
@@ -1338,7 +1328,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
               <ol className="list-decimal list-inside text-[10.5px] space-y-2.5 pl-2">
                 {q.commercialTerms.slice(0, 7).map((term, idx) => (
                   <li key={idx} className="leading-relaxed text-justify">
-                    <span className="font-bold">{term.title} </span>
+                    <span className="font-bold"><FormattedText text={term.title} globalVars={globalVars} /> </span>
                     <FormattedText text={term.content} globalVars={globalVars} />
                     {term.subItems && term.subItems.length > 0 && (
                       <ul className="list-disc list-inside pl-4 mt-0.5 space-y-0.5">
@@ -1373,7 +1363,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
               <ol start={8} className="list-decimal list-inside text-[10.5px] space-y-2.5 pl-2">
                 {q.commercialTerms.slice(7, 13).map((term, idx) => (
                   <li key={idx} className="leading-relaxed text-justify">
-                    <span className="font-bold">{term.title} </span>
+                    <span className="font-bold"><FormattedText text={term.title} globalVars={globalVars} /> </span>
                     <span className="whitespace-pre-line">
                       <FormattedText text={term.content} globalVars={globalVars} />
                     </span>
@@ -1402,7 +1392,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
               <ol start={14} className="list-decimal list-inside text-[10px] space-y-1 pl-2">
                 {q.commercialTerms.slice(13).map((term, idx) => (
                   <li key={idx} className="leading-snug text-justify">
-                    <span className="font-bold">{term.title} </span>
+                    <span className="font-bold"><FormattedText text={term.title} globalVars={globalVars} /> </span>
                     <FormattedText text={term.content} globalVars={globalVars} />
                   </li>
                 ))}
@@ -1428,7 +1418,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
             <ul className="list-disc list-inside text-[9.5px] space-y-0.5 pl-2 mt-0.5 whitespace-pre-line">
               {q.exclusions.map((ex, idx) => (
                 <li key={idx} className="leading-snug text-justify whitespace-pre-line">
-                  {ex}
+                  <FormattedText text={ex} globalVars={globalVars} />
                 </li>
               ))}
             </ul>
@@ -1449,10 +1439,10 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
             )}`}
           >
             <div className="font-bold text-[10.5px] underline uppercase">Section 8: SPECIAL NOTES</div>
-            <ul className="list-disc list-inside text-[9.5px] space-y-0.5 pl-2 mt-0.5">
+            <ul className="list-disc list-inside text-[9.5px] space-y-0.5 pl-2 mt-0.5 whitespace-pre-line">
               {q.specialNotes.map((sn, idx) => (
-                <li key={idx} className="leading-snug text-justify">
-                  {sn}
+                <li key={idx} className="leading-snug text-justify whitespace-pre-line">
+                  <FormattedText text={sn} globalVars={globalVars} />
                 </li>
               ))}
             </ul>
