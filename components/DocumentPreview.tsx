@@ -13,6 +13,7 @@ import { QuotationPreview } from './QuotationPreview';
 import { DynamicTemplatePreview } from './DynamicTemplatePreview';
 import { LatexFormattedText } from '@/lib/katex-renderer';
 import { applyVariables, applyVariablesToArray } from '@/lib/variables';
+import { FormattedText } from '@/lib/format-text';
 import {
   getDocumentOutlineGroups,
   OutlineGroup,
@@ -504,9 +505,11 @@ const CustomSectionRenderer: React.FC<CustomSectionRendererProps> = ({
       )}
 
       {section.contentType === 'paragraphs' && section.paragraphs && (
-        <div className="space-y-1.5 text-justify leading-relaxed text-black">
+        <div className="space-y-1.5 text-justify leading-relaxed text-black whitespace-pre-line">
           {section.paragraphs.map((p, pIdx) => (
-            <p key={pIdx}>{applyVariables(p, globalVars, po)}</p>
+            <p key={pIdx} className="whitespace-pre-line">
+              <FormattedText text={p} globalVars={globalVars} po={po} />
+            </p>
           ))}
         </div>
       )}
@@ -874,9 +877,11 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             <h2 className="text-[13px] font-bold text-[#505050] mb-1">
               Scope of Contractor
             </h2>
-            <div className="space-y-1.5 text-justify leading-relaxed">
+            <div className="space-y-1.5 text-justify leading-relaxed whitespace-pre-line">
               {po.scopeOfContractor.map((p, i) => (
-                <p key={i}>{applyVariables(p, globalVars, po)}</p>
+                <p key={i} className="whitespace-pre-line">
+                  <FormattedText text={p} globalVars={globalVars} po={po} />
+                </p>
               ))}
             </div>
           </div>
@@ -908,9 +913,11 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             <h2 className="text-[13px] font-bold text-[#505050] mb-1">
               Payment Terms & Milestones
             </h2>
-            <ul className="list-disc list-inside space-y-1 pl-1">
+            <ul className="list-disc list-inside space-y-1 pl-1 whitespace-pre-line">
               {po.paymentTerms.map((term, i) => (
-                <li key={i}>{applyVariables(term, globalVars, po)}</li>
+                <li key={i} className="whitespace-pre-line">
+                  <FormattedText text={term} globalVars={globalVars} po={po} />
+                </li>
               ))}
             </ul>
           </div>
@@ -942,9 +949,11 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             <h2 className="text-[13px] font-bold text-[#505050] mb-1">
               Quality, Materials & Safety (Clauses 5–7)
             </h2>
-            <div className="space-y-1.5 text-justify leading-relaxed">
+            <div className="space-y-1.5 text-justify leading-relaxed whitespace-pre-line">
               {po.measurementClause.map((clause, i) => (
-                <p key={i}>{applyVariables(clause, globalVars, po)}</p>
+                <p key={i} className="whitespace-pre-line">
+                  <FormattedText text={clause} globalVars={globalVars} po={po} />
+                </p>
               ))}
             </div>
           </div>
@@ -976,9 +985,11 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             <h2 className="text-[13px] font-bold text-[#505050] mb-1">
               Commercial & Labour Terms (Clauses 8–10)
             </h2>
-            <ul className="list-disc list-inside space-y-1 pl-1">
+            <ul className="list-disc list-inside space-y-1 pl-1 whitespace-pre-line">
               {po.termsAndConditions.map((term, i) => (
-                <li key={i}>{applyVariables(term, globalVars, po)}</li>
+                <li key={i} className="whitespace-pre-line">
+                  <FormattedText text={term} globalVars={globalVars} po={po} />
+                </li>
               ))}
             </ul>
           </div>
@@ -1010,9 +1021,11 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             <h2 className="text-[13px] font-bold text-[#505050] mb-1">
               General Terms & Defect Liability (Clauses 11–16)
             </h2>
-            <ul className="list-disc list-inside space-y-1.5 pl-1 text-justify">
+            <ul className="list-disc list-inside space-y-1.5 pl-1 text-justify whitespace-pre-line">
               {po.page3Terms.map((term, i) => (
-                <li key={i}>{applyVariables(term, globalVars, po)}</li>
+                <li key={i} className="whitespace-pre-line">
+                  <FormattedText text={term} globalVars={globalVars} po={po} />
+                </li>
               ))}
             </ul>
           </div>

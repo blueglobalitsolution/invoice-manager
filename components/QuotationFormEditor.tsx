@@ -43,6 +43,7 @@ import {
   CustomSectionItem,
 } from '@/types/document';
 import { numberToIndianWords } from '@/lib/number-to-words';
+import { RichTextEditor } from '@/components/ui/RichTextEditor';
 import {
   formatDateInput,
   sanitizePhoneInput,
@@ -585,60 +586,15 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                 />
               </div>
 
-              <div className="space-y-3">
-                <div className="flex justify-between items-center pt-1">
-                  <label className="block text-xs font-medium text-slate-400">Introduction Paragraphs</label>
-                  <button
-                    onClick={() => {
-                      const updated = [...q.introParagraphs, ''];
-                      updateQuotation({ introParagraphs: updated });
-                    }}
-                    className="border border-indigo-500/40 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 rounded-lg px-3 py-1 text-xs font-medium flex items-center space-x-1.5 transition-colors cursor-pointer"
-                  >
-                    <Plus className="w-3 h-3" />
-                    <span>Add Paragraph</span>
-                  </button>
-                </div>
-                {q.introParagraphs.map((para, idx) => (
-                  <div key={idx} className="bg-[#070A13] border border-[#1E2538] hover:border-slate-700 rounded-xl p-3.5 space-y-2.5 transition-colors">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-slate-600 font-mono text-xs cursor-grab">⋮⋮</span>
-                        <span className="text-[11px] font-semibold text-[#A5B4FC] bg-[#312E81]/30 border border-indigo-500/30 px-2.5 py-0.5 rounded-md">
-                          Paragraph #{idx + 1}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <button
-                          className="text-slate-400 hover:text-white p-1 cursor-pointer transition-colors"
-                          title="Edit Paragraph"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            const updated = q.introParagraphs.filter((_, i) => i !== idx);
-                            updateQuotation({ introParagraphs: updated });
-                          }}
-                          className="text-rose-400 hover:text-rose-300 p-1 cursor-pointer transition-colors"
-                          title="Remove Paragraph"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                    <textarea
-                      rows={2}
-                      value={para}
-                      onChange={(e) => {
-                        const updated = [...q.introParagraphs];
-                        updated[idx] = e.target.value;
-                        updateQuotation({ introParagraphs: updated });
-                      }}
-                      className="w-full bg-transparent border-0 text-slate-300 text-xs focus:outline-none resize-none p-0 leading-relaxed font-normal"
-                    />
-                  </div>
-                ))}
+              <div className="space-y-3 pt-1">
+                <RichTextEditor
+                  value={q.introParagraphs}
+                  onChange={(val) => updateQuotation({ introParagraphs: Array.isArray(val) ? val : [val] })}
+                  label="Introduction Paragraphs & Proposal Body"
+                  placeholder="Enter introductory proposal paragraphs here... Press Enter for a new line, or double Enter for a new paragraph. Select text and click B (Bold), I (Italic), U (Underline), or Lists."
+                  minHeight="180px"
+                  isParagraphArray={true}
+                />
               </div>
 
               {/* Signatory Settings */}

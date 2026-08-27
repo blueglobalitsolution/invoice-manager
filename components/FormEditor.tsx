@@ -43,6 +43,7 @@ import {
   getDocumentOutlineGroups,
   moveSectionToPage,
 } from '@/lib/document-sections';
+import { RichTextEditor } from '@/components/ui/RichTextEditor';
 
 interface FormEditorProps {
   document: LatexDocument;
@@ -861,38 +862,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {/* 4. SCOPE OF CONTRACTOR (PAGE 2) */}
         {activeSectionId === 'scope_contractor' && (
           <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="block font-bold uppercase text-[10.5px] text-blue-300">
-                Scope of Contractor Clauses (Page 2)
-              </span>
-              <button
-                onClick={() => updatePO({ scopeOfContractor: [...po.scopeOfContractor, 'New clause'] })}
-                className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
-              >
-                <Plus className="w-3 h-3" />
-                <span>Add Clause</span>
-              </button>
-            </div>
-            {po.scopeOfContractor.map((clause, idx) => (
-              <div key={idx} className="flex items-start space-x-2">
-                <textarea
-                  rows={3}
-                  value={clause}
-                  onChange={(e) => {
-                    const updated = [...po.scopeOfContractor];
-                    updated[idx] = e.target.value;
-                    updatePO({ scopeOfContractor: updated });
-                  }}
-                  className="w-full bg-[#070c18] border border-[#16233a] rounded p-2 text-xs text-white"
-                />
-                <button
-                  onClick={() => updatePO({ scopeOfContractor: po.scopeOfContractor.filter((_, i) => i !== idx) })}
-                  className="p-1 text-gray-500 hover:text-red-400 rounded mt-1 cursor-pointer"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
+            <RichTextEditor
+              value={po.scopeOfContractor}
+              onChange={(val) => updatePO({ scopeOfContractor: Array.isArray(val) ? val : [val] })}
+              label="Scope of Contractor Clauses (Page 2)"
+              placeholder="Enter scope of contractor clauses... Press Enter for a new line, or double Enter for a new clause/paragraph."
+              minHeight="180px"
+              isParagraphArray={true}
+            />
           </div>
         )}
 
