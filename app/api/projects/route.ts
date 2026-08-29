@@ -103,22 +103,25 @@ export async function POST(request: Request) {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    if (newProject.documents && Array.isArray(newProject.documents) && newProject.documents.length > 0) {
-      for (const [idx, doc] of newProject.documents.entries()) {
-        const docId = doc.id && doc.projectId === id ? doc.id : `doc_${id.split('_')[1] || Date.now()}_${idx}`;
-        insertDocStmt.run(
-          docId,
-          id,
-          doc.title || title || 'Untitled Document',
-          doc.docType || 'quotation',
-          doc.docNumber || code || '',
-          doc.status || 'draft',
-          doc.lastModified || newProject.lastModified || new Date().toLocaleString(),
-          doc.document ? JSON.stringify(doc.document) : '{}'
-        );
+    if (newProject.documents && Array.isArray(newProject.documents)) {
+      if (newProject.documents.length > 0) {
+        for (const [idx, doc] of newProject.documents.entries()) {
+          const docId = doc.id && doc.projectId === id ? doc.id : `doc_${id.split('_')[1] || Date.now()}_${idx}`;
+          insertDocStmt.run(
+            docId,
+            id,
+            doc.title || title || 'Untitled Document',
+            doc.docType || 'quotation',
+            doc.docNumber || code || '',
+            doc.status || 'draft',
+            doc.lastModified || newProject.lastModified || new Date().toLocaleString(),
+            doc.document ? JSON.stringify(doc.document) : '{}'
+          );
+        }
       }
-    } else {
-      // Fallback: Insert single initial document
+      // If newProject.documents is empty array ([]), do NOT insert any documents. It is an empty project.
+    } else if (newProject.document) {
+      // Legacy Fallback: Insert single initial document only if documents array was not provided
       const docId = `doc_${id.split('_')[1] || Date.now()}`;
       const docType = category?.toLowerCase().includes('invoice') 
         ? 'tax_invoice' 
@@ -134,7 +137,7 @@ export async function POST(request: Request) {
         code || '',
         'draft',
         newProject.lastModified || new Date().toLocaleString(),
-        document ? JSON.stringify(document) : '{}'
+        JSON.stringify(newProject.document)
       );
     }
 

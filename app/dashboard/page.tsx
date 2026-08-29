@@ -113,7 +113,7 @@ export default function DashboardPage() {
       return docItem;
     });
 
-    const defaultDoc = initialDocuments[0]?.document || JSON.parse(JSON.stringify(LABOUR_PO_TEMPLATE));
+    const defaultDoc = initialDocuments[0]?.document || null;
 
     const newProj = {
       id: newProjId,
