@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useMemo, useState } from 'react';
-import { ZoomIn, ZoomOut, FileCode } from 'lucide-react';
+import { ZoomIn, ZoomOut } from 'lucide-react';
 import {
   LatexDocument,
   PurchaseOrderData,
@@ -11,6 +11,7 @@ import {
 import { TaxInvoicePreview } from './TaxInvoicePreview';
 import { QuotationPreview } from './QuotationPreview';
 import { DynamicTemplatePreview } from './DynamicTemplatePreview';
+import { ShortcutsDropdown } from './ShortcutsDropdown';
 import { LatexFormattedText } from '@/lib/katex-renderer';
 import { applyVariables, applyVariablesToArray } from '@/lib/variables';
 import { FormattedText } from '@/lib/format-text';
@@ -89,61 +90,52 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
 
 
   return (
-    <div className="flex-1 flex flex-col bg-[#070A13] overflow-hidden relative h-full min-h-0 print:bg-white print:overflow-visible">
+    <div className="flex-1 flex flex-col bg-[#64748b] overflow-hidden relative h-full min-h-0 print:bg-white print:overflow-visible">
       {/* Top Preview Toolbar */}
-      <div className="h-11 bg-[#070A13] flex items-center justify-between px-5 border-b border-[#151C2C] shrink-0 z-10 select-none print:hidden">
+      <div className="h-[49px] bg-[#f0efe6] flex items-center justify-between px-5 border-b border-[#cccccc] shrink-0 z-10 select-none print:hidden shadow-xs">
         <div className="flex items-center space-x-3.5">
-          <div className="flex bg-[#0E1424] rounded-xl border border-[#1E2538] overflow-hidden text-xs text-slate-300">
+          <div className="flex bg-white rounded-xl border border-[#cccccc] overflow-hidden text-xs text-[#333333] shadow-xs">
             <button
               onClick={() => setZoomLevel(Math.max(50, zoomLevel - 15))}
-              className="px-2.5 py-1.5 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+              className="px-2.5 py-1.5 hover:bg-slate-100 hover:text-black transition-colors cursor-pointer"
               title="Zoom Out"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
-            <span className="px-3 py-1.5 text-slate-200 font-mono font-medium text-[11px] border-x border-[#1E2538]">
+            <span className="px-3 py-1.5 text-black font-mono font-semibold text-[11px] border-x border-[#cccccc]">
               {zoomLevel}%
             </span>
             <button
               onClick={() => setZoomLevel(Math.min(175, zoomLevel + 15))}
-              className="px-2.5 py-1.5 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+              className="px-2.5 py-1.5 hover:bg-slate-100 hover:text-black transition-colors cursor-pointer"
               title="Zoom In"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setZoomLevel(100)}
-              className="px-3 py-1.5 hover:bg-slate-800 hover:text-white transition-colors font-medium text-[11px] cursor-pointer border-l border-[#1E2538]"
+              className="px-3 py-1.5 hover:bg-slate-100 hover:text-black transition-colors font-semibold text-[11px] cursor-pointer border-l border-[#cccccc]"
             >
               Reset
             </button>
           </div>
 
           {activeSectionId && (
-            <div className="hidden sm:flex items-center space-x-2 text-[11px] text-emerald-400 bg-[#064E3B]/30 px-3 py-1.5 rounded-lg border border-emerald-600/40 font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="hidden sm:flex items-center space-x-2 text-[11px] text-[#0d3479] bg-[#dfe7f4] px-3 py-1 rounded-lg border border-[#b9c7de] font-mono font-semibold">
+              <span className="w-2 h-2 rounded-full bg-[#0d3479] animate-pulse" />
               <span>Section: {activeSectionId.replace('_', ' ')}</span>
             </div>
           )}
         </div>
 
         {/* Right Preview Toolbar Action */}
-        {onOpenLatexCode && (
-          <button
-            onClick={onOpenLatexCode}
-            className="flex items-center space-x-2 px-3.5 py-1.5 bg-[#0E1424] hover:bg-[#151E34] text-slate-300 hover:text-white rounded-xl border border-[#1E2538] hover:border-slate-600 text-xs font-semibold transition-colors cursor-pointer shadow-sm"
-            title="View generated LaTeX (.tex) source"
-          >
-            <FileCode className="w-3.5 h-3.5 text-indigo-400" />
-            <span>LaTeX Code</span>
-          </button>
-        )}
+        <ShortcutsDropdown />
       </div>
 
       {/* Main Canvas Scroll Area */}
       <div
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#070A13] scrollbar-thin scroll-smooth text-center print:p-0 print:m-0 print:bg-white print:overflow-visible"
+        className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#64748b] scrollbar-thin scroll-smooth text-center print:p-0 print:m-0 print:bg-white print:overflow-visible"
       >
         {/* Centered preview container scaled natively using CSS zoom */}
         <div
@@ -219,7 +211,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
               <div>
                 <div className="text-center mb-8 border-b pb-6 border-gray-200">
                   <h1 className="text-2xl md:text-3xl font-bold leading-snug mb-2 text-gray-900 tracking-tight">
-                    <LatexFormattedText text={applyVariables(doc.title || 'Untitled Document', doc.globalVariables, doc.purchaseOrder)} />
+                    <FormattedText text={doc.title || 'Untitled Document'} globalVars={doc.globalVariables} po={doc.purchaseOrder} />
                   </h1>
                 </div>
 
@@ -236,37 +228,37 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
                       onMouseLeave={() => onHoverSection?.(null)}
                       className={`mb-6 p-2 rounded relative cursor-pointer transition-all duration-200 ${
                         isSecActive
-                          ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+                          ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
                           : isSecHovered
-                          ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-                          : 'hover:ring-1 hover:ring-emerald-300/40'
+                          ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+                          : 'hover:ring-1 hover:ring-[#0d3479]/30'
                       }`}
                     >
                       {isSecHovered && (
-                        <span className="absolute top-1 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+                        <span className="absolute top-1 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
                           Focus
                         </span>
                       )}
                       <h2 className="text-lg font-bold text-gray-900 border-b border-gray-300 pb-1 mb-3">
-                        {sIndex + 1}. <LatexFormattedText text={applyVariables(section.title, doc.globalVariables, doc.purchaseOrder)} />
+                        {sIndex + 1}. <FormattedText text={section.title} globalVars={doc.globalVariables} po={doc.purchaseOrder} />
                       </h2>
                       {section.subsections.map((sub) => (
                         <div key={sub.id} className="my-2">
                           {sub.title && (
                             <h3 className="font-bold text-sm mb-1">
-                              {applyVariables(sub.title, doc.globalVariables, doc.purchaseOrder)}
+                              <FormattedText text={sub.title} globalVars={doc.globalVariables} po={doc.purchaseOrder} />
                             </h3>
                           )}
                           {sub.body && (
                             <p className="text-gray-900 leading-relaxed indent-4">
-                              <LatexFormattedText text={applyVariables(sub.body, doc.globalVariables, doc.purchaseOrder)} />
+                              <FormattedText text={sub.body} globalVars={doc.globalVariables} po={doc.purchaseOrder} />
                             </p>
                           )}
                           {sub.bullets && sub.bullets.length > 0 && (
                             <ul className="list-disc list-inside space-y-1 pl-2 text-xs">
                               {sub.bullets.map((b, bIdx) => (
                                 <li key={bIdx}>
-                                  <LatexFormattedText text={applyVariables(b, doc.globalVariables, doc.purchaseOrder)} />
+                                  <FormattedText text={b} globalVars={doc.globalVariables} po={doc.purchaseOrder} />
                                 </li>
                               ))}
                             </ul>
@@ -340,15 +332,15 @@ const LetterHeader: React.FC<LetterHeaderProps> = ({
       onMouseLeave={() => onHover?.(false)}
       className={`mb-3 p-1 rounded relative cursor-pointer transition-all duration-200 select-none ${
         isActive
-          ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+          ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
           : isHovered
-          ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-          : 'hover:ring-1 hover:ring-emerald-300/40'
+          ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+          : 'hover:ring-1 hover:ring-[#0d3479]/30'
       }`}
       title="Header & Footer (Click to edit)"
     >
       {isHovered && !isActive && (
-        <span className="absolute top-1 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+        <span className="absolute top-1 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
           Header & Footer
         </span>
       )}
@@ -465,10 +457,10 @@ const CustomSectionRenderer: React.FC<CustomSectionRendererProps> = ({
       onMouseLeave={() => onHover?.(false)}
       className={`my-2 p-1.5 rounded relative cursor-pointer transition-all duration-200 ${
         isActive
-          ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+          ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
           : isHovered
-          ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-          : 'hover:ring-1 hover:ring-emerald-300/40'
+          ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+          : 'hover:ring-1 hover:ring-[#0d3479]/30'
       }`}
       title={`${sectionTitle} (Click to edit)`}
     >
@@ -709,15 +701,15 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
               onMouseLeave={() => onHoverSection?.(null)}
               className={`border border-black my-2 text-[11.5px] p-0.5 rounded relative cursor-pointer transition-all duration-200 ${
                 isSecActive
-                  ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+                  ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
                   : isSecHovered
-                  ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-                  : 'hover:ring-1 hover:ring-emerald-300/40'
+                  ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+                  : 'hover:ring-1 hover:ring-[#0d3479]/30'
               }`}
               title="PO Info & Parties (Click to edit)"
             >
               {isSecHovered && (
-                <span className="absolute top-1 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+                <span className="absolute top-1 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
                   PO Info & Parties
                 </span>
               )}
@@ -765,15 +757,15 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`mt-2 p-1.5 rounded relative cursor-pointer transition-all duration-200 ${
               isSecActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+                ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
                 : isSecHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-                : 'hover:ring-1 hover:ring-emerald-300/40'
+                ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+                : 'hover:ring-1 hover:ring-[#0d3479]/30'
             }`}
             title="Scope of Work (Click to edit)"
           >
             {isSecHovered && (
-              <span className="absolute top-1 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+              <span className="absolute top-1 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
                 Scope of Work
               </span>
             )}
@@ -799,15 +791,15 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`mt-2 p-1.5 rounded relative cursor-pointer transition-all duration-200 ${
               isSecActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+                ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
                 : isSecHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-                : 'hover:ring-1 hover:ring-emerald-300/40'
+                ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+                : 'hover:ring-1 hover:ring-[#0d3479]/30'
             }`}
             title="Rate & Pricing Table (Click to edit)"
           >
             {isSecHovered && (
-              <span className="absolute top-1 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+              <span className="absolute top-1 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
                 Rates & Pricing
               </span>
             )}
@@ -866,15 +858,15 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`p-1.5 rounded relative cursor-pointer transition-all duration-200 ${
               isSecActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+                ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
                 : isSecHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-                : 'hover:ring-1 hover:ring-emerald-300/40'
+                ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+                : 'hover:ring-1 hover:ring-[#0d3479]/30'
             }`}
             title="Scope of Contractor (Click to edit)"
           >
             {isSecHovered && (
-              <span className="absolute top-1 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+              <span className="absolute top-1 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
                 Scope of Contractor
               </span>
             )}
@@ -902,15 +894,15 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`p-1.5 rounded relative cursor-pointer transition-all duration-200 ${
               isSecActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+                ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
                 : isSecHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-                : 'hover:ring-1 hover:ring-emerald-300/40'
+                ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+                : 'hover:ring-1 hover:ring-[#0d3479]/30'
             }`}
             title="Payment Terms & Milestones (Click to edit)"
           >
             {isSecHovered && (
-              <span className="absolute top-1 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+              <span className="absolute top-1 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
                 Payment Milestones
               </span>
             )}
@@ -938,15 +930,15 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`p-1.5 rounded relative cursor-pointer transition-all duration-200 ${
               isSecActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+                ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
                 : isSecHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-                : 'hover:ring-1 hover:ring-emerald-300/40'
+                ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+                : 'hover:ring-1 hover:ring-[#0d3479]/30'
             }`}
             title="Quality, Materials & Safety (Clauses 5–7) (Click to edit)"
           >
             {isSecHovered && (
-              <span className="absolute top-1 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+              <span className="absolute top-1 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
                 Quality & Safety
               </span>
             )}
@@ -974,15 +966,15 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`p-1.5 rounded relative cursor-pointer transition-all duration-200 ${
               isSecActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+                ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
                 : isSecHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-                : 'hover:ring-1 hover:ring-emerald-300/40'
+                ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+                : 'hover:ring-1 hover:ring-[#0d3479]/30'
             }`}
             title="Commercial, Labour & Measurement Terms (Clauses 8–10) (Click to edit)"
           >
             {isSecHovered && (
-              <span className="absolute top-1 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+              <span className="absolute top-1 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
                 Commercial & Labour Terms
               </span>
             )}
@@ -1010,15 +1002,15 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`p-1.5 rounded relative cursor-pointer transition-all duration-200 ${
               isSecActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+                ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
                 : isSecHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-                : 'hover:ring-1 hover:ring-emerald-300/40'
+                ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+                : 'hover:ring-1 hover:ring-[#0d3479]/30'
             }`}
             title="General Terms & Defect Liability (Clauses 11–16) (Click to edit)"
           >
             {isSecHovered && (
-              <span className="absolute top-1 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+              <span className="absolute top-1 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
                 General Terms & Liabilities
               </span>
             )}
@@ -1046,15 +1038,15 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`mt-10 flex justify-between items-end px-4 p-2 rounded relative cursor-pointer transition-all duration-200 ${
               isSecActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+                ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
                 : isSecHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-                : 'hover:ring-1 hover:ring-emerald-300/40'
+                ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+                : 'hover:ring-1 hover:ring-[#0d3479]/30'
             }`}
             title="Signatures & Execution Block (Click to edit)"
           >
             {isSecHovered && (
-              <span className="absolute top-1 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+              <span className="absolute top-1 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
                 Signatures
               </span>
             )}
@@ -1221,10 +1213,10 @@ const PurchaseOrderPages: React.FC<PurchaseOrderPagesProps> = ({
                 key={`${sec.id}_split_${subPages.length}`}
                 className={`mt-2 p-1.5 rounded relative ${
                   activeSectionId === 'rates'
-                    ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+                    ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
                     : hoveredSectionId === 'rates'
-                    ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-                    : 'hover:ring-1 hover:ring-emerald-300/40'
+                    ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+                    : 'hover:ring-1 hover:ring-[#0d3479]/30'
                 }`}
               >
                 <h2 className="text-[13px] font-bold text-[#505050] mb-1.5">

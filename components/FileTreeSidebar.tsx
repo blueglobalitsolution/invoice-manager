@@ -239,19 +239,19 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
   };
 
   return (
-    <aside className="w-64 bg-[#070A13] border-r border-[#151C2C] flex flex-col justify-between shrink-0 select-none text-xs text-slate-400 overflow-hidden relative h-full min-h-0">
+    <aside className="w-64 bg-[#f7f7f2] border-r border-[#cccccc] flex flex-col justify-between shrink-0 select-none text-xs text-[#444444] overflow-hidden relative h-full min-h-0 shadow-xs">
       {/* Sections Tree Outline */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {/* Outline Header */}
-        <div className="px-3.5 py-3 border-b border-[#151C2C] flex items-center justify-between shrink-0">
-          <div className="flex items-center space-x-1.5 text-[10.5px] font-bold text-slate-400 tracking-wider">
-            <FileText className="w-3.5 h-3.5 text-slate-400" />
+        <div className="h-[49px] px-3.5 border-b border-[#cccccc] bg-[#f0efe6] flex items-center justify-between shrink-0">
+          <div className="flex items-center space-x-1.5 text-[10.5px] font-bold text-[#0d3479] tracking-wider">
+            <FileText className="w-3.5 h-3.5 text-[#0d3479]" />
             <span>OUTLINE</span>
           </div>
           {!isInvoice && onAddPage && (
             <button
               onClick={() => onAddPage()}
-              className="px-2 py-1 bg-[#10192C] hover:bg-indigo-600/20 text-indigo-400 hover:text-indigo-200 border border-indigo-500/30 hover:border-indigo-500/60 rounded-md text-[10.5px] font-semibold flex items-center space-x-1 transition-all cursor-pointer shadow-xs"
+              className="px-2.5 py-1 bg-white hover:bg-[#dfe7f4] text-[#0d3479] border border-[#cccccc] hover:border-[#b9c7de] rounded-md text-[10.5px] font-semibold flex items-center space-x-1 transition-all cursor-pointer shadow-xs"
               title="Add Page"
             >
               <Plus className="w-3 h-3" />
@@ -283,13 +283,13 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                   onClick={() => toggleGroup(grp.pageNum)}
                   className={`group/pageheader flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
                     isGroupTargeted
-                      ? 'border border-indigo-500 bg-indigo-500/10'
-                      : 'hover:bg-slate-800/40 text-slate-200'
+                      ? 'border border-[#0d3479] bg-[#dfe7f4]'
+                      : 'hover:bg-black/5 text-[#222222]'
                   }`}
                 >
                   <div className="flex items-center space-x-2.5 min-w-0">
-                    <GroupIcon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span className="text-xs font-semibold text-slate-200 truncate">
+                    <GroupIcon className="w-3.5 h-3.5 text-[#0d3479] shrink-0" />
+                    <span className="text-xs font-bold text-black truncate">
                       Page {grp.pageNum}
                     </span>
                   </div>
@@ -302,7 +302,7 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                           e.stopPropagation();
                           handleOpenCustomizer(grp.pageNum, grp.groupTitle);
                         }}
-                        className="p-1 hover:bg-indigo-600/30 text-indigo-400 hover:text-indigo-200 rounded transition-colors cursor-pointer"
+                        className="p-1 hover:bg-[#dfe7f4] text-[#0d3479] rounded transition-colors cursor-pointer"
                         title="Add Pre-defined Section to this Page"
                       >
                         <Plus className="w-3.5 h-3.5" />
@@ -316,7 +316,7 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                           e.stopPropagation();
                           onDeletePage(grp.pageNum, grp.groupId);
                         }}
-                        className="p-1 opacity-0 group-hover/pageheader:opacity-100 hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 rounded transition-all cursor-pointer"
+                        className="p-1 opacity-0 group-hover/pageheader:opacity-100 hover:bg-rose-50 text-[#888888] hover:text-rose-600 rounded transition-all cursor-pointer"
                         title={`Delete Page ${grp.pageNum}`}
                       >
                         <Trash2 className="w-3 h-3" />
@@ -324,21 +324,21 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                     )}
 
                     {isCollapsed ? (
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                      <ChevronRight className="w-3.5 h-3.5 text-[#888888]" />
                     ) : (
-                      <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                      <ChevronDown className="w-3.5 h-3.5 text-[#888888]" />
                     )}
                   </div>
                 </div>
 
                 {/* Subsections List (Show when group is NOT collapsed) */}
                 {!isCollapsed && (
-                  <div className="ml-2 pl-2 py-0.5 space-y-1">
+                  <div className="ml-2 pl-2 py-0.5 space-y-1 border-l border-[#cccccc]/70">
                     {grp.sections.length === 0 && (
                       <div
                         onDragOver={(e) => handleGroupDragOver(e, grp.pageNum)}
                         onDrop={(e) => handleDropOnGroup(e, grp.pageNum)}
-                        className="text-[10px] italic text-slate-500 py-3 text-center border border-dashed border-slate-800 rounded-lg bg-slate-900/30"
+                        className="text-[10px] italic text-[#888888] py-2.5 text-center border border-dashed border-[#cccccc] rounded-lg bg-white/50"
                       >
                         Drop sections here
                       </div>
@@ -368,24 +368,24 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                               isMoveMenuOpen ? 'z-40' : 'z-0'
                             } ${
                               isDraggingThis
-                                ? 'opacity-40 scale-95 border-dashed border-2 border-indigo-500 bg-indigo-500/10'
+                                ? 'opacity-40 scale-95 border-dashed border-2 border-[#0d3479] bg-[#dfe7f4]'
                                 : ''
                             } ${
                               isDragOverThis
                                 ? dropPosition === 'before'
-                                  ? 'border-t-2 border-indigo-500'
-                                  : 'border-b-2 border-indigo-500'
+                                  ? 'border-t-2 border-[#0d3479]'
+                                  : 'border-b-2 border-[#0d3479]'
                                 : ''
                             } ${
                               isSecActive
-                                ? 'bg-[#1C1436] border border-[#7C3AED]/70 text-white font-medium shadow-[0_0_14px_rgba(124,58,237,0.22)]'
+                                ? 'bg-[#dfe7f4] border border-[#b9c7de] text-[#0d3479] font-bold shadow-xs'
                                 : isSecHovered
-                                ? 'bg-slate-800/50 text-slate-200'
-                                : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-200'
+                                ? 'bg-white text-black border border-[#cccccc] shadow-xs'
+                                : 'text-[#444444] hover:bg-white/80 hover:text-black border border-transparent'
                             }`}
                           >
                             <div className="flex items-center space-x-1.5 truncate flex-1 min-w-0 pr-1">
-                              <GripVertical className="w-3 h-3 text-slate-600 group-hover/sec:text-slate-400 shrink-0 cursor-grab" />
+                              <GripVertical className="w-3 h-3 text-[#999999] group-hover/sec:text-[#444444] shrink-0 cursor-grab" />
                               <span className="truncate text-xs flex-1">{sec.label}</span>
                             </div>
 
@@ -398,7 +398,7 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                                     e.stopPropagation();
                                     onMoveSectionUp(sec.id);
                                   }}
-                                  className="p-1 hover:bg-indigo-600/30 rounded text-slate-400 hover:text-indigo-200 transition-colors"
+                                  className="p-1 hover:bg-[#dfe7f4] rounded text-[#666666] hover:text-[#0d3479] transition-colors"
                                   title="Move Up"
                                 >
                                   <ChevronUp className="w-3 h-3" />
@@ -411,7 +411,7 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                                     e.stopPropagation();
                                     onMoveSectionDown(sec.id);
                                   }}
-                                  className="p-1 hover:bg-indigo-600/30 rounded text-slate-400 hover:text-indigo-200 transition-colors"
+                                  className="p-1 hover:bg-[#dfe7f4] rounded text-[#666666] hover:text-[#0d3479] transition-colors"
                                   title="Move Down"
                                 >
                                   <ChevronDown className="w-3 h-3" />

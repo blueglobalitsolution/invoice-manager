@@ -116,22 +116,22 @@ export const FormEditor: React.FC<FormEditorProps> = ({
 
   if (!doc.purchaseOrder) {
     return (
-      <aside className="w-full bg-[#0B0F19] text-gray-200 flex flex-col h-full shrink-0 select-none overflow-hidden">
-        <div className="px-4 py-3 border-b border-[#1E293B] bg-[#0F1523] flex justify-between items-center shrink-0">
-          <h2 className="font-bold text-xs uppercase tracking-wider text-gray-300">
+      <aside className="w-full bg-[#f4f3eb] text-black flex flex-col h-full shrink-0 select-none overflow-hidden">
+        <div className="px-4 py-3 border-b border-[#cccccc] bg-white flex justify-between items-center shrink-0">
+          <h2 className="font-bold text-xs uppercase tracking-wider text-black">
             Document Settings
           </h2>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
           <div className="space-y-1.5">
-            <label className="block text-[11px] font-bold text-gray-300 uppercase">
+            <label className="block text-[11px] font-bold text-black uppercase">
               Document Title
             </label>
             <input
               type="text"
               value={doc.title}
               onChange={(e) => updateDoc({ title: e.target.value })}
-              className="w-full bg-[#111827] border border-[#1E293B] rounded px-3 py-2 text-sm text-white font-medium"
+              className="w-full bg-white border border-[#cccccc] rounded px-3 py-2 text-sm text-black font-medium"
             />
           </div>
         </div>
@@ -300,21 +300,21 @@ export const FormEditor: React.FC<FormEditorProps> = ({
   };
 
   return (
-    <aside className="w-full bg-[#0B0F19] text-gray-200 flex flex-col h-full shrink-0 select-none overflow-hidden">
+    <aside className="w-full bg-[#f4f3eb] text-black flex flex-col h-full shrink-0 select-none overflow-hidden">
       {/* Single Unified Header */}
-      <div className="px-3.5 py-2 border-b border-[#151C2C] bg-[#0A0E1A] flex items-center justify-between shrink-0 h-[49px]">
+      <div className="px-3.5 py-2 border-b border-[#cccccc] bg-[#f0efe6] flex items-center justify-between shrink-0 h-[49px]">
         <div className="flex items-center space-x-2.5 min-w-0">
-          <div className="bg-[#10192C] p-1.5 rounded-lg border border-[#1E293B] text-blue-300 shrink-0">
+          <div className="bg-[#dfe7f4] p-1.5 rounded-lg border border-[#cccccc] text-[#0d3479] shrink-0">
             <CurrentIcon className="w-3.5 h-3.5" />
           </div>
           <div className="truncate">
-            <div className="text-xs font-bold text-white leading-tight truncate">{currentMeta.title}</div>
-            <div className="text-[10px] text-slate-400 leading-tight truncate">{currentMeta.subtitle}</div>
+            <div className="text-xs font-bold text-black leading-tight truncate">{currentMeta.title}</div>
+            <div className="text-[10px] text-black leading-tight truncate">{currentMeta.subtitle}</div>
           </div>
         </div>
 
         <div className="flex items-center space-x-2 shrink-0">
-          <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-[#0d3479]/40 text-blue-200 border border-[#0d3479] rounded-md font-semibold">
+          <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-[#dfe7f4] text-[#0d3479] border border-[#0d3479] rounded-md font-semibold">
             {typeof currentSectionPage === 'number' ? `Page ${currentSectionPage}` : currentSectionPage}
           </span>
         </div>
@@ -328,10 +328,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {(activeSectionId === 'header_footer' || activeSectionId === 'letterhead' || activeSectionId === 'footer') && (
           <div className="space-y-5">
             {/* Header Letterhead Box */}
-            <div className="p-3 bg-[#15202f] border border-emerald-900/60 rounded-lg space-y-3 shadow-sm">
-              <div className="flex items-center space-x-2 border-b border-[#141f33] pb-2">
-                <LayoutTemplate className="w-4 h-4 text-blue-300" />
-                <span className="font-bold text-blue-300 uppercase text-[11px] tracking-wide">
+            <div className="bg-white rounded-xl border border-[#cccccc] overflow-hidden shadow-xs">
+              <div className="bg-[#f0efe6] px-4 py-3 border-b border-[#cccccc] flex items-center space-x-2">
+                <LayoutTemplate className="w-4 h-4 text-[#0d3479]" />
+                <span className="font-bold text-[#0d3479] uppercase text-[11px] tracking-wide">
                   Top Letterhead Header
                 </span>
               </div>
@@ -339,33 +339,33 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               {/* Company Branding */}
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <label className="block font-medium text-gray-300 text-[10.5px]">
+                  <label className="block text-xs font-bold text-black mb-1.5">
                     Company Name
                   </label>
                   <input
                     type="text"
                     value={po.companyName}
                     onChange={(e) => updatePO({ companyName: e.target.value })}
-                    className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white font-bold"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs font-bold"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block font-medium text-gray-300 text-[10.5px]">
+                  <label className="block text-xs font-bold text-black mb-1.5">
                     Subtitle / Type
                   </label>
                   <input
                     type="text"
                     value={po.companySubtitle}
                     onChange={(e) => updatePO({ companySubtitle: e.target.value })}
-                    className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white font-semibold"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs font-semibold"
                   />
                 </div>
               </div>
 
               {/* GST Number */}
               <div className="space-y-1">
-                <label className="block font-medium text-gray-300 text-[10.5px]">
+                <label className="block text-xs font-bold text-black mb-1.5">
                   GST Number
                 </label>
                 <input
@@ -373,14 +373,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   value={po.gstNo}
                   onChange={(e) => updatePO({ gstNo: e.target.value })}
                   placeholder="e.g. 24AABCA1234F1Z5"
-                  className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white font-mono font-bold"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs font-mono font-bold"
                 />
               </div>
 
               {/* Company Registered Address in Header */}
               <div className="space-y-1.5">
-                <label className="block font-medium text-gray-300 text-[10.5px] flex items-center space-x-1">
-                  <MapPin className="w-3 h-3 text-blue-300" />
+                <label className="block text-xs font-bold text-black mb-1.5 flex items-center space-x-1">
+                  <MapPin className="w-3 h-3 text-[#0d3479]" />
                   <span>Company Address (Header / PO Box)</span>
                 </label>
                 {po.companyAddress.map((addr, idx) => (
@@ -393,24 +393,24 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                       newAddr[idx] = e.target.value;
                       updatePO({ companyAddress: newAddr });
                     }}
-                    className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1 text-white text-[11px]"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-[11px]"
                   />
                 ))}
               </div>
 
               {/* 2-Column Services / Offerings */}
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#141f33]/80">
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#cccccc]/80">
                 {/* Left Services */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-300 text-[10px] uppercase">
+                    <span className="font-bold text-black text-[10px] uppercase">
                       Left Services ({po.leftServices.length})
                     </span>
                     <button
                       onClick={() =>
                         updatePO({ leftServices: [...po.leftServices, 'NEW SERVICE'] })
                       }
-                      className="p-0.5 text-blue-300 hover:text-blue-200 rounded cursor-pointer"
+                      className="p-1 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded-md transition-colors cursor-pointer shadow-xs"
                       title="Add Left Service"
                     >
                       <Plus className="w-3 h-3" />
@@ -426,7 +426,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                           updated[idx] = e.target.value;
                           updatePO({ leftServices: updated });
                         }}
-                        className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2 py-1 text-[10.5px] text-white"
+                        className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-[10.5px] text-black"
                       />
                       {po.leftServices.length > 1 && (
                         <button
@@ -435,7 +435,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                               leftServices: po.leftServices.filter((_, i) => i !== idx),
                             })
                           }
-                          className="p-1 text-gray-500 hover:text-red-400 cursor-pointer"
+                          className="p-1 text-[#888888] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-2.5 h-2.5" />
                         </button>
@@ -447,14 +447,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                 {/* Right Services */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-300 text-[10px] uppercase">
+                    <span className="font-bold text-black text-[10px] uppercase">
                       Right Services ({po.rightServices.length})
                     </span>
                     <button
                       onClick={() =>
                         updatePO({ rightServices: [...po.rightServices, 'NEW SERVICE'] })
                       }
-                      className="p-0.5 text-blue-300 hover:text-blue-200 rounded cursor-pointer"
+                      className="p-1 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded-md transition-colors cursor-pointer shadow-xs"
                       title="Add Right Service"
                     >
                       <Plus className="w-3 h-3" />
@@ -470,7 +470,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                           updated[idx] = e.target.value;
                           updatePO({ rightServices: updated });
                         }}
-                        className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2 py-1 text-[10.5px] text-white"
+                        className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-[10.5px] text-black"
                       />
                       {po.rightServices.length > 1 && (
                         <button
@@ -479,7 +479,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                               rightServices: po.rightServices.filter((_, i) => i !== idx),
                             })
                           }
-                          className="p-1 text-gray-500 hover:text-red-400 cursor-pointer"
+                          className="p-1 text-[#888888] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-2.5 h-2.5" />
                         </button>
@@ -491,66 +491,66 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             </div>
 
             {/* Bottom Footer Box */}
-            <div className="p-3 bg-[#15202f] border border-emerald-900/60 rounded-lg space-y-3 shadow-sm">
-              <div className="flex items-center space-x-2 border-b border-[#141f33] pb-2">
-                <Building className="w-4 h-4 text-blue-300" />
-                <span className="font-bold text-blue-300 uppercase text-[11px] tracking-wide">
+            <div className="bg-white rounded-xl border border-[#cccccc] overflow-hidden shadow-xs">
+              <div className="bg-[#f0efe6] px-4 py-3 border-b border-[#cccccc] flex items-center space-x-2">
+                <Building className="w-4 h-4 text-[#0d3479]" />
+                <span className="font-bold text-[#0d3479] uppercase text-[11px] tracking-wide">
                   Bottom Letterhead Footer
                 </span>
               </div>
 
               {/* Phone */}
               <div className="space-y-1">
-                <label className="block font-medium text-gray-300 text-[10.5px] flex items-center space-x-1">
-                  <Phone className="w-3 h-3 text-blue-300" />
+                <label className="block text-xs font-bold text-black mb-1.5 flex items-center space-x-1">
+                  <Phone className="w-3 h-3 text-[#0d3479]" />
                   <span>Company Phone Number</span>
                 </label>
                 <input
                   type="text"
                   value={po.companyPhone}
                   onChange={(e) => updatePO({ companyPhone: sanitizePhoneInput(e.target.value) })}
-                  className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-xs text-white"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-xs text-black"
                 />
               </div>
 
               {/* Footer Address */}
               <div className="space-y-1">
-                <label className="block font-medium text-gray-300 text-[10.5px] flex items-center space-x-1">
-                  <MapPin className="w-3 h-3 text-blue-300" />
+                <label className="block text-xs font-bold text-black mb-1.5 flex items-center space-x-1">
+                  <MapPin className="w-3 h-3 text-[#0d3479]" />
                   <span>Registered Footer Address</span>
                 </label>
                 <input
                   type="text"
                   value={po.companyAddressFooter}
                   onChange={(e) => updatePO({ companyAddressFooter: e.target.value })}
-                  className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white text-xs"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-xs"
                 />
               </div>
 
               {/* Email & Website */}
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <label className="block font-medium text-gray-300 text-[10.5px] flex items-center space-x-1">
-                    <Mail className="w-3 h-3 text-blue-300" />
+                  <label className="block text-xs font-bold text-black mb-1.5 flex items-center space-x-1">
+                    <Mail className="w-3 h-3 text-[#0d3479]" />
                     <span>Email</span>
                   </label>
                   <input
                     type="text"
                     value={po.companyEmail}
                     onChange={(e) => updatePO({ companyEmail: e.target.value })}
-                    className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white text-xs"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-xs"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="block font-medium text-gray-300 text-[10.5px] flex items-center space-x-1">
-                    <Globe className="w-3 h-3 text-blue-300" />
+                  <label className="block text-xs font-bold text-black mb-1.5 flex items-center space-x-1">
+                    <Globe className="w-3 h-3 text-[#0d3479]" />
                     <span>Website</span>
                   </label>
                   <input
                     type="text"
                     value={po.companyWebsite}
                     onChange={(e) => updatePO({ companyWebsite: e.target.value })}
-                    className="w-full bg-[#1e2a3c] border border-[#16233a] rounded px-2.5 py-1.5 text-white text-xs"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-xs"
                   />
                 </div>
               </div>
@@ -562,7 +562,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {activeSectionId === 'info' && (
           <div className="space-y-4">
             <div className="space-y-1">
-              <label className="block font-bold text-gray-300 uppercase text-[10px]">
+              <label className="block text-xs font-bold text-black mb-1.5 uppercase">
                 Document Heading Title
               </label>
               <input
@@ -570,13 +570,13 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                 value={doc.title}
                 onChange={(e) => updateDoc({ title: e.target.value })}
                 placeholder="LABOUR CONTRACT PURCHASE ORDER"
-                className="w-full mt-1 px-2.5 py-1.5 bg-[#111827] border border-[#1E293B] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none"
+                className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <label className="block font-bold text-gray-300 uppercase text-[10px]">
+                <label className="block text-xs font-bold text-black mb-1.5 uppercase">
                   PO Number
                 </label>
                 <input
@@ -584,12 +584,12 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   value={po.poNumber}
                   onChange={(e) => updatePO({ poNumber: e.target.value })}
                   placeholder="PO-2026-001"
-                  className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 focus:ring-1 focus:ring-emerald-500 text-white font-medium"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs focus:ring-1 focus:ring-[#0d3479] text-black font-medium"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="block font-bold text-gray-300 uppercase text-[10px]">
+                <label className="block text-xs font-bold text-black mb-1.5 uppercase">
                   PO Date (DD/MM/YYYY)
                 </label>
                 <input
@@ -598,42 +598,42 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   onChange={(e) => updatePO({ poDate: formatDateInput(e.target.value) })}
                   placeholder="DD/MM/YYYY"
                   maxLength={10}
-                  className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 focus:ring-1 focus:ring-emerald-500 text-white font-medium font-mono"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs focus:ring-1 focus:ring-[#0d3479] text-black font-medium font-mono"
                 />
               </div>
             </div>
 
             {/* Issuer Company Details Box */}
-            <div className="p-3 bg-[#16202e] border border-[#16233a]/80 rounded space-y-2.5">
-              <span className="block font-bold text-blue-300 uppercase text-[10.5px]">
+            <div className="p-3 bg-white border border-[#cccccc]/80 rounded space-y-2.5">
+              <span className="block font-bold text-[#0d3479] uppercase text-[10.5px]">
                 Issuer Company Details (Table Left Side)
               </span>
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <label className="block font-medium text-gray-400 text-[10px]">Company Name</label>
+                  <label className="block text-xs font-bold text-black mb-1.5 text-[10px]">Company Name</label>
                   <input
                     type="text"
                     value={po.tableCompanyName !== undefined ? po.tableCompanyName : (po.companyName ?? '')}
                     onChange={(e) => updatePO({ tableCompanyName: e.target.value })}
                     placeholder="Company Name"
-                    className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-semibold text-xs"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs font-semibold text-xs"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="block font-medium text-gray-400 text-[10px]">Subtitle / Branch</label>
+                  <label className="block text-xs font-bold text-black mb-1.5 text-[10px]">Subtitle / Branch</label>
                   <input
                     type="text"
                     value={po.tableCompanySubtitle !== undefined ? po.tableCompanySubtitle : (po.companySubtitle ?? '')}
                     onChange={(e) => updatePO({ tableCompanySubtitle: e.target.value })}
                     placeholder="Branch or Subtitle"
-                    className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-semibold text-xs"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs font-semibold text-xs"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="block font-medium text-gray-400 text-[10px]">
+                <label className="block text-xs font-bold text-black mb-1.5 text-[10px]">
                   Company Full Address (Press Enter for new line)
                 </label>
                 <textarea
@@ -644,44 +644,44 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     updatePO({ tableCompanyAddress: lines });
                   }}
                   placeholder={'SO7B / 2nd Floor / Phase 2\nIndiabulls, Jetalpur Road\nVadodara - 390007, Gujarat'}
-                  className="w-full bg-[#1f2d40] border border-[#16233a] rounded-lg px-2.5 py-2 text-white text-xs leading-relaxed focus:border-indigo-500 focus:outline-none resize-y"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-2.5 py-2 text-black text-xs leading-relaxed focus:border-[#0d3479] focus:outline-none resize-y"
                 />
               </div>
             </div>
 
-            <div className="p-3 bg-[#16202e] border border-[#16233a]/80 rounded space-y-2.5">
-              <span className="block font-bold text-blue-300 uppercase text-[10.5px]">
+            <div className="p-3 bg-white border border-[#cccccc]/80 rounded space-y-2.5">
+              <span className="block font-bold text-[#0d3479] uppercase text-[10.5px]">
                 Contractor & Project Info
               </span>
 
               <div className="space-y-1">
-                <label className="block font-medium text-gray-400">Contractor Name</label>
+                <label className="block text-xs font-bold text-black mb-1.5">Contractor Name</label>
                 <input
                   type="text"
                   value={po.contractorName}
                   onChange={(e) => updatePO({ contractorName: e.target.value })}
-                  className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-semibold"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs font-semibold"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="block font-medium text-gray-400">Project Name</label>
+                <label className="block text-xs font-bold text-black mb-1.5">Project Name</label>
                 <input
                   type="text"
                   value={po.projectName}
                   onChange={(e) => updatePO({ projectName: e.target.value })}
-                  className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-semibold"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs font-semibold"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="block font-medium text-gray-400">Project Location (Address)</label>
+                <label className="block text-xs font-bold text-black mb-1.5">Project Location (Address)</label>
                 <textarea
                   rows={2}
                   value={po.projectLocation}
                   onChange={(e) => updatePO({ projectLocation: e.target.value })}
                   placeholder="Site / Project Location Address"
-                  className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1.5 text-white font-semibold text-xs resize-y focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs.5 text-black font-semibold text-xs resize-y focus:outline-none focus:border-[#0d3479]"
                 />
               </div>
             </div>
@@ -692,7 +692,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {activeSectionId === 'scope' && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-blue-300 uppercase text-[10.5px]">
+              <span className="font-bold text-[#0d3479] uppercase text-[10.5px]">
                 Scope of Work Items ({po.scopeOfWork.length})
               </span>
               <button
@@ -701,7 +701,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     scopeOfWork: [...po.scopeOfWork, 'New item execution clause...'],
                   })
                 }
-                className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+                className="px-2 py-0.5 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
               >
                 <Plus className="w-3 h-3" />
                 <span>Add Item</span>
@@ -710,7 +710,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
 
             {po.scopeOfWork.map((item, idx) => (
               <div key={idx} className="flex items-start space-x-2">
-                <span className="font-bold text-gray-400 text-xs mt-1.5">{idx + 1}.</span>
+                <span className="font-bold text-black text-xs mt-1.5">{idx + 1}.</span>
                 <textarea
                   rows={2}
                   value={item}
@@ -719,14 +719,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     updated[idx] = e.target.value;
                     updatePO({ scopeOfWork: updated });
                   }}
-                  className="flex-1 bg-[#070c18] border border-[#16233a] rounded p-2 text-xs text-white"
+                  className="flex-1 bg-white border border-[#cccccc] rounded p-2 text-xs text-black"
                 />
                 <button
                   onClick={() => {
                     const updated = po.scopeOfWork.filter((_, i) => i !== idx);
                     updatePO({ scopeOfWork: updated });
                   }}
-                  className="p-1 text-gray-500 hover:text-red-400 rounded mt-1 cursor-pointer"
+                  className="p-1 text-[#666666] hover:text-red-400 rounded mt-1 cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -739,123 +739,150 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {activeSectionId === 'rates' && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-blue-300 uppercase text-[10.5px]">
-                Line Items ({po.rateItems.length})
+              <span className="font-bold text-[#0d3479] uppercase text-xs tracking-wide">
+                Rate ({po.rateItems.length} {po.rateItems.length === 1 ? 'Item' : 'Items'})
               </span>
               <button
                 onClick={handleAddRateRow}
-                className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+                className="px-2.5 py-1 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded-lg text-xs font-bold flex items-center space-x-1.5 cursor-pointer shadow-xs transition-all"
               >
-                <Plus className="w-3 h-3" />
+                <Plus className="w-3.5 h-3.5" />
                 <span>Add Item</span>
               </button>
             </div>
 
-            <div className="space-y-2">
-              {po.rateItems.map((item, index) => (
-                <div
-                  key={item.id}
-                  className="p-2.5 bg-[#16202e] border border-[#16233a]/80 rounded space-y-2"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-300 text-[11px]">
-                      Item #{index + 1}
-                    </span>
-                    {po.rateItems.length > 1 && (
-                      <button
-                        onClick={() => handleDeleteRateRow(item.id)}
-                        className="p-1 text-gray-500 hover:text-red-400 rounded cursor-pointer"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    )}
-                  </div>
+            {/* Tabular Form matching Document Preview Table Layout */}
+            <div className="bg-white border border-[#cccccc] rounded-xl overflow-hidden shadow-xs">
+              {/* Header Row matching Preview Columns */}
+              <div className="grid grid-cols-12 gap-1.5 bg-[#f0efe6] px-3 py-2 border-b border-[#cccccc] text-[10.5px] font-bold text-[#0d3479] uppercase tracking-wider items-center">
+                <div className="col-span-4">Description</div>
+                <div className="col-span-2 text-center">Unit</div>
+                <div className="col-span-2 text-center">Qty</div>
+                <div className="col-span-2 text-center">Rate</div>
+                <div className="col-span-2 text-right pr-6">Total</div>
+              </div>
 
-                  <input
-                    type="text"
-                    value={item.description}
-                    onChange={(e) =>
-                      handleRateChange(item.id, 'description', e.target.value)
-                    }
-                    placeholder="Description"
-                    className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-medium text-xs"
-                  />
+              {/* Data Rows matching horizontal column placement */}
+              <div className="divide-y divide-[#cccccc]">
+                {po.rateItems.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className="grid grid-cols-12 gap-1.5 p-2.5 items-center hover:bg-[#f7f7f2]/60 transition-colors group"
+                  >
+                    {/* Description */}
+                    <div className="col-span-4">
+                      <input
+                        type="text"
+                        value={item.description}
+                        onChange={(e) =>
+                          handleRateChange(item.id, 'description', e.target.value)
+                        }
+                        placeholder={`Description #${index + 1}`}
+                        className="w-full bg-white border border-[#cccccc] rounded-lg px-2.5 py-1.5 text-black font-semibold text-xs focus:border-[#0d3479] focus:outline-none placeholder:text-[#888888]"
+                      />
+                    </div>
 
-                  <div className="grid grid-cols-4 gap-1.5">
-                    <div>
-                      <label className="block text-[9.5px] text-gray-400 uppercase">Unit</label>
+                    {/* Unit */}
+                    <div className="col-span-2">
                       <input
                         type="text"
                         value={item.unit}
                         onChange={(e) =>
                           handleRateChange(item.id, 'unit', e.target.value)
                         }
-                        className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-1.5 py-1 text-white text-[11px]"
+                        placeholder="Unit"
+                        className="w-full bg-white border border-[#cccccc] rounded-lg px-2 py-1.5 text-black text-center text-xs focus:border-[#0d3479] focus:outline-none"
                       />
                     </div>
-                    <div>
-                      <label className="block text-[9.5px] text-gray-400 uppercase">Qty</label>
+
+                    {/* Qty */}
+                    <div className="col-span-2">
                       <input
                         type="text"
                         value={item.qty}
                         onChange={(e) =>
                           handleRateChange(item.id, 'qty', e.target.value)
                         }
-                        className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-1.5 py-1 text-white text-[11px]"
+                        placeholder="Qty"
+                        className="w-full bg-white border border-[#cccccc] rounded-lg px-2 py-1.5 text-black text-center text-xs font-mono focus:border-[#0d3479] focus:outline-none"
                       />
                     </div>
-                    <div>
-                      <label className="block text-[9.5px] text-gray-400 uppercase">Rate</label>
+
+                    {/* Rate */}
+                    <div className="col-span-2">
                       <input
                         type="text"
                         value={item.rate}
                         onChange={(e) =>
                           handleRateChange(item.id, 'rate', e.target.value)
                         }
-                        className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-1.5 py-1 text-white text-[11px]"
+                        placeholder="Rate"
+                        className="w-full bg-white border border-[#cccccc] rounded-lg px-2 py-1.5 text-black text-center text-xs font-mono focus:border-[#0d3479] focus:outline-none"
                       />
                     </div>
-                    <div>
-                      <label className="block text-[9.5px] text-gray-400 uppercase">Total</label>
+
+                    {/* Total & Delete Button */}
+                    <div className="col-span-2 flex items-center space-x-1">
                       <input
                         type="text"
                         value={item.total}
                         onChange={(e) =>
                           handleRateChange(item.id, 'total', e.target.value)
                         }
-                        className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-1.5 py-1 text-white font-bold font-mono text-[11px]"
+                        placeholder="Total"
+                        className="w-full bg-white border border-[#cccccc] rounded-lg px-2 py-1.5 text-black font-bold font-mono text-xs text-right focus:border-[#0d3479] focus:outline-none"
                       />
+                      {po.rateItems.length > 1 && (
+                        <button
+                          onClick={() => handleDeleteRateRow(item.id)}
+                          className="p-1.5 text-[#888888] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer shrink-0"
+                          title="Delete row"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
                   </div>
+                ))}
+              </div>
+
+              {/* Bottom Row: Amount in Words (matching preview's bottom row placement) */}
+              <div className="p-3 bg-[#f7f7f2] border-t border-[#cccccc] space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] font-bold text-[#0d3479] uppercase tracking-wide">
+                    Amount in Words:
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const words = calculateTotalWords(po.rateItems);
+                      updatePO({ amountInWords: words });
+                    }}
+                    className="text-[10px] text-[#0d3479] bg-[#dfe7f4] hover:bg-[#d0ddf0] border border-[#b9c7de] px-2 py-0.5 rounded-md flex items-center space-x-1 cursor-pointer font-bold transition-all shadow-xs"
+                    title="Auto generate words from Line Items total"
+                  >
+                    <Sparkles className="w-3 h-3 text-[#0d3479]" />
+                    <span>Auto-Convert</span>
+                  </button>
                 </div>
-              ))}
+                <input
+                  type="text"
+                  value={po.amountInWords}
+                  onChange={(e) => updatePO({ amountInWords: e.target.value })}
+                  placeholder="e.g. INR Fifty Thousand Only"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-2.5 py-1.5 text-black font-semibold text-xs focus:border-[#0d3479] focus:outline-none"
+                />
+              </div>
             </div>
 
-            <div className="space-y-1 pt-2 border-t border-[#141f33]">
-              <div className="flex items-center justify-between">
-                <label className="block font-medium text-gray-400">
-                  Amount in Words
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const words = calculateTotalWords(po.rateItems);
-                    updatePO({ amountInWords: words });
-                  }}
-                  className="text-[10px] text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 cursor-pointer font-medium"
-                  title="Auto generate words from Line Items total"
-                >
-                  <Sparkles className="w-3 h-3" />
-                  <span>Auto-Convert</span>
-                </button>
-              </div>
-              <input
-                type="text"
-                value={po.amountInWords}
-                onChange={(e) => updatePO({ amountInWords: e.target.value })}
-                className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 text-white font-semibold"
-              />
-            </div>
+            {/* Quick Add Row Button at bottom */}
+            <button
+              onClick={handleAddRateRow}
+              className="w-full py-2 bg-white hover:bg-slate-50 border border-dashed border-[#cccccc] hover:border-[#0d3479] text-[#0d3479] rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition-all cursor-pointer shadow-xs"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>+ Add Another Rate Row</span>
+            </button>
           </div>
         )}
 
@@ -877,21 +904,21 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {activeSectionId === 'payment_terms' && (
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="block font-bold uppercase text-[10.5px] text-blue-300">
+              <span className="block font-bold uppercase text-[10.5px] text-[#0d3479]">
                 Payment Terms Clauses (Page 2)
               </span>
               <button
                 onClick={() => updatePO({ paymentTerms: [...po.paymentTerms, 'New payment term'] })}
-                className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+                className="px-2 py-0.5 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
               >
                 <Plus className="w-3 h-3" />
                 <span>Add Term</span>
               </button>
             </div>
             {po.paymentTerms.map((term, idx) => (
-              <div key={idx} className="space-y-1 bg-[#070c18] p-2 rounded border border-[#16233a]">
+              <div key={idx} className="space-y-1 bg-white p-2 rounded border border-[#cccccc]">
                 <div className="flex justify-between items-center">
-                  <label className="block text-gray-400 text-[10.5px]">Clause {idx + 1}</label>
+                  <label className="block text-black text-[10.5px]">Clause {idx + 1}</label>
                   <button
                     onClick={() => updatePO({ paymentTerms: po.paymentTerms.filter((_, i) => i !== idx) })}
                     className="text-red-400 hover:text-red-300 p-0.5 cursor-pointer"
@@ -907,7 +934,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     updated[idx] = e.target.value;
                     updatePO({ paymentTerms: updated });
                   }}
-                  className="w-full bg-[#0e1624] border border-[#16233a] rounded px-2.5 py-1.5 text-xs text-white focus:outline-none"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-xs text-black focus:outline-none"
                 />
               </div>
             ))}
@@ -918,12 +945,12 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {activeSectionId === 'measurement' && (
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="block font-bold uppercase text-[10.5px] text-blue-300">
+              <span className="block font-bold uppercase text-[10.5px] text-[#0d3479]">
                 Quality, Materials & Safety Clauses (5–7)
               </span>
               <button
                 onClick={() => updatePO({ measurementClause: [...po.measurementClause, 'New clause'] })}
-                className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+                className="px-2 py-0.5 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
               >
                 <Plus className="w-3 h-3" />
                 <span>Add Clause</span>
@@ -939,11 +966,11 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     updated[idx] = e.target.value;
                     updatePO({ measurementClause: updated });
                   }}
-                  className="w-full bg-[#070c18] border border-[#16233a] rounded p-2 text-xs text-white"
+                  className="w-full bg-white border border-[#cccccc] rounded p-2 text-xs text-black"
                 />
                 <button
                   onClick={() => updatePO({ measurementClause: po.measurementClause.filter((_, i) => i !== idx) })}
-                  className="p-1 text-gray-500 hover:text-red-400 rounded mt-1 cursor-pointer"
+                  className="p-1 text-[#666666] hover:text-red-400 rounded mt-1 cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -956,21 +983,21 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {activeSectionId === 'terms' && (
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="block font-bold uppercase text-[10.5px] text-blue-300">
+              <span className="block font-bold uppercase text-[10.5px] text-[#0d3479]">
                 Commercial & Labour Terms (Clauses 8–10)
               </span>
               <button
                 onClick={() => updatePO({ termsAndConditions: [...po.termsAndConditions, 'New commercial term'] })}
-                className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+                className="px-2 py-0.5 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
               >
                 <Plus className="w-3 h-3" />
                 <span>Add Term</span>
               </button>
             </div>
             {po.termsAndConditions.map((term, idx) => (
-              <div key={idx} className="space-y-1 bg-[#070c18] p-2 rounded border border-[#16233a]">
+              <div key={idx} className="space-y-1 bg-white p-2 rounded border border-[#cccccc]">
                 <div className="flex justify-between items-center">
-                  <label className="block text-gray-400 text-[10.5px]">Term {idx + 1}</label>
+                  <label className="block text-black text-[10.5px]">Term {idx + 1}</label>
                   <button
                     onClick={() => updatePO({ termsAndConditions: po.termsAndConditions.filter((_, i) => i !== idx) })}
                     className="text-red-400 hover:text-red-300 p-0.5 cursor-pointer"
@@ -986,7 +1013,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     updated[idx] = e.target.value;
                     updatePO({ termsAndConditions: updated });
                   }}
-                  className="w-full bg-[#0e1624] border border-[#16233a] rounded px-2.5 py-1.5 text-xs text-white focus:outline-none"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-xs text-black focus:outline-none"
                 />
               </div>
             ))}
@@ -997,21 +1024,21 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {activeSectionId === 'page3_terms' && (
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="block font-bold uppercase text-[10.5px] text-blue-300">
+              <span className="block font-bold uppercase text-[10.5px] text-[#0d3479]">
                 General Terms & Defect Liability (Clauses 11–16)
               </span>
               <button
                 onClick={() => updatePO({ page3Terms: [...po.page3Terms, 'New clause'] })}
-                className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+                className="px-2 py-0.5 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
               >
                 <Plus className="w-3 h-3" />
                 <span>Add Clause</span>
               </button>
             </div>
             {po.page3Terms.map((term, idx) => (
-              <div key={idx} className="space-y-1 bg-[#070c18] p-2 rounded border border-[#16233a]">
+              <div key={idx} className="space-y-1 bg-white p-2 rounded border border-[#cccccc]">
                 <div className="flex justify-between items-center">
-                  <label className="block text-gray-400 text-[10.5px]">Clause {idx + 1}</label>
+                  <label className="block text-black text-[10.5px]">Clause {idx + 1}</label>
                   <button
                     onClick={() => updatePO({ page3Terms: po.page3Terms.filter((_, i) => i !== idx) })}
                     className="text-red-400 hover:text-red-300 p-0.5 cursor-pointer"
@@ -1027,7 +1054,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     updated[idx] = e.target.value;
                     updatePO({ page3Terms: updated });
                   }}
-                  className="w-full bg-[#0e1624] border border-[#16233a] rounded px-2.5 py-1.5 text-xs text-white focus:outline-none"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-xs text-black focus:outline-none"
                 />
               </div>
             ))}
@@ -1037,32 +1064,32 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {/* 9. SIGNATURE BLOCKS */}
         {activeSectionId === 'signatures' && (
           <div className="space-y-4">
-            <div className="p-3 bg-[#16202e] border border-[#16233a]/80 rounded space-y-2">
-              <span className="block font-bold text-blue-300 uppercase text-[10.5px]">
+            <div className="p-3 bg-white border border-[#cccccc]/80 rounded space-y-2">
+              <span className="block font-bold text-[#0d3479] uppercase text-[10.5px]">
                 Company Signature Designation
               </span>
               <input
                 type="text"
                 value={`For ${po.companyName}`}
                 readOnly
-                className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-bold text-xs"
+                className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs font-bold text-xs"
               />
-              <p className="text-[10px] text-gray-400">
+              <p className="text-[10px] text-black">
                 Rendered on Page 3 with authorized signatory stamp block.
               </p>
             </div>
 
-            <div className="p-3 bg-[#16202e] border border-[#16233a]/80 rounded space-y-2">
-              <span className="block font-bold text-blue-300 uppercase text-[10.5px]">
+            <div className="p-3 bg-white border border-[#cccccc]/80 rounded space-y-2">
+              <span className="block font-bold text-[#0d3479] uppercase text-[10.5px]">
                 Contractor Acceptance Designation
               </span>
               <input
                 type="text"
                 value={`Accepted By Contractor: ${po.contractorName}`}
                 readOnly
-                className="w-full bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-white font-bold text-xs"
+                className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs font-bold text-xs"
               />
-              <p className="text-[10px] text-gray-400">
+              <p className="text-[10px] text-black">
                 Rendered on Page 3 with contractor signature and seal acknowledgment.
               </p>
             </div>
@@ -1073,20 +1100,20 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {customSection && (
           <div className="space-y-4">
             <div className="space-y-1">
-              <label className="block font-bold text-gray-300 uppercase text-[10px]">
+              <label className="block text-xs font-bold text-black mb-1.5 uppercase">
                 Section Title
               </label>
               <input
                 type="text"
                 value={customSection.title}
                 onChange={(e) => handleUpdateCustomSection({ title: e.target.value })}
-                className="w-full bg-[#070c18] border border-[#16233a] rounded px-2.5 py-1.5 text-white font-bold"
+                className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs font-bold"
               />
             </div>
 
             {/* Page Number Selector */}
             <div className="space-y-1">
-              <label className="block font-bold text-gray-300 uppercase text-[10px]">
+              <label className="block text-xs font-bold text-black mb-1.5 uppercase">
                 Assigned Page Number
               </label>
               <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
@@ -1100,15 +1127,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     }}
                     className={`flex-1 min-w-[38px] py-1 rounded text-xs font-bold border cursor-pointer transition-colors ${
                       currentSectionPage === pageNum
-                        ? 'bg-emerald-700 border-emerald-500 text-white'
-                        : 'bg-[#070c18] border-[#16233a] text-gray-300 hover:text-white'
+                        ? 'bg-[#0d3479] border-[#0d3479] text-white'
+                        : 'bg-white border-[#cccccc] text-black hover:text-black'
                     }`}
                   >
                     P{pageNum}
                   </button>
                 ))}
               </div>
-              <p className="text-[10px] text-gray-400">
+              <p className="text-[10px] text-black">
                 Move this section to another page or drag it in the Document Outline.
               </p>
             </div>
@@ -1116,7 +1143,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             {/* Content Type Selector */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="block font-bold text-gray-300 uppercase text-[10px]">
+                <label className="block text-xs font-bold text-black mb-1.5 uppercase">
                   Section Layout Type
                 </label>
                 <div className="relative group/preset">
@@ -1143,7 +1170,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                       e.target.value = '';
                     }}
                     defaultValue=""
-                    className="bg-[#1f2d40] text-blue-200 border border-emerald-700/60 rounded px-2 py-0.5 text-[10px] font-bold cursor-pointer"
+                    className="bg-white text-[#0d3479] border border-[#0d3479]/60 rounded px-2 py-0.5 text-[10px] font-bold cursor-pointer"
                   >
                     <option value="" disabled>
                       ⚡ Insert Preset Template...
@@ -1186,8 +1213,8 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     }}
                     className={`px-1.5 py-1 rounded text-[10.5px] font-medium border cursor-pointer text-center truncate ${
                       customSection.contentType === type
-                        ? 'bg-emerald-700 border-emerald-500 text-white font-bold'
-                        : 'bg-[#070c18] border-[#16233a] text-gray-300 hover:text-white'
+                        ? 'bg-[#0d3479] border-[#0d3479] text-white font-bold'
+                        : 'bg-white border-[#cccccc] text-black hover:text-black'
                     }`}
                   >
                     {label}
@@ -1200,7 +1227,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             {customSection.contentType === 'bullet_list' && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-300 text-[10.5px]">
+                  <span className="font-bold text-black text-[10.5px]">
                     Bullet Items ({(customSection.bullets || []).length})
                   </span>
                   <button
@@ -1210,7 +1237,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         bullets: [...cur, 'New bullet item text...'],
                       });
                     }}
-                    className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+                    className="px-2 py-0.5 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
                   >
                     <Plus className="w-3 h-3" />
                     <span>Add Bullet</span>
@@ -1226,14 +1253,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         cur[idx] = e.target.value;
                         handleUpdateCustomSection({ bullets: cur });
                       }}
-                      className="w-full bg-[#070c18] border border-[#16233a] rounded px-2 py-1 text-xs text-white"
+                      className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-xs text-black"
                     />
                     <button
                       onClick={() => {
                         const cur = (customSection.bullets || []).filter((_, i) => i !== idx);
                         handleUpdateCustomSection({ bullets: cur });
                       }}
-                      className="p-1 text-gray-500 hover:text-red-400 cursor-pointer"
+                      className="p-1 text-[#888888] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
@@ -1247,7 +1274,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               customSection.contentType === 'paragraphs') && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-300 text-[10.5px]">
+                  <span className="font-bold text-black text-[10.5px]">
                     {customSection.contentType === 'legal_clause'
                       ? 'Legal Numbered Clauses'
                       : 'Paragraphs'}{' '}
@@ -1263,15 +1290,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         ],
                       });
                     }}
-                    className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+                    className="px-2 py-0.5 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
                   >
                     <Plus className="w-3 h-3" />
                     <span>Add Clause</span>
                   </button>
                 </div>
                 {(customSection.paragraphs || []).map((p, idx) => (
-                  <div key={idx} className="flex items-start space-x-1.5 bg-[#172232] p-2 rounded border border-[#141f33]">
-                    <span className="font-mono font-bold text-blue-300 text-xs mt-1 shrink-0">
+                  <div key={idx} className="flex items-start space-x-1.5 bg-white p-2 rounded border border-[#cccccc]">
+                    <span className="font-mono font-bold text-[#0d3479] text-xs mt-1 shrink-0">
                       {idx + 1}.0
                     </span>
                     <textarea
@@ -1282,14 +1309,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         cur[idx] = e.target.value;
                         handleUpdateCustomSection({ paragraphs: cur });
                       }}
-                      className="w-full bg-[#070c18] border border-[#16233a] rounded p-2 text-xs text-white"
+                      className="w-full bg-white border border-[#cccccc] rounded p-2 text-xs text-black"
                     />
                     <button
                       onClick={() => {
                         const cur = (customSection.paragraphs || []).filter((_, i) => i !== idx);
                         handleUpdateCustomSection({ paragraphs: cur });
                       }}
-                      className="p-1 text-gray-500 hover:text-red-400 cursor-pointer mt-1"
+                      className="p-1 text-[#888888] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer mt-1"
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
@@ -1302,7 +1329,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             {customSection.contentType === 'key_value' && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-300 text-[10.5px]">
+                  <span className="font-bold text-black text-[10.5px]">
                     Key-Value Parameters ({(customSection.keyValuePairs || []).length})
                   </span>
                   <button
@@ -1312,7 +1339,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         keyValuePairs: [...cur, { key: 'Parameter Name', value: 'Specific Value' }],
                       });
                     }}
-                    className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+                    className="px-2 py-0.5 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
                   >
                     <Plus className="w-3 h-3" />
                     <span>Add Row</span>
@@ -1329,7 +1356,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         cur[idx] = { ...cur[idx], key: e.target.value };
                         handleUpdateCustomSection({ keyValuePairs: cur });
                       }}
-                      className="w-1/3 bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-xs font-semibold text-blue-200"
+                      className="w-1/3 bg-white border border-[#cccccc] rounded px-2 py-1 text-xs font-semibold text-[#0d3479]"
                     />
                     <input
                       type="text"
@@ -1340,14 +1367,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         cur[idx] = { ...cur[idx], value: e.target.value };
                         handleUpdateCustomSection({ keyValuePairs: cur });
                       }}
-                      className="w-2/3 bg-[#070c18] border border-[#16233a] rounded px-2 py-1 text-xs text-white"
+                      className="w-2/3 bg-white border border-[#cccccc] rounded px-2 py-1 text-xs text-black"
                     />
                     <button
                       onClick={() => {
                         const cur = (customSection.keyValuePairs || []).filter((_, i) => i !== idx);
                         handleUpdateCustomSection({ keyValuePairs: cur });
                       }}
-                      className="p-1 text-gray-500 hover:text-red-400 cursor-pointer"
+                      className="p-1 text-[#888888] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
@@ -1360,7 +1387,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             {customSection.contentType === 'callout' && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-300 text-[10.5px]">
+                  <span className="font-bold text-black text-[10.5px]">
                     Notice Callout Settings
                   </span>
                   <select
@@ -1370,7 +1397,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         calloutType: e.target.value as 'info' | 'warning' | 'important',
                       })
                     }
-                    className="bg-[#1f2d40] text-amber-300 border border-amber-700/60 rounded px-2 py-0.5 text-[10px] font-bold cursor-pointer"
+                    className="bg-white text-amber-800 border border-amber-700/60 rounded px-2 py-0.5 text-[10px] font-bold cursor-pointer"
                   >
                     <option value="warning">Warning Directive</option>
                     <option value="important">Important Notice</option>
@@ -1382,7 +1409,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   value={customSection.calloutText || ''}
                   onChange={(e) => handleUpdateCustomSection({ calloutText: e.target.value })}
                   placeholder="Enter notice text or mandatory directive..."
-                  className="w-full bg-[#070c18] border border-amber-800/60 rounded p-2 text-xs text-amber-200"
+                  className="w-full bg-white border border-amber-800/60 rounded p-2 text-xs text-amber-200"
                 />
               </div>
             )}
@@ -1391,7 +1418,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             {customSection.contentType === 'table' && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-300 text-[10.5px]">
+                  <span className="font-bold text-black text-[10.5px]">
                     Table Headers ({(customSection.tableHeaders || []).length} columns)
                   </span>
                   <button
@@ -1403,7 +1430,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         tableRows: curR.map((row) => [...row, '-']),
                       });
                     }}
-                    className="px-2 py-0.5 bg-[#1f2d40] hover:bg-emerald-800 text-gray-200 hover:text-white rounded text-[10px] font-bold cursor-pointer"
+                    className="px-2 py-0.5 bg-white hover:bg-[#123f8f] text-gray-200 hover:text-white rounded text-[10px] font-bold cursor-pointer"
                   >
                     + Add Column
                   </button>
@@ -1423,7 +1450,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                             cur[idx] = e.target.value;
                             handleUpdateCustomSection({ tableHeaders: cur });
                           }}
-                          className="bg-[#1f2d40] border border-[#16233a] rounded px-2 py-1 text-[11px] font-bold text-white flex-1 min-w-[80px]"
+                          className="bg-white border border-[#cccccc] rounded px-2 py-1 text-[11px] font-bold text-black flex-1 min-w-[80px]"
                         />
                       )
                     )}
@@ -1432,7 +1459,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-300 text-[10.5px]">
+                    <span className="font-bold text-black text-[10.5px]">
                       Rows ({(customSection.tableRows || []).length})
                     </span>
                     <button
@@ -1444,7 +1471,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                           tableRows: [...curR, newRow],
                         });
                       }}
-                      className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
+                      className="px-2 py-0.5 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded text-[10px] font-bold flex items-center space-x-1 cursor-pointer"
                     >
                       <Plus className="w-3 h-3" />
                       <span>Add Row</span>
@@ -1465,7 +1492,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                               cur[rIdx][cIdx] = e.target.value;
                               handleUpdateCustomSection({ tableRows: cur });
                             }}
-                            className="bg-[#070c18] border border-[#16233a] rounded px-2 py-1 text-xs text-white flex-1 min-w-[70px]"
+                            className="bg-white border border-[#cccccc] rounded px-2 py-1 text-xs text-black flex-1 min-w-[70px]"
                           />
                         ))}
                       </div>
@@ -1474,7 +1501,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                           const cur = (customSection.tableRows || []).filter((_, i) => i !== rIdx);
                           handleUpdateCustomSection({ tableRows: cur });
                         }}
-                        className="p-1 text-gray-500 hover:text-red-400 cursor-pointer shrink-0"
+                        className="p-1 text-[#888888] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer shrink-0"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>

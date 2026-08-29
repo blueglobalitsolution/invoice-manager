@@ -150,42 +150,43 @@ export default function CompanyProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0f18]">
-        <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-[#f4f3eb]">
+        <Loader2 className="w-8 h-8 text-[#0d3479] animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[#0a0f18] text-gray-200">
-      {/* Top Header */}
-      <header className="h-14 bg-[#111827] border-b border-gray-800 flex items-center justify-between px-4 shrink-0">
-        <div className="flex items-center space-x-4">
+    <div className="flex flex-col h-screen bg-[#f4f3eb] text-black">
+      {/* Sleek Top Header in Signature Deep Navy */}
+      <header className="h-11 bg-[#002057] border-b border-[#15428a] flex items-center justify-between px-4 shrink-0 shadow-xs select-none">
+        <div className="flex items-center space-x-3">
           <button
             onClick={() => router.push(`/project/${projectId}`)}
-            className="p-1.5 hover:bg-gray-800 text-gray-400 hover:text-white rounded transition-colors"
+            className="p-1.5 hover:bg-[#0d3479] text-white/90 hover:text-white rounded-lg transition-colors cursor-pointer"
             title="Back to Project"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
           </button>
-          <div>
-            <div className="text-sm font-semibold text-white flex items-center space-x-2">
-              <span className="uppercase tracking-wider text-xs text-emerald-500">Project / {project?.code}</span>
-              <span className="text-gray-500">|</span>
-              <span>Company Profile (Header & Footer)</span>
-            </div>
+          <div className="flex items-center space-x-2 text-xs">
+            <span className="uppercase font-mono font-bold text-white bg-[#0d3479] px-2.5 py-0.5 rounded-full border border-[#2356a8]">
+              PROJECT / {project?.code}
+            </span>
+            <span className="text-white/40">|</span>
+            <span className="text-white font-semibold">Company Profile (Header & Footer)</span>
           </div>
         </div>
+
         <div className="flex items-center space-x-3">
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
+            className="flex items-center space-x-1.5 bg-white hover:bg-slate-100 disabled:opacity-50 text-[#002057] px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
           >
             {saving ? (
-              <Loader2 className="w-4 h-4 text-white animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 text-[#002057] animate-spin" />
             ) : (
-              <Save className="w-4 h-4" />
+              <Save className="w-3.5 h-3.5 text-[#002057]" />
             )}
             <span>{saving ? 'Saving...' : 'Save to Project'}</span>
           </button>
@@ -195,12 +196,12 @@ export default function CompanyProfilePage() {
       {/* Split View Editor */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Inputs */}
-        <div className="w-1/2 lg:w-5/12 xl:w-1/3 border-r border-gray-800 overflow-y-auto custom-scrollbar">
+        <div className="w-1/2 lg:w-5/12 xl:w-1/3 border-r border-[#cccccc] bg-[#f4f3eb] overflow-y-auto custom-scrollbar">
           <CompanyProfileEditor profile={profile} onChange={setProfile} />
         </div>
         
         {/* Right: PDF Preview */}
-        <div className="flex-1 bg-[#0a0f18] relative overflow-hidden flex flex-col">
+        <div className="flex-1 bg-[#64748b] relative overflow-hidden flex flex-col">
           <CompanyProfilePreview profile={profile} />
         </div>
       </div>

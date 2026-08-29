@@ -73,9 +73,9 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
   const getSectionHighlightClass = (sectionId: string) => {
     const isActive = activeSectionId === sectionId;
     const isHovered = hoveredSectionId === sectionId && !isActive;
-    if (isActive) return 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
-    if (isHovered) return 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
-    return 'hover:ring-1 hover:ring-emerald-300/40 print:ring-0 print:bg-transparent print:shadow-none';
+    if (isActive) return 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
+    if (isHovered) return 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
+    return 'hover:ring-1 hover:ring-[#0d3479]/30 print:ring-0 print:bg-transparent print:shadow-none';
   };
 
   // Accurate line counting that prevents double-counting \n and text-wrapping
@@ -248,14 +248,10 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                       {pageRows.map((spec, idx) => (
                         <tr key={idx} className="border-b border-black">
                           <td className="w-[32%] font-bold px-3 py-2 border-r border-black align-top bg-gray-50/50 whitespace-pre-line">
-                            {spec.title.replace(/\\newline/g, '\n').replace(/\\textbf{([^}]+)}/g, '$1')}
+                            <FormattedText text={spec.title} globalVars={globalVars} />
                           </td>
                           <td className="px-3 py-2 align-top text-[11px] leading-relaxed whitespace-pre-line">
-                            {spec.details
-                              .replace(/\\newline/g, '\n')
-                              .replace(/\\textbf{([^}]+)}/g, '$1')
-                              .replace(/\\&/g, '&')
-                              .replace(/\\\$/g, '$')}
+                            <FormattedText text={spec.details} globalVars={globalVars} />
                           </td>
                         </tr>
                       ))}
@@ -315,9 +311,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                           <td className="w-[38%] font-bold px-3 py-1.5 border-r border-black align-top bg-gray-50/50">
                             {td.label}
                           </td>
-                          <td className="px-3 py-1.5 align-top leading-snug">
-                            {applyVariables(td.value, globalVars)}
-                          </td>
+                          <td className="px-3 py-1.5 align-top leading-snug"><FormattedText text={td.value} globalVars={globalVars} /></td>
                         </tr>
                       ))}
                     </tbody>
@@ -465,10 +459,10 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                             <td className="px-2 py-0.5 text-right">{q.subTotal}</td>
                           </tr>
                           <tr className="border-b border-black font-bold">
-                            <td colSpan={2} className="px-2 py-0.5 text-[10px]">{q.amountInWords}</td>
+                            <td colSpan={2} className="px-2 py-0.5 text-[10px]"><FormattedText text={q.amountInWords} globalVars={globalVars} /></td>
                           </tr>
                           <tr className="border-b border-black font-bold bg-gray-50/50">
-                            <td colSpan={2} className="px-2 py-0.5 text-[10px]">{q.gstNote}</td>
+                            <td colSpan={2} className="px-2 py-0.5 text-[10px]"><FormattedText text={q.gstNote} globalVars={globalVars} /></td>
                           </tr>
                         </>
                       )}
@@ -499,10 +493,10 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                           <td className="px-2 py-0.5 text-right">{q.subTotal}</td>
                         </tr>
                         <tr className="border-b border-black font-bold">
-                          <td colSpan={2} className="px-2 py-0.5 text-[10px]">{q.amountInWords}</td>
+                          <td colSpan={2} className="px-2 py-0.5 text-[10px]"><FormattedText text={q.amountInWords} globalVars={globalVars} /></td>
                         </tr>
                         <tr className="border-b border-black font-bold bg-gray-50/50">
-                          <td colSpan={2} className="px-2 py-0.5 text-[10px]">{q.gstNote}</td>
+                          <td colSpan={2} className="px-2 py-0.5 text-[10px]"><FormattedText text={q.gstNote} globalVars={globalVars} /></td>
                         </tr>
                       </tbody>
                     </table>
@@ -558,9 +552,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                       <thead>
                         <tr className="border-b border-black bg-gray-100 font-bold">
                           {headers.map((h, hIdx) => (
-                            <th key={hIdx} className="p-1.5 border-r border-black last:border-r-0 text-left">
-                              {applyVariables(h, globalVars)}
-                            </th>
+                            <th key={hIdx} className="p-1.5 border-r border-black last:border-r-0 text-left"><FormattedText text={h} globalVars={globalVars} /></th>
                           ))}
                         </tr>
                       </thead>
@@ -568,9 +560,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                         {pageRows.map((row, rIdx) => (
                           <tr key={rIdx} className="border-b border-black last:border-b-0">
                             {row.map((cell, cIdx) => (
-                              <td key={cIdx} className="p-1.5 border-r border-black last:border-r-0 align-top">
-                                {applyVariables(cell, globalVars)}
-                              </td>
+                              <td key={cIdx} className="p-1.5 border-r border-black last:border-r-0 align-top"><FormattedText text={cell} globalVars={globalVars} /></td>
                             ))}
                           </tr>
                         ))}
@@ -619,13 +609,13 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                   {cs.contentType === 'bullet_list' ? (
                     <ul className="list-disc list-inside space-y-1 pl-1 text-justify text-[11px] leading-relaxed">
                       {pageItems.map((b, bIdx) => (
-                        <li key={bIdx} className="text-black">{applyVariables(b, globalVars)}</li>
+                        <li key={bIdx} className="text-black"><FormattedText text={b} globalVars={globalVars} /></li>
                       ))}
                     </ul>
                   ) : cs.contentType === 'paragraphs' ? (
                     <div className="space-y-1.5 text-justify leading-relaxed text-black text-[11px]">
                       {pageItems.map((p, pIdx) => (
-                        <p key={pIdx}>{applyVariables(p, globalVars)}</p>
+                        <p key={pIdx}><FormattedText text={p} globalVars={globalVars} /></p>
                       ))}
                     </div>
                   ) : (
@@ -635,7 +625,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                           <span className="font-bold text-black font-mono shrink-0 text-[11px]">
                             {currentItemIndex - pageItems.length + pIdx + 1}.0
                           </span>
-                          <p className="flex-1">{applyVariables(p, globalVars)}</p>
+                          <p className="flex-1"><FormattedText text={p} globalVars={globalVars} /></p>
                         </div>
                       ))}
                     </div>
@@ -686,15 +676,15 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
       onMouseLeave={() => onHoverSection?.(null)}
       className={`mb-2 p-1 rounded relative cursor-pointer transition-all duration-200 select-none ${
         isHeaderActive
-          ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+          ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
           : isHeaderHovered
-          ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-          : 'hover:ring-1 hover:ring-emerald-300/40'
+          ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+          : 'hover:ring-1 hover:ring-[#0d3479]/30'
       }`}
       title="Header & Footer (Click to edit)"
     >
       {isHeaderHovered && !isHeaderActive && (
-        <span className="absolute top-1 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+        <span className="absolute top-1 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
           Header & Footer
         </span>
       )}
@@ -735,7 +725,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
       </div>
 
       <div className="flex justify-between items-center text-[10px] font-bold text-gray-900">
-        <div>{applyVariables(companyAddressHeader, globalVars)}</div>
+        <div><FormattedText text={companyAddressHeader} globalVars={globalVars} /></div>
         <div>GST NO: {applyVariables(companyGstNo, globalVars)}</div>
       </div>
 
@@ -751,15 +741,15 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
       onMouseLeave={() => onHoverSection?.(null)}
       className={`pt-2 mt-auto select-none rounded p-1 transition-all duration-200 cursor-pointer relative ${
         isHeaderActive
-          ? 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs'
+          ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
           : isHeaderHovered
-          ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs'
-          : 'hover:ring-1 hover:ring-emerald-300/40'
+          ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
+          : 'hover:ring-1 hover:ring-[#0d3479]/30'
       }`}
       title="Header & Footer (Click to edit)"
     >
       {isHeaderHovered && !isHeaderActive && (
-        <span className="absolute -top-6 right-1 text-[9px] bg-emerald-700 text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
+        <span className="absolute -top-6 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
           Header & Footer
         </span>
       )}
@@ -818,9 +808,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
         {sec.contentType === 'bullet_list' && sec.bullets && (
           <ul className="list-disc list-inside space-y-1 pl-1 text-justify text-[11px] leading-relaxed">
             {sec.bullets.map((b, bIdx) => (
-              <li key={bIdx} className="text-black">
-                {applyVariables(b, globalVars)}
-              </li>
+              <li key={bIdx} className="text-black"><FormattedText text={b} globalVars={globalVars} /></li>
             ))}
           </ul>
         )}
@@ -832,7 +820,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                 <span className="font-bold text-black font-mono shrink-0 text-[11px]">
                   {pIdx + 1}.0
                 </span>
-                <p className="flex-1">{applyVariables(p, globalVars)}</p>
+                <p className="flex-1"><FormattedText text={p} globalVars={globalVars} /></p>
               </div>
             ))}
           </div>
@@ -841,7 +829,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
         {sec.contentType === 'paragraphs' && sec.paragraphs && (
           <div className="space-y-1.5 text-justify leading-relaxed text-black text-[11px]">
             {sec.paragraphs.map((p, pIdx) => (
-              <p key={pIdx}>{applyVariables(p, globalVars)}</p>
+              <p key={pIdx}><FormattedText text={p} globalVars={globalVars} /></p>
             ))}
           </div>
         )}
@@ -852,9 +840,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
               <thead>
                 <tr className="border-b border-black bg-gray-100 font-bold">
                   {sec.tableHeaders.map((h, hIdx) => (
-                    <th key={hIdx} className="p-1.5 border-r border-black last:border-r-0 text-left">
-                      {applyVariables(h, globalVars)}
-                    </th>
+                    <th key={hIdx} className="p-1.5 border-r border-black last:border-r-0 text-left"><FormattedText text={h} globalVars={globalVars} /></th>
                   ))}
                 </tr>
               </thead>
@@ -862,9 +848,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                 {sec.tableRows.map((row, rIdx) => (
                   <tr key={rIdx} className="border-b border-black last:border-b-0">
                     {row.map((cell, cIdx) => (
-                      <td key={cIdx} className="p-1.5 border-r border-black last:border-r-0 align-top">
-                        {applyVariables(cell, globalVars)}
-                      </td>
+                      <td key={cIdx} className="p-1.5 border-r border-black last:border-r-0 align-top"><FormattedText text={cell} globalVars={globalVars} /></td>
                     ))}
                   </tr>
                 ))}
@@ -879,12 +863,8 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
               <tbody>
                 {sec.keyValuePairs.map((kv, kvIdx) => (
                   <tr key={kvIdx} className="border-b border-black last:border-b-0">
-                    <td className="p-1.5 font-bold border-r border-black w-1/3 bg-gray-50/50 align-top">
-                      {applyVariables(kv.key, globalVars)}
-                    </td>
-                    <td className="p-1.5 align-top">
-                      {applyVariables(kv.value, globalVars)}
-                    </td>
+                    <td className="p-1.5 font-bold border-r border-black w-1/3 bg-gray-50/50 align-top"><FormattedText text={kv.key} globalVars={globalVars} /></td>
+                    <td className="p-1.5 align-top"><FormattedText text={kv.value} globalVars={globalVars} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -901,7 +881,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
                 ? 'IMPORTANT NOTICE'
                 : 'SPECIAL NOTICE'}
             </div>
-            <p className="italic">{applyVariables(sec.calloutText, globalVars)}</p>
+            <p className="italic"><FormattedText text={sec.calloutText} globalVars={globalVars} /></p>
           </div>
         )}
       </div>

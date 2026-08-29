@@ -295,21 +295,21 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
   };
 
   return (
-    <aside className="w-full bg-[#070A13] text-slate-200 flex flex-col h-full shrink-0 select-none overflow-hidden">
+    <aside className="w-full bg-[#f4f3eb] text-black flex flex-col h-full shrink-0 select-none overflow-hidden">
       {/* Single Unified Header */}
-      <div className="px-3.5 py-2 border-b border-[#151C2C] bg-[#0A0E1A] flex items-center justify-between shrink-0 h-[49px]">
+      <div className="px-3.5 py-2 border-b border-[#cccccc] bg-[#f0efe6] flex items-center justify-between shrink-0 h-[49px]">
         <div className="flex items-center space-x-2.5 min-w-0">
-          <div className="w-7 h-7 rounded-lg bg-[#4F46E5]/20 border border-[#6366F1]/40 text-[#818CF8] flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-[#dfe7f4] border border-[#b9c7de] text-[#0d3479] flex items-center justify-center shrink-0">
             <CurrentIcon className="w-3.5 h-3.5" />
           </div>
           <div className="truncate">
-            <div className="text-xs font-bold text-white leading-tight tracking-tight truncate">{currentMeta.title}</div>
-            <div className="text-[10px] text-slate-400 leading-tight truncate">{currentMeta.subtitle}</div>
+            <div className="text-xs font-bold text-black leading-tight tracking-tight truncate">{currentMeta.title}</div>
+            <div className="text-[10px] text-black leading-tight truncate">{currentMeta.subtitle}</div>
           </div>
         </div>
 
         <div className="flex items-center space-x-2 shrink-0">
-          <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-[#4F46E5]/30 text-indigo-200 border border-[#6366F1]/50 rounded-md font-semibold">
+          <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de] rounded-md font-semibold">
             {typeof currentSectionPage === 'number' ? `Page ${currentSectionPage}` : currentSectionPage}
           </span>
         </div>
@@ -324,64 +324,64 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
             ========================================================================= */}
         {isGlobalHeader && (
           <div className="space-y-4">
-            <div className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
-              <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
+            <div className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
+              <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide flex items-center space-x-1.5">
                 <Building className="w-3.5 h-3.5" />
                 <span>Letterhead & Company Branding</span>
               </h3>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-400">Company Name</label>
+                  <label className="block text-[11px] font-semibold text-black">Company Name</label>
                   <input
                     type="text"
                     value={q.companyName}
                     onChange={(e) => updateQuotation({ companyName: e.target.value })}
-                    className="w-full mt-1 px-2.5 py-1.5 bg-[#111827] border border-[#1E293B] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none"
+                    className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-400">Subtitle</label>
+                  <label className="block text-[11px] font-semibold text-black">Subtitle</label>
                   <input
                     type="text"
                     value={q.companySubtitle}
                     onChange={(e) => updateQuotation({ companySubtitle: e.target.value })}
-                    className="w-full mt-1 px-2.5 py-1.5 bg-[#111827] border border-[#1E293B] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none"
+                    className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-[11px] font-semibold text-gray-400">Company GST No.</label>
+                <label className="block text-[11px] font-semibold text-black">Company GST No.</label>
                 <input
                   type="text"
                   value={q.companyGstNo}
                   onChange={(e) => updateQuotation({ companyGstNo: e.target.value })}
-                  className="w-full mt-1 px-2.5 py-1.5 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none font-mono"
+                  className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none font-mono"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-semibold text-gray-400">Header Address</label>
+                <label className="block text-[11px] font-semibold text-black">Header Address</label>
                 <input
                   type="text"
                   value={q.companyAddressHeader || ''}
                   onChange={(e) => updateQuotation({ companyAddressHeader: e.target.value })}
-                  className="w-full mt-1 px-2.5 py-1.5 bg-[#111827] border border-[#1E293B] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none"
+                  className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                   placeholder="Regd. Off. : SO7B / 2nd floor..."
                 />
               </div>
 
               {/* 2-Column Services / Offerings */}
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#141f33]/80">
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#cccccc]/80">
                 {/* Left Services */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-400 text-[10px] uppercase">
+                    <span className="font-bold text-black text-[10px] uppercase">
                       Left Services ({(q.leftServices || []).length})
                     </span>
                     <button
                       onClick={() =>
                         updateQuotation({ leftServices: [...(q.leftServices || []), '• NEW SERVICE'] })
                       }
-                      className="p-0.5 text-blue-400 hover:text-blue-300 rounded cursor-pointer"
+                      className="p-1 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded-md transition-colors cursor-pointer shadow-xs"
                       title="Add Left Service"
                     >
                       <Plus className="w-3 h-3" />
@@ -397,7 +397,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                           updated[idx] = e.target.value;
                           updateQuotation({ leftServices: updated });
                         }}
-                        className="w-full bg-[#070c18] border border-[#16233a] rounded px-2 py-1 text-[10.5px] text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                        className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-[10.5px] text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                       />
                       {(q.leftServices || []).length > 1 && (
                         <button
@@ -406,7 +406,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                               leftServices: (q.leftServices || []).filter((_, i) => i !== idx),
                             })
                           }
-                          className="p-1 text-gray-500 hover:text-red-400 cursor-pointer"
+                          className="p-1 text-[#888888] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-2.5 h-2.5" />
                         </button>
@@ -418,14 +418,14 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                 {/* Right Services */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-400 text-[10px] uppercase">
+                    <span className="font-bold text-black text-[10px] uppercase">
                       Right Services ({(q.rightServices || []).length})
                     </span>
                     <button
                       onClick={() =>
                         updateQuotation({ rightServices: [...(q.rightServices || []), '• NEW SERVICE'] })
                       }
-                      className="p-0.5 text-blue-400 hover:text-blue-300 rounded cursor-pointer"
+                      className="p-1 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded-md transition-colors cursor-pointer shadow-xs"
                       title="Add Right Service"
                     >
                       <Plus className="w-3 h-3" />
@@ -441,7 +441,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                           updated[idx] = e.target.value;
                           updateQuotation({ rightServices: updated });
                         }}
-                        className="w-full bg-[#070c18] border border-[#16233a] rounded px-2 py-1 text-[10.5px] text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                        className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-[10.5px] text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                       />
                       {(q.rightServices || []).length > 1 && (
                         <button
@@ -450,7 +450,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                               rightServices: (q.rightServices || []).filter((_, i) => i !== idx),
                             })
                           }
-                          className="p-1 text-gray-500 hover:text-red-400 cursor-pointer"
+                          className="p-1 text-[#888888] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-2.5 h-2.5" />
                         </button>
@@ -461,47 +461,47 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
               </div>
             </div>
 
-            <div className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
-              <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
+            <div className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
+              <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide flex items-center space-x-1.5">
                 <MapPin className="w-3.5 h-3.5" />
                 <span>Footer Details</span>
               </h3>
               <div>
-                <label className="block text-[11px] font-semibold text-gray-400">Address (Footer)</label>
+                <label className="block text-[11px] font-semibold text-black">Address (Footer)</label>
                 <textarea
                   value={q.companyAddressFooter || ''}
                   onChange={(e) => updateQuotation({ companyAddressFooter: e.target.value })}
-                  className="w-full mt-1 px-2.5 py-1.5 bg-[#111827] border border-[#1E293B] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none"
+                  className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                   rows={2}
                 />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-400">Phone</label>
+                  <label className="block text-[11px] font-semibold text-black">Phone</label>
                   <input
                     type="text"
                     value={q.companyPhone || ''}
                     onChange={(e) => updateQuotation({ companyPhone: e.target.value })}
-                    className="w-full mt-1 px-2.5 py-1.5 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none font-mono"
+                    className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-400">Email</label>
+                  <label className="block text-[11px] font-semibold text-black">Email</label>
                   <input
                     type="text"
                     value={q.companyEmail || ''}
                     onChange={(e) => updateQuotation({ companyEmail: e.target.value })}
-                    className="w-full mt-1 px-2.5 py-1.5 bg-[#111827] border border-[#1E293B] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none"
+                    className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-[11px] font-semibold text-gray-400">Website</label>
+                <label className="block text-[11px] font-semibold text-black">Website</label>
                 <input
                   type="text"
                   value={q.companyWebsite || ''}
                   onChange={(e) => updateQuotation({ companyWebsite: e.target.value })}
-                  className="w-full mt-1 px-2.5 py-1.5 bg-[#111827] border border-[#1E293B] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none"
+                  className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                 />
               </div>
             </div>
@@ -513,51 +513,51 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
             ========================================================================= */}
         {(activeSectionId === 'q_cover_info' || activeSectionId === 'page_1') && (
           <div className="space-y-4">
-            <div className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
-              <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
+            <div className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
+              <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide flex items-center space-x-1.5">
                 <User className="w-3.5 h-3.5" />
                 <span>Recipient / Client Info</span>
               </h3>
 
               <div>
-                <label className="block text-[11px] font-semibold text-gray-400">Recipient Name (To,)</label>
+                <label className="block text-[11px] font-semibold text-black">Recipient Name (To,)</label>
                 <input
                   type="text"
                   value={q.toRecipient}
                   onChange={(e) => updateQuotation({ toRecipient: e.target.value })}
-                  className="w-full mt-1 px-2.5 py-1.5 bg-[#111827] border border-[#1E293B] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none"
+                  className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-gray-400">Recipient Address</label>
+                <label className="block text-[11px] font-semibold text-black">Recipient Address</label>
                 <textarea
                   rows={2}
                   value={q.toAddress}
                   onChange={(e) => updateQuotation({ toAddress: e.target.value })}
-                  className="w-full mt-1 px-2.5 py-1.5 bg-[#111827] border border-[#1E293B] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none"
+                  className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-400">Ref. No.</label>
+                  <label className="block text-[11px] font-semibold text-black">Ref. No.</label>
                   <input
                     type="text"
                     value={q.refNo}
                     onChange={(e) => updateQuotation({ refNo: e.target.value })}
-                    className="w-full mt-1 px-2.5 py-1.5 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none font-mono"
+                    className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-400">Quotation Date (DD/MM/YYYY)</label>
+                  <label className="block text-[11px] font-semibold text-black">Quotation Date (DD/MM/YYYY)</label>
                   <input
                     type="text"
                     value={q.date}
                     onChange={(e) => updateQuotation({ date: formatDateInput(e.target.value) })}
                     placeholder="DD/MM/YYYY"
                     maxLength={10}
-                    className="w-full mt-1 px-2.5 py-1.5 bg-[#111827] border border-[#1E293B] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none font-mono"
+                    className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none font-mono"
                   />
                 </div>
               </div>
@@ -567,22 +567,22 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
 
         {(activeSectionId === 'q_cover_intro' || activeSectionId === 'page_1') && (
           <div className="space-y-4">
-            <div className="bg-[#0C101F] p-4 rounded-2xl border border-[#1E2538] space-y-4">
-              <h3 className="font-bold text-xs text-[#818CF8] uppercase tracking-wider flex items-center justify-between cursor-pointer">
+            <div className="bg-white p-4 rounded-2xl border border-[#cccccc] space-y-4">
+              <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wider flex items-center justify-between cursor-pointer">
                 <div className="flex items-center space-x-2">
                   <FileText className="w-3.5 h-3.5" />
                   <span>SUBJECT & INTRODUCTORY PITCH</span>
                 </div>
-                <ChevronUp className="w-4 h-4 text-indigo-400" />
+                <ChevronUp className="w-4 h-4 text-[#0d3479]" />
               </h3>
 
               <div>
-                <label className="block text-xs font-medium text-slate-400">Subject Heading</label>
+                <label className="block text-xs font-medium text-black">Subject Heading</label>
                 <input
                   type="text"
                   value={q.subjectTitle}
                   onChange={(e) => updateQuotation({ subjectTitle: e.target.value })}
-                  className="w-full mt-1.5 px-3 py-2 bg-[#070A13] border border-[#1E2538] rounded-xl text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 focus:outline-none font-medium"
+                  className="w-full mt-1.5 px-3 py-2 bg-[#f4f3eb] border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-indigo-500/30 focus:outline-none font-medium"
                 />
               </div>
 
@@ -598,26 +598,26 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
               </div>
 
               {/* Signatory Settings */}
-              <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-[#141f33]">
+              <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-[#cccccc]">
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-400">Signatory Company/Name</label>
+                  <label className="block text-[11px] font-semibold text-black">Signatory Company/Name</label>
                   <input
                     type="text"
                     value={q.signatoryName || ''}
                     placeholder="e.g. Global Industries"
                     onChange={(e) => updateQuotation({ signatoryName: e.target.value })}
-                    className="w-full mt-1 px-2.5 py-1.5 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none font-bold"
+                    className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none font-bold"
                   />
                 </div>
                 <div>
                   <div className="flex justify-between items-center">
-                    <label className="block text-[11px] font-semibold text-gray-400">Signatory Phones</label>
+                    <label className="block text-[11px] font-semibold text-black">Signatory Phones</label>
                     <button
                       onClick={() => {
                         const updated = [...(q.signatoryPhones || []), ''];
                         updateQuotation({ signatoryPhones: updated });
                       }}
-                      className="px-1.5 py-0.5 bg-blue-900/50 hover:bg-blue-800/80 text-blue-300 rounded text-[9px] font-semibold cursor-pointer"
+                      className="px-1.5 py-0.5 bg-blue-900/50 hover:bg-blue-800/80 text-[#0d3479] rounded text-[9px] font-semibold cursor-pointer"
                     >
                       + Add
                     </button>
@@ -634,7 +634,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                             updated[idx] = e.target.value;
                             updateQuotation({ signatoryPhones: updated });
                           }}
-                          className="flex-1 px-2 py-1 bg-[#070c18] border border-[#16233a] rounded text-[11px] text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                          className="flex-1 px-2 py-1 bg-white border border-[#cccccc] rounded text-[11px] text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                         />
                         <button
                           onClick={() => {
@@ -661,7 +661,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
         {(activeSectionId === 'q_tech_details' || activeSectionId === 'page_2') && (
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-[11px] text-gray-400 font-semibold">
+              <span className="text-[11px] text-black font-semibold">
                 Technical Specifications Table (Page 2)
               </span>
               <button
@@ -669,7 +669,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   const updated = [...q.technicalDetails, { label: 'New Parameter', value: 'Specification Value' }];
                   updateQuotation({ technicalDetails: updated });
                 }}
-                className="px-2.5 py-1 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[11px] font-semibold flex items-center space-x-1 cursor-pointer"
+                className="px-2.5 py-1 bg-[#dfe7f4] hover:bg-[#0d3479]/80 text-[#0d3479] border border-[#0d3479]/80 rounded text-[11px] font-semibold flex items-center space-x-1 cursor-pointer"
               >
                 <Plus className="w-3 h-3" />
                 <span>Add Row</span>
@@ -680,10 +680,10 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
               {q.technicalDetails.map((td, idx) => (
                 <div
                   key={idx}
-                  className="bg-[#0b1426] p-2.5 rounded-2xl border border-[#141f33] space-y-1.5"
+                  className="bg-white p-2.5 rounded-2xl border border-[#cccccc] space-y-1.5"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-blue-400">Item #{idx + 1}</span>
+                    <span className="text-[10px] font-mono text-[#0d3479]">Item #{idx + 1}</span>
                     <button
                       onClick={() => {
                         const updated = q.technicalDetails.filter((_, i) => i !== idx);
@@ -706,7 +706,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                           updated[idx] = { ...updated[idx], label: e.target.value };
                           updateQuotation({ technicalDetails: updated });
                         }}
-                        className="w-full px-2 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none font-semibold"
+                        className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none font-semibold"
                       />
                     </div>
                     <div className="col-span-3">
@@ -719,7 +719,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                           updated[idx] = { ...updated[idx], value: e.target.value };
                           updateQuotation({ technicalDetails: updated });
                         }}
-                        className="w-full px-2 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                        className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -735,7 +735,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
         {(activeSectionId === 'q_mat_specs' || activeSectionId === 'page_3') && (
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-[11px] text-gray-400 font-semibold block">
+              <span className="text-[11px] text-black font-semibold block">
                 Material Compliance & Standards Specifications (Page 3)
               </span>
               <button
@@ -743,7 +743,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   const updated = [...q.specifications, { title: 'New Spec', details: 'Details...' }];
                   updateQuotation({ specifications: updated });
                 }}
-                className="px-2 py-0.5 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[10px] font-semibold flex items-center space-x-1 cursor-pointer"
+                className="px-2 py-0.5 bg-[#dfe7f4] hover:bg-[#0d3479]/80 text-[#0d3479] border border-[#0d3479]/80 rounded text-[10px] font-semibold flex items-center space-x-1 cursor-pointer"
               >
                 <Plus className="w-3 h-3" />
                 <span>Add Spec</span>
@@ -754,10 +754,10 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
               {q.specifications.map((spec, idx) => (
                 <div
                   key={idx}
-                  className="bg-[#0b1426] p-3 rounded-2xl border border-[#141f33] space-y-2 relative"
+                  className="bg-white p-3 rounded-2xl border border-[#cccccc] space-y-2 relative"
                 >
                   <div className="flex justify-between items-center">
-                    <label className="block text-[11px] font-bold text-blue-400">Spec Title</label>
+                    <label className="block text-[11px] font-bold text-[#0d3479]">Spec Title</label>
                     <button
                       onClick={() => {
                         const updated = q.specifications.filter((_, i) => i !== idx);
@@ -776,11 +776,11 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                       updated[idx] = { ...updated[idx], title: e.target.value };
                       updateQuotation({ specifications: updated });
                     }}
-                    className="w-full mt-0.5 px-2.5 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none font-semibold"
+                    className="w-full mt-0.5 px-2.5 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none font-semibold"
                   />
 
                   <div>
-                    <label className="block text-[11px] font-semibold text-gray-400">Technical Details / Standards</label>
+                    <label className="block text-[11px] font-semibold text-black">Technical Details / Standards</label>
                     <textarea
                       rows={4}
                       value={cleanDisplayValue(spec.details)}
@@ -789,7 +789,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                         updated[idx] = { ...updated[idx], details: e.target.value };
                         updateQuotation({ specifications: updated });
                       }}
-                      className="w-full mt-0.5 px-2.5 py-1.5 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none font-mono text-[11px]"
+                      className="w-full mt-0.5 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none font-mono text-[11px]"
                     />
                   </div>
                 </div>
@@ -803,9 +803,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
             ========================================================================= */}
         {(activeSectionId === 'q_boq_items' || activeSectionId === 'page_4') && (
           <div className="space-y-4">
-            <div id="form-sec-q_boq_items" className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
+            <div id="form-sec-q_boq_items" className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
               <div className="flex justify-between items-center">
-                <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
+                <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide flex items-center space-x-1.5">
                   <DollarSign className="w-3.5 h-3.5" />
                   <span>Commercial BOQ Items</span>
                 </h3>
@@ -817,7 +817,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                     ];
                     updateQuotation({ commercialItems: updated });
                   }}
-                  className="px-2 py-1 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[11px] font-semibold flex items-center space-x-1 cursor-pointer"
+                  className="px-2 py-1 bg-[#dfe7f4] hover:bg-[#0d3479]/80 text-[#0d3479] border border-[#0d3479]/80 rounded text-[11px] font-semibold flex items-center space-x-1 cursor-pointer"
                 >
                   <Plus className="w-3 h-3" />
                   <span>Add BOQ Item</span>
@@ -825,21 +825,21 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400">Commercial Subtitle</label>
+                <label className="block text-[10px] font-semibold text-black">Commercial Subtitle</label>
                 <input
                   type="text"
                   value={q.commercialSubtitle || ''}
                   onChange={(e) => updateQuotation({ commercialSubtitle: e.target.value })}
                   placeholder="e.g., (A) PRICE BASIS: SUPPLY OF PEB STRUCTURE"
-                  className="w-full mt-0.5 px-2 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                  className="w-full mt-0.5 px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                 />
               </div>
 
               <div className="space-y-2.5">
                 {q.commercialItems.map((item, idx) => (
-                  <div key={idx} className="bg-[#070c18] p-2.5 rounded border border-[#16233a] space-y-2">
+                  <div key={idx} className="bg-white p-2.5 rounded border border-[#cccccc] space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-mono text-gray-400">BOQ Item #{idx + 1}</span>
+                      <span className="text-[10px] font-mono text-black">BOQ Item #{idx + 1}</span>
                       <div className="flex items-center space-x-1">
                         {idx > 0 && (
                           <button
@@ -850,7 +850,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                               updated[idx - 1] = temp;
                               updateQuotation({ commercialItems: updated });
                             }}
-                            className="p-1 text-gray-400 hover:text-white"
+                            className="p-1 text-black hover:text-black"
                             title="Move Up"
                           >
                             <ArrowUp className="w-3 h-3" />
@@ -865,7 +865,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                               updated[idx + 1] = temp;
                               updateQuotation({ commercialItems: updated });
                             }}
-                            className="p-1 text-gray-400 hover:text-white"
+                            className="p-1 text-black hover:text-black"
                             title="Move Down"
                           >
                             <ArrowDown className="w-3 h-3" />
@@ -892,11 +892,11 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                           updated[idx] = { ...updated[idx], description: e.target.value };
                           updateQuotation({ commercialItems: updated });
                         }}
-                        className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                        className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                       />
                     </div>
                     <div className="flex justify-end items-center space-x-2">
-                      <span className="text-[11px] text-gray-400 font-semibold">Total Price (INR):</span>
+                      <span className="text-[11px] text-black font-semibold">Total Price (INR):</span>
                       <input
                         type="text"
                         value={item.price}
@@ -905,44 +905,44 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                           updated[idx] = { ...updated[idx], price: e.target.value };
                           updateQuotation({ commercialItems: updated });
                         }}
-                        className="w-36 px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white text-right font-mono focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                        className="w-36 px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black text-right font-mono focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                       />
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#141f33]">
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#cccccc]">
                 <div>
-                  <label className="block text-[10px] font-semibold text-gray-400">Total Price In INR</label>
+                  <label className="block text-[10px] font-semibold text-black">Total Price In INR</label>
                   <input
                     type="text"
                     value={q.totalPriceInInr}
                     onChange={(e) => updateQuotation({ totalPriceInInr: e.target.value })}
-                    className="w-full mt-0.5 px-2 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white font-mono font-bold"
+                    className="w-full mt-0.5 px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black font-mono font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold text-gray-400">Sub Total</label>
+                  <label className="block text-[10px] font-semibold text-black">Sub Total</label>
                   <input
                     type="text"
                     value={q.subTotal}
                     onChange={(e) => updateQuotation({ subTotal: e.target.value })}
-                    className="w-full mt-0.5 px-2 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white font-mono font-bold"
+                    className="w-full mt-0.5 px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black font-mono font-bold"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-0.5">
-                  <label className="block text-[10px] font-semibold text-gray-400">Amount In Words</label>
+                  <label className="block text-[10px] font-semibold text-black">Amount In Words</label>
                   <button
                     type="button"
                     onClick={() => {
                       const words = numberToIndianWords(q.subTotal || '0', 'Total: ');
                       updateQuotation({ amountInWords: words });
                     }}
-                    className="text-[10px] text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 cursor-pointer font-medium"
+                    className="text-[10px] text-[#0d3479] hover:text-[#0d3479] flex items-center space-x-1 cursor-pointer font-medium"
                     title="Auto generate words from Sub Total"
                   >
                     <Sparkles className="w-3 h-3" />
@@ -953,17 +953,17 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   type="text"
                   value={q.amountInWords}
                   onChange={(e) => updateQuotation({ amountInWords: e.target.value })}
-                  className="w-full mt-0.5 px-2 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white"
+                  className="w-full mt-0.5 px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400">GST Note</label>
+                <label className="block text-[10px] font-semibold text-black">GST Note</label>
                 <input
                   type="text"
                   value={q.gstNote}
                   onChange={(e) => updateQuotation({ gstNote: e.target.value })}
-                  className="w-full mt-0.5 px-2 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white"
+                  className="w-full mt-0.5 px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black"
                 />
               </div>
             </div>
@@ -975,9 +975,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
             ========================================================================= */}
         {(activeSectionId === 'q_payment_terms_fab' || (activeSectionId === 'page_4' && false)) && (
           <div className="space-y-4">
-            <div id="form-sec-q_payment_terms_fab" className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
+            <div id="form-sec-q_payment_terms_fab" className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
               <div className="flex justify-between items-center">
-                <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
+                <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide flex items-center space-x-1.5">
                   <DollarSign className="w-3.5 h-3.5" />
                   <span>Payment Terms: For Fabrication</span>
                 </h3>
@@ -986,7 +986,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                     const updated = [...q.paymentTermsFab, '10% milestone upon completion of phase'];
                     updateQuotation({ paymentTermsFab: updated });
                   }}
-                  className="px-2 py-1 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[10.5px] font-semibold flex items-center space-x-1 cursor-pointer"
+                  className="px-2 py-1 bg-[#dfe7f4] hover:bg-[#0d3479]/80 text-[#0d3479] border border-[#0d3479]/80 rounded text-[10.5px] font-semibold flex items-center space-x-1 cursor-pointer"
                 >
                   <Plus className="w-3 h-3" />
                   <span>Add Milestone</span>
@@ -996,7 +996,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
               <div className="space-y-2">
                 {q.paymentTermsFab.map((pt, idx) => (
                   <div key={idx} className="flex items-center space-x-1.5">
-                    <span className="text-[10px] font-mono text-gray-500 w-5 text-right">{idx + 1}.</span>
+                    <span className="text-[10px] font-mono text-[#666666] w-5 text-right">{idx + 1}.</span>
                     <input
                       type="text"
                       value={pt}
@@ -1005,14 +1005,14 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                         updated[idx] = e.target.value;
                         updateQuotation({ paymentTermsFab: updated });
                       }}
-                      className="flex-1 px-2 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                      className="flex-1 px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                     />
                     <button
                       onClick={() => {
                         const updated = q.paymentTermsFab.filter((_, i) => i !== idx);
                         updateQuotation({ paymentTermsFab: updated });
                       }}
-                      className="p-1 text-gray-400 hover:text-red-400 cursor-pointer"
+                      className="p-1 text-black hover:text-red-400 cursor-pointer"
                       title="Remove"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -1029,9 +1029,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
             ========================================================================= */}
         {activeSectionId === 'q_payment_terms_civil' && (
           <div className="space-y-4">
-            <div id="form-sec-q_payment_terms_civil" className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
+            <div id="form-sec-q_payment_terms_civil" className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
               <div className="flex justify-between items-center">
-                <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
+                <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide flex items-center space-x-1.5">
                   <DollarSign className="w-3.5 h-3.5" />
                   <span>Payment Terms: For Civil Work</span>
                 </h3>
@@ -1040,7 +1040,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                     const updated = [...q.paymentTermsCivil, '15% on completion of plinth level'];
                     updateQuotation({ paymentTermsCivil: updated });
                   }}
-                  className="px-2 py-1 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[10.5px] font-semibold flex items-center space-x-1 cursor-pointer"
+                  className="px-2 py-1 bg-[#dfe7f4] hover:bg-[#0d3479]/80 text-[#0d3479] border border-[#0d3479]/80 rounded text-[10.5px] font-semibold flex items-center space-x-1 cursor-pointer"
                 >
                   <Plus className="w-3 h-3" />
                   <span>Add Milestone</span>
@@ -1050,7 +1050,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
               <div className="space-y-2">
                 {q.paymentTermsCivil.map((pt, idx) => (
                   <div key={idx} className="flex items-center space-x-1.5">
-                    <span className="text-[10px] font-mono text-gray-500 w-5 text-right">{idx + 1}.</span>
+                    <span className="text-[10px] font-mono text-[#666666] w-5 text-right">{idx + 1}.</span>
                     <input
                       type="text"
                       value={pt}
@@ -1059,14 +1059,14 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                         updated[idx] = e.target.value;
                         updateQuotation({ paymentTermsCivil: updated });
                       }}
-                      className="flex-1 px-2 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                      className="flex-1 px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                     />
                     <button
                       onClick={() => {
                         const updated = q.paymentTermsCivil.filter((_, i) => i !== idx);
                         updateQuotation({ paymentTermsCivil: updated });
                       }}
-                      className="p-1 text-gray-400 hover:text-red-400 cursor-pointer"
+                      className="p-1 text-black hover:text-red-400 cursor-pointer"
                       title="Remove"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -1083,11 +1083,11 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
             ========================================================================= */}
         {(activeSectionId === 'q_delivery_schedule' || activeSectionId === 'page_5') && (
           <div className="space-y-4">
-            <div id="form-sec-q_delivery_schedule" className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
+            <div id="form-sec-q_delivery_schedule" className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
               <div className="flex justify-between items-center">
                 <h3 
                   onClick={() => toggleSection('q_delivery_schedule')}
-                  className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5 cursor-pointer hover:text-blue-300 transition-colors select-none"
+                  className="font-bold text-xs text-[#0d3479] uppercase tracking-wide flex items-center space-x-1.5 cursor-pointer hover:text-[#0d3479] transition-colors select-none"
                 >
                   <Truck className="w-3.5 h-3.5" />
                   <span>Delivery Schedule & Timeline (Page 5)</span>
@@ -1101,7 +1101,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                     ];
                     updateQuotation({ deliverySchedule: updated });
                   }}
-                  className="px-2 py-1 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[10.5px] font-semibold flex items-center space-x-1 cursor-pointer"
+                  className="px-2 py-1 bg-[#dfe7f4] hover:bg-[#0d3479]/80 text-[#0d3479] border border-[#0d3479]/80 rounded text-[10.5px] font-semibold flex items-center space-x-1 cursor-pointer"
                 >
                   <Plus className="w-3 h-3" />
                   <span>Add Timeline Item</span>
@@ -1111,9 +1111,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
               {!collapsedSections['q_delivery_schedule'] && (
                 <div className="space-y-2.5">
                   {q.deliverySchedule.map((ds, idx) => (
-                    <div key={idx} className="bg-[#070c18] p-2 rounded border border-[#16233a] space-y-1.5">
+                    <div key={idx} className="bg-white p-2 rounded border border-[#cccccc] space-y-1.5">
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-mono text-gray-400">Milestone #{idx + 1}</span>
+                        <span className="text-[10px] font-mono text-black">Milestone #{idx + 1}</span>
                         <button
                           onClick={() => {
                             const updated = q.deliverySchedule.filter((_, i) => i !== idx);
@@ -1132,7 +1132,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                           updated[idx] = e.target.value;
                           updateQuotation({ deliverySchedule: updated });
                         }}
-                        className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                        className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                       />
                     </div>
                   ))}
@@ -1147,9 +1147,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
             ========================================================================= */}
         {(activeSectionId === 'q_vendors' || activeSectionId === 'q_vendors_part1' || activeSectionId === 'q_vendors_part2' || activeSectionId === 'page_6') && (
           <div className="space-y-4">
-            <div className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
+            <div className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
               <div className="flex justify-between items-center">
-                <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
+                <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide flex items-center space-x-1.5">
                   <CheckSquare className="w-3.5 h-3.5" />
                   <span>Approved Vendor List Table ({q.vendorList.length} items)</span>
                 </h3>
@@ -1165,7 +1165,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                     ];
                     updateQuotation({ vendorList: updated });
                   }}
-                  className="px-2 py-1 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[11px] font-semibold flex items-center space-x-1 cursor-pointer"
+                  className="px-2 py-1 bg-[#dfe7f4] hover:bg-[#0d3479]/80 text-[#0d3479] border border-[#0d3479]/80 rounded text-[11px] font-semibold flex items-center space-x-1 cursor-pointer"
                 >
                   <Plus className="w-3 h-3" />
                   <span>Add Vendor Item</span>
@@ -1174,10 +1174,10 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
 
               <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
                 {q.vendorList.map((v, idx) => (
-                  <div key={idx} className="bg-[#070c18] p-2 rounded border border-[#16233a] space-y-1.5">
+                  <div key={idx} className="bg-white p-2 rounded border border-[#cccccc] space-y-1.5">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center space-x-2">
-                        <span className="text-[10px] font-mono text-gray-400">Sr.</span>
+                        <span className="text-[10px] font-mono text-black">Sr.</span>
                         <input
                           type="text"
                           value={v.srNo}
@@ -1186,7 +1186,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                             updated[idx] = { ...updated[idx], srNo: e.target.value };
                             updateQuotation({ vendorList: updated });
                           }}
-                          className="w-10 px-1 py-0.5 bg-[#0b1426] border border-[#16233a] rounded text-[10px] text-white font-mono text-center"
+                          className="w-10 px-1 py-0.5 bg-white border border-[#cccccc] rounded text-[10px] text-black font-mono text-center"
                         />
                       </div>
                       <button
@@ -1202,7 +1202,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-[10px] text-gray-500">Description</label>
+                        <label className="block text-[10px] text-[#666666]">Description</label>
                         <input
                           type="text"
                           value={v.description}
@@ -1211,11 +1211,11 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                             updated[idx] = { ...updated[idx], description: e.target.value };
                             updateQuotation({ vendorList: updated });
                           }}
-                          className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white"
+                          className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] text-gray-500">Brand / Make</label>
+                        <label className="block text-[10px] text-[#666666]">Brand / Make</label>
                         <input
                           type="text"
                           value={cleanDisplayValue(v.brand)}
@@ -1224,7 +1224,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                             updated[idx] = { ...updated[idx], brand: e.target.value };
                             updateQuotation({ vendorList: updated });
                           }}
-                          className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white"
+                          className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black"
                         />
                       </div>
                     </div>
@@ -1240,30 +1240,30 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
             ========================================================================= */}
         {(activeSectionId === 'q_taxes_notes' || activeSectionId === 'page_7') && (
           <div className="space-y-4">
-            <div className="bg-[#0b1426] p-3.5 rounded-2xl border border-[#141f33] space-y-4">
-              <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide">
+            <div className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-4">
+              <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide">
                 Taxes, Notes & Delivery Conditions
                 </h3>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-400 mb-1">Tax Note</label>
+                  <label className="block text-[11px] font-semibold text-black mb-1">Tax Note</label>
                   <input
                     type="text"
                     value={q.taxNote}
                     onChange={(e) => updateQuotation({ taxNote: e.target.value })}
-                    className="w-full px-2 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white"
+                    className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <label className="block text-[11px] font-semibold text-gray-400">Key Notes</label>
+                    <label className="block text-[11px] font-semibold text-black">Key Notes</label>
                     <button
                       onClick={() => {
                         const updated = [...(q.notes || []), 'New key note here.'];
                         updateQuotation({ notes: updated });
                       }}
-                      className="px-1.5 py-0.5 bg-blue-900/50 hover:bg-blue-800/80 text-blue-300 rounded text-[9px] font-semibold cursor-pointer"
+                      className="px-1.5 py-0.5 bg-blue-900/50 hover:bg-blue-800/80 text-[#0d3479] rounded text-[9px] font-semibold cursor-pointer"
                     >
                       + Add Note
                     </button>
@@ -1271,7 +1271,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   <div className="space-y-1.5">
                     {(q.notes || []).map((note, idx) => (
                       <div key={idx} className="flex items-start space-x-1.5">
-                        <span className="text-[10px] font-mono text-gray-500 w-4 text-right pt-1">{idx + 1}.</span>
+                        <span className="text-[10px] font-mono text-[#666666] w-4 text-right pt-1">{idx + 1}.</span>
                         <textarea
                           rows={2}
                           value={note}
@@ -1280,14 +1280,14 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                             updated[idx] = e.target.value;
                             updateQuotation({ notes: updated });
                           }}
-                          className="flex-1 px-2 py-1 bg-[#070c18] border border-[#16233a] rounded text-[11px] text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                          className="flex-1 px-2 py-1 bg-white border border-[#cccccc] rounded text-[11px] text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                         />
                         <button
                           onClick={() => {
                             const updated = (q.notes || []).filter((_, i) => i !== idx);
                             updateQuotation({ notes: updated });
                           }}
-                          className="p-1 text-gray-400 hover:text-red-400 cursor-pointer"
+                          className="p-1 text-black hover:text-red-400 cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1296,15 +1296,15 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   </div>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-[#141f33]">
+                <div className="space-y-2 pt-2 border-t border-[#cccccc]">
                   <div className="flex justify-between items-center">
-                    <label className="block text-[11px] font-semibold text-gray-400">Delivery Checklist</label>
+                    <label className="block text-[11px] font-semibold text-black">Delivery Checklist</label>
                     <button
                       onClick={() => {
                         const updated = [...(q.deliveryChecklist || []), 'New checklist item.'];
                         updateQuotation({ deliveryChecklist: updated });
                       }}
-                      className="px-1.5 py-0.5 bg-blue-900/50 hover:bg-blue-800/80 text-blue-300 rounded text-[9px] font-semibold cursor-pointer"
+                      className="px-1.5 py-0.5 bg-blue-900/50 hover:bg-blue-800/80 text-[#0d3479] rounded text-[9px] font-semibold cursor-pointer"
                     >
                       + Add Item
                     </button>
@@ -1312,7 +1312,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   <div className="space-y-1.5">
                     {(q.deliveryChecklist || []).map((chk, idx) => (
                       <div key={idx} className="flex items-center space-x-1.5">
-                        <CheckSquare className="w-3 h-3 text-gray-500 shrink-0" />
+                        <CheckSquare className="w-3 h-3 text-[#666666] shrink-0" />
                         <input
                           type="text"
                           value={chk}
@@ -1321,14 +1321,14 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                             updated[idx] = e.target.value;
                             updateQuotation({ deliveryChecklist: updated });
                           }}
-                          className="flex-1 px-2 py-1 bg-[#070c18] border border-[#16233a] rounded text-[11px] text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                          className="flex-1 px-2 py-1 bg-white border border-[#cccccc] rounded text-[11px] text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                         />
                         <button
                           onClick={() => {
                             const updated = (q.deliveryChecklist || []).filter((_, i) => i !== idx);
                             updateQuotation({ deliveryChecklist: updated });
                           }}
-                          className="p-1 text-gray-400 hover:text-red-400 cursor-pointer"
+                          className="p-1 text-black hover:text-red-400 cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1337,13 +1337,13 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-[#141f33]">
-                  <label className="block text-[11px] font-semibold text-gray-400 mb-1">Delivery Notes Text</label>
+                <div className="pt-2 border-t border-[#cccccc]">
+                  <label className="block text-[11px] font-semibold text-black mb-1">Delivery Notes Text</label>
                   <textarea
                     rows={3}
                     value={q.deliveryNotes}
                     onChange={(e) => updateQuotation({ deliveryNotes: e.target.value })}
-                    className="w-full px-2 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white"
+                    className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black"
                   />
                 </div>
               </div>
@@ -1355,9 +1355,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
             ========================================================================= */}
         {(activeSectionId === 'q_terms_part1' || activeSectionId === 'page_8') && (
           <div className="space-y-4">
-            <div className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
+            <div className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
               <div className="flex justify-between items-center">
-                <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
+                <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide flex items-center space-x-1.5">
                   <ListOrdered className="w-3.5 h-3.5" />
                   <span>Commercial Terms (Terms 1 to 7)</span>
                 </h3>
@@ -1373,7 +1373,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                     ];
                     updateQuotation({ commercialTerms: updated });
                   }}
-                  className="px-2 py-1 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[11px] font-semibold flex items-center space-x-1 cursor-pointer"
+                  className="px-2 py-1 bg-[#dfe7f4] hover:bg-[#0d3479]/80 text-[#0d3479] border border-[#0d3479]/80 rounded text-[11px] font-semibold flex items-center space-x-1 cursor-pointer"
                 >
                   <Plus className="w-3 h-3" />
                   <span>Add Term</span>
@@ -1382,9 +1382,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
 
               <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
                 {q.commercialTerms.slice(0, 7).map((term, idx) => (
-                  <div key={idx} className="bg-[#070c18] p-2.5 rounded border border-[#16233a] space-y-2">
+                  <div key={idx} className="bg-white p-2.5 rounded border border-[#cccccc] space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-mono text-blue-400">Term #{idx + 1}</span>
+                      <span className="text-[10px] font-mono text-[#0d3479]">Term #{idx + 1}</span>
                       <button
                         onClick={() => {
                           const updated = q.commercialTerms.filter((_, i) => i !== idx);
@@ -1396,7 +1396,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                       </button>
                     </div>
                     <div>
-                      <label className="block text-[10px] text-gray-500">Term Title</label>
+                      <label className="block text-[10px] text-[#666666]">Term Title</label>
                       <input
                         type="text"
                         value={term.title}
@@ -1405,11 +1405,11 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                           updated[idx] = { ...updated[idx], title: e.target.value };
                           updateQuotation({ commercialTerms: updated });
                         }}
-                        className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white font-bold"
+                        className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black font-bold"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] text-gray-500">Content</label>
+                      <label className="block text-[10px] text-[#666666]">Content</label>
                       <textarea
                         rows={2}
                         value={cleanDisplayValue(term.content)}
@@ -1418,7 +1418,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                           updated[idx] = { ...updated[idx], content: e.target.value };
                           updateQuotation({ commercialTerms: updated });
                         }}
-                        className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white"
+                        className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black"
                       />
                     </div>
                   </div>
@@ -1433,9 +1433,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
             ========================================================================= */}
         {(activeSectionId === 'q_terms_part2' || activeSectionId === 'page_9') && (
           <div className="space-y-4">
-            <div className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
+            <div className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
               <div className="flex justify-between items-center">
-                <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
+                <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide flex items-center space-x-1.5">
                   <ListOrdered className="w-3.5 h-3.5" />
                   <span>Commercial Terms (Terms 8 to 13)</span>
                 </h3>
@@ -1451,7 +1451,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                     ];
                     updateQuotation({ commercialTerms: updated });
                   }}
-                  className="px-2 py-1 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[11px] font-semibold flex items-center space-x-1 cursor-pointer"
+                  className="px-2 py-1 bg-[#dfe7f4] hover:bg-[#0d3479]/80 text-[#0d3479] border border-[#0d3479]/80 rounded text-[11px] font-semibold flex items-center space-x-1 cursor-pointer"
                 >
                   <Plus className="w-3 h-3" />
                   <span>Add Term</span>
@@ -1462,9 +1462,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                 {q.commercialTerms.slice(7, 13).map((term, relativeIdx) => {
                   const actualIdx = relativeIdx + 7;
                   return (
-                    <div key={actualIdx} className="bg-[#070c18] p-2.5 rounded border border-[#16233a] space-y-2">
+                    <div key={actualIdx} className="bg-white p-2.5 rounded border border-[#cccccc] space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-mono text-blue-400">Term #{actualIdx + 1}</span>
+                        <span className="text-[10px] font-mono text-[#0d3479]">Term #{actualIdx + 1}</span>
                         <button
                           onClick={() => {
                             const updated = q.commercialTerms.filter((_, i) => i !== actualIdx);
@@ -1476,7 +1476,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                         </button>
                       </div>
                       <div>
-                        <label className="block text-[10px] text-gray-500">Term Title</label>
+                        <label className="block text-[10px] text-[#666666]">Term Title</label>
                         <input
                           type="text"
                           value={term.title}
@@ -1485,11 +1485,11 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                             updated[actualIdx] = { ...updated[actualIdx], title: e.target.value };
                             updateQuotation({ commercialTerms: updated });
                           }}
-                          className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white font-bold"
+                          className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black font-bold"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] text-gray-500">Content</label>
+                        <label className="block text-[10px] text-[#666666]">Content</label>
                         <textarea
                           rows={2}
                           value={cleanDisplayValue(term.content)}
@@ -1498,7 +1498,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                             updated[actualIdx] = { ...updated[actualIdx], content: e.target.value };
                             updateQuotation({ commercialTerms: updated });
                           }}
-                          className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white"
+                          className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black"
                         />
                       </div>
                     </div>
@@ -1518,8 +1518,8 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
           activeSectionId === 'page_10') && (
           <div className="space-y-4">
             {(activeSectionId === 'q_terms_part3' || activeSectionId === 'page_10') && (
-              <div className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
-                <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide flex items-center space-x-1.5">
+              <div className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
+                <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide flex items-center space-x-1.5">
                   <ListOrdered className="w-3.5 h-3.5" />
                   <span>Commercial Terms (Terms 14 to 17)</span>
                 </h3>
@@ -1527,9 +1527,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   {q.commercialTerms.slice(13).map((term, relativeIdx) => {
                     const actualIdx = relativeIdx + 13;
                     return (
-                      <div key={actualIdx} className="bg-[#070c18] p-2.5 rounded border border-[#16233a] space-y-2">
+                      <div key={actualIdx} className="bg-white p-2.5 rounded border border-[#cccccc] space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-[10px] font-mono text-blue-400">Term #{actualIdx + 1}</span>
+                          <span className="text-[10px] font-mono text-[#0d3479]">Term #{actualIdx + 1}</span>
                         </div>
                         <div>
                           <input
@@ -1540,7 +1540,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                               updated[actualIdx] = { ...updated[actualIdx], title: e.target.value };
                               updateQuotation({ commercialTerms: updated });
                             }}
-                            className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white font-bold"
+                            className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black font-bold"
                           />
                         </div>
                         <div>
@@ -1552,7 +1552,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                               updated[actualIdx] = { ...updated[actualIdx], content: e.target.value };
                               updateQuotation({ commercialTerms: updated });
                             }}
-                            className="w-full px-2 py-1 bg-[#0b1426] border border-[#16233a] rounded-xl text-xs text-white"
+                            className="w-full px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black"
                           />
                         </div>
                       </div>
@@ -1563,9 +1563,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
             )}
 
             {(activeSectionId === 'q_exclusions' || activeSectionId === 'page_10') && (
-              <div className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
+              <div className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
                 <div className="flex justify-between items-center">
-                  <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide">
+                  <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide">
                     Section 7: Exclusions ({q.exclusions.length} items)
                   </h3>
                   <button
@@ -1573,7 +1573,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                       const updated = [...q.exclusions, 'Civil foundation anchor bolt setting work'];
                       updateQuotation({ exclusions: updated });
                     }}
-                    className="px-2 py-0.5 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[10px] font-semibold flex items-center space-x-1 cursor-pointer"
+                    className="px-2 py-0.5 bg-[#dfe7f4] hover:bg-[#0d3479]/80 text-[#0d3479] border border-[#0d3479]/80 rounded text-[10px] font-semibold flex items-center space-x-1 cursor-pointer"
                   >
                     <Plus className="w-3 h-3" />
                     <span>Add</span>
@@ -1583,7 +1583,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                 <div className="space-y-1.5">
                   {q.exclusions.map((ex, idx) => (
                     <div key={idx} className="flex items-center space-x-1.5">
-                      <span className="text-[10px] font-mono text-gray-500 w-5 text-right">{idx + 1}.</span>
+                      <span className="text-[10px] font-mono text-[#666666] w-5 text-right">{idx + 1}.</span>
                       <input
                         type="text"
                         value={ex}
@@ -1592,14 +1592,14 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                           updated[idx] = e.target.value;
                           updateQuotation({ exclusions: updated });
                         }}
-                        className="flex-1 px-2 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white"
+                        className="flex-1 px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black"
                       />
                       <button
                         onClick={() => {
                           const updated = q.exclusions.filter((_, i) => i !== idx);
                           updateQuotation({ exclusions: updated });
                         }}
-                        className="p-1 text-gray-400 hover:text-red-400 cursor-pointer"
+                        className="p-1 text-black hover:text-red-400 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -1610,9 +1610,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
             )}
 
             {(activeSectionId === 'q_signatures' || activeSectionId === 'page_10') && (
-              <div className="bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B] space-y-3">
+              <div className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
                 <div className="flex justify-between items-center">
-                  <h3 className="font-bold text-xs text-blue-400 uppercase tracking-wide">
+                  <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide">
                     Section 8: Special Notes
                   </h3>
                   <button
@@ -1620,7 +1620,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                       const updated = [...q.specialNotes, 'Work permits to be arranged prior to execution.'];
                       updateQuotation({ specialNotes: updated });
                     }}
-                    className="px-2 py-0.5 bg-[#0d3479]/40 hover:bg-[#0d3479]/80 text-blue-200 border border-[#0d3479]/80 rounded text-[10px] font-semibold flex items-center space-x-1 cursor-pointer"
+                    className="px-2 py-0.5 bg-[#dfe7f4] hover:bg-[#0d3479]/80 text-[#0d3479] border border-[#0d3479]/80 rounded text-[10px] font-semibold flex items-center space-x-1 cursor-pointer"
                   >
                     <Plus className="w-3 h-3" />
                     <span>Add</span>
@@ -1630,7 +1630,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                 <div className="space-y-1.5">
                   {q.specialNotes.map((sn, idx) => (
                     <div key={idx} className="flex items-center space-x-1.5">
-                      <span className="text-[10px] font-mono text-gray-500 w-5 text-right">{idx + 1}.</span>
+                      <span className="text-[10px] font-mono text-[#666666] w-5 text-right">{idx + 1}.</span>
                       <input
                         type="text"
                         value={sn}
@@ -1639,14 +1639,14 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                           updated[idx] = e.target.value;
                           updateQuotation({ specialNotes: updated });
                         }}
-                        className="flex-1 px-2 py-1 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white"
+                        className="flex-1 px-2 py-1 bg-white border border-[#cccccc] rounded-xl text-xs text-black"
                       />
                       <button
                         onClick={() => {
                           const updated = q.specialNotes.filter((_, i) => i !== idx);
                           updateQuotation({ specialNotes: updated });
                         }}
-                        className="p-1 text-gray-400 hover:text-red-400 cursor-pointer"
+                        className="p-1 text-black hover:text-red-400 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -1655,25 +1655,25 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                 </div>
 
                 {/* Final Signatory Block */}
-                <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-[#141f33]">
+                <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-[#cccccc]">
                   <div>
-                    <label className="block text-[11px] font-semibold text-gray-400 mb-1">Final Signatory Company</label>
+                    <label className="block text-[11px] font-semibold text-black mb-1">Final Signatory Company</label>
                     <input
                       type="text"
                       value={q.finalSignatoryCompany || ''}
                       placeholder="e.g. For, GLOBAL INDUSTRIES"
                       onChange={(e) => updateQuotation({ finalSignatoryCompany: e.target.value })}
-                      className="w-full px-2 py-1.5 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none font-bold"
+                      className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none font-bold"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-gray-400 mb-1">Final Signatory Title</label>
+                    <label className="block text-[11px] font-semibold text-black mb-1">Final Signatory Title</label>
                     <input
                       type="text"
                       value={q.finalSignatoryTitle || ''}
                       placeholder="e.g. (Authorized Signatory)"
                       onChange={(e) => updateQuotation({ finalSignatoryTitle: e.target.value })}
-                      className="w-full px-2 py-1.5 bg-[#070c18] border border-[#16233a] rounded-xl text-xs text-white focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/20 focus:outline-none"
+                      className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1688,20 +1688,20 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
         {customSection && (
           <div className="space-y-4">
             <div className="space-y-1">
-              <label className="block font-bold text-gray-300 uppercase text-[10px]">
+              <label className="block text-xs font-bold text-black mb-1.5 uppercase">
                 Section Title
               </label>
               <input
                 type="text"
                 value={customSection.title}
                 onChange={(e) => handleUpdateCustomSection({ title: e.target.value })}
-                className="w-full bg-[#0F1523] border border-[#1E293B] rounded-xl px-3 py-2 text-white font-bold focus:border-indigo-500 focus:outline-none text-xs"
+                className="w-full bg-white border border-[#cccccc] rounded-xl px-3 py-2 text-black font-bold focus:border-[#0d3479] focus:outline-none text-xs"
               />
             </div>
 
             {/* Page Number Selector */}
             <div className="space-y-1">
-              <label className="block font-bold text-gray-300 uppercase text-[10px]">
+              <label className="block text-xs font-bold text-black mb-1.5 uppercase">
                 Assigned Page Number
               </label>
               <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
@@ -1716,22 +1716,22 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                     className={`px-3 py-1 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${
                       customSection.pageNumber === pageNum
                         ? 'bg-indigo-600 border-indigo-500 text-white'
-                        : 'bg-[#0F1523] border-[#1E293B] text-gray-300 hover:text-white'
+                        : 'bg-white border-[#cccccc] text-black hover:text-black'
                     }`}
                   >
                     P{pageNum}
                   </button>
                 ))}
               </div>
-              <p className="text-[10px] text-gray-400">
+              <p className="text-[10px] text-black">
                 Move this section to another page or drag it in the Document Outline.
               </p>
             </div>
 
             {/* Content Type Selector */}
-            <div className="space-y-1.5 bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B]">
+            <div className="space-y-1.5 bg-white p-3.5 rounded-2xl border border-[#cccccc]">
               <div className="flex items-center justify-between mb-2">
-                <label className="block font-bold text-gray-300 uppercase text-[10px]">
+                <label className="block text-xs font-bold text-black mb-1.5 uppercase">
                   Section Layout Type
                 </label>
                 <div className="relative group/preset">
@@ -1758,7 +1758,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                       e.target.value = '';
                     }}
                     defaultValue=""
-                    className="bg-[#1F293D] text-indigo-300 border border-indigo-700/60 rounded px-2 py-0.5 text-[10px] font-bold cursor-pointer"
+                    className="bg-white text-[#0d3479] border border-indigo-700/60 rounded px-2 py-0.5 text-[10px] font-bold cursor-pointer"
                   >
                     <option value="" disabled>
                       ⚡ Insert Preset Template...
@@ -1802,7 +1802,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                     className={`px-1.5 py-1.5 rounded-lg text-[10.5px] font-medium border cursor-pointer text-center truncate transition-colors ${
                       customSection.contentType === type
                         ? 'bg-indigo-600 border-indigo-500 text-white font-bold'
-                        : 'bg-[#111827] border-[#1E293B] text-gray-300 hover:text-white'
+                        : 'bg-white border-[#cccccc] text-black hover:text-black'
                     }`}
                   >
                     {label}
@@ -1813,9 +1813,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
 
             {/* Bullet List Editor */}
             {customSection.contentType === 'bullet_list' && (
-              <div className="space-y-2 bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B]">
+              <div className="space-y-2 bg-white p-3.5 rounded-2xl border border-[#cccccc]">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-300 text-[10.5px]">
+                  <span className="font-bold text-black text-[10.5px]">
                     Bullet Items ({(customSection.bullets || []).length})
                   </span>
                   <button
@@ -1841,14 +1841,14 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                         cur[idx] = e.target.value;
                         handleUpdateCustomSection({ bullets: cur });
                       }}
-                      className="w-full bg-[#111827] border border-[#1E293B] rounded-xl px-2.5 py-1.5 text-xs text-white"
+                      className="w-full bg-white border border-[#cccccc] rounded-xl px-2.5 py-1.5 text-xs text-black"
                     />
                     <button
                       onClick={() => {
                         const cur = (customSection.bullets || []).filter((_, i) => i !== idx);
                         handleUpdateCustomSection({ bullets: cur });
                       }}
-                      className="p-1.5 text-gray-500 hover:text-red-400 cursor-pointer"
+                      className="p-1.5 text-[#888888] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -1860,9 +1860,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
             {/* Legal Clause / Paragraphs Editor */}
             {(customSection.contentType === 'legal_clause' ||
               customSection.contentType === 'paragraphs') && (
-              <div className="space-y-2 bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B]">
+              <div className="space-y-2 bg-white p-3.5 rounded-2xl border border-[#cccccc]">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-300 text-[10.5px]">
+                  <span className="font-bold text-black text-[10.5px]">
                     {customSection.contentType === 'legal_clause'
                       ? 'Legal Numbered Clauses'
                       : 'Paragraphs'}{' '}
@@ -1883,7 +1883,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                 </div>
                 {(customSection.paragraphs || []).map((p, idx) => (
                   <div key={idx} className="flex items-start space-x-1.5">
-                    <span className="text-[10px] font-mono text-gray-500 mt-2 w-5 text-right">
+                    <span className="text-[10px] font-mono text-[#666666] mt-2 w-5 text-right">
                       {idx + 1}.
                     </span>
                     <textarea
@@ -1894,14 +1894,14 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                         cur[idx] = e.target.value;
                         handleUpdateCustomSection({ paragraphs: cur });
                       }}
-                      className="w-full bg-[#111827] border border-[#1E293B] rounded-xl p-2 text-xs text-white"
+                      className="w-full bg-white border border-[#cccccc] rounded-xl p-2 text-xs text-black"
                     />
                     <button
                       onClick={() => {
                         const cur = (customSection.paragraphs || []).filter((_, i) => i !== idx);
                         handleUpdateCustomSection({ paragraphs: cur });
                       }}
-                      className="p-1.5 text-gray-500 hover:text-red-400 cursor-pointer mt-1"
+                      className="p-1.5 text-[#888888] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer mt-1"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -1912,9 +1912,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
 
             {/* Key-Value Matrix Editor */}
             {customSection.contentType === 'key_value' && (
-              <div className="space-y-2 bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B]">
+              <div className="space-y-2 bg-white p-3.5 rounded-2xl border border-[#cccccc]">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-300 text-[10.5px]">
+                  <span className="font-bold text-black text-[10.5px]">
                     Key-Value Rows ({(customSection.keyValuePairs || []).length})
                   </span>
                   <button
@@ -1941,7 +1941,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                         cur[idx] = { ...cur[idx], key: e.target.value };
                         handleUpdateCustomSection({ keyValuePairs: cur });
                       }}
-                      className="w-1/3 bg-[#1F293D] border border-[#1E293B] rounded-xl px-2.5 py-1.5 text-xs font-semibold text-indigo-200"
+                      className="w-1/3 bg-white border border-[#cccccc] rounded-xl px-2.5 py-1.5 text-xs font-semibold text-[#0d3479]"
                     />
                     <input
                       type="text"
@@ -1952,14 +1952,14 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                         cur[idx] = { ...cur[idx], value: e.target.value };
                         handleUpdateCustomSection({ keyValuePairs: cur });
                       }}
-                      className="w-2/3 bg-[#111827] border border-[#1E293B] rounded-xl px-2.5 py-1.5 text-xs text-white"
+                      className="w-2/3 bg-white border border-[#cccccc] rounded-xl px-2.5 py-1.5 text-xs text-black"
                     />
                     <button
                       onClick={() => {
                         const cur = (customSection.keyValuePairs || []).filter((_, i) => i !== idx);
                         handleUpdateCustomSection({ keyValuePairs: cur });
                       }}
-                      className="p-1.5 text-gray-500 hover:text-red-400 cursor-pointer"
+                      className="p-1.5 text-[#888888] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -1970,9 +1970,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
 
             {/* Callout Notice Editor */}
             {customSection.contentType === 'callout' && (
-              <div className="space-y-2 bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B]">
+              <div className="space-y-2 bg-white p-3.5 rounded-2xl border border-[#cccccc]">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-300 text-[10.5px]">
+                  <span className="font-bold text-black text-[10.5px]">
                     Notice Callout Settings
                   </span>
                   <select
@@ -1982,7 +1982,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                         calloutType: e.target.value as 'info' | 'warning' | 'important',
                       })
                     }
-                    className="bg-[#1F293D] text-amber-300 border border-amber-700/60 rounded px-2 py-0.5 text-[10px] font-bold cursor-pointer"
+                    className="bg-white text-amber-800 border border-amber-700/60 rounded px-2 py-0.5 text-[10px] font-bold cursor-pointer"
                   >
                     <option value="warning">Warning Directive</option>
                     <option value="important">Important Notice</option>
@@ -1994,16 +1994,16 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   value={customSection.calloutText || ''}
                   onChange={(e) => handleUpdateCustomSection({ calloutText: e.target.value })}
                   placeholder="Enter notice text or mandatory directive..."
-                  className="w-full bg-[#111827] border border-amber-800/60 rounded-xl p-2.5 text-xs text-amber-200"
+                  className="w-full bg-white border border-amber-800/60 rounded-xl p-2.5 text-xs text-amber-200"
                 />
               </div>
             )}
 
             {/* Table Editor */}
             {customSection.contentType === 'table' && (
-              <div className="space-y-3 bg-[#0F1523] p-3.5 rounded-2xl border border-[#1E293B]">
+              <div className="space-y-3 bg-white p-3.5 rounded-2xl border border-[#cccccc]">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-300 text-[10.5px]">
+                  <span className="font-bold text-black text-[10.5px]">
                     Table Headers ({(customSection.tableHeaders || []).length} columns)
                   </span>
                   <button
@@ -2024,7 +2024,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                 <div className="space-y-1.5">
                   {(customSection.tableHeaders || []).map((header, hIdx) => (
                     <div key={hIdx} className="flex items-center space-x-1.5">
-                      <span className="text-[10px] text-gray-400 w-16">Col {hIdx + 1}:</span>
+                      <span className="text-[10px] text-black w-16">Col {hIdx + 1}:</span>
                       <input
                         type="text"
                         value={header}
@@ -2033,7 +2033,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                           cur[hIdx] = e.target.value;
                           handleUpdateCustomSection({ tableHeaders: cur });
                         }}
-                        className="flex-1 bg-[#111827] border border-[#1E293B] rounded-xl px-2.5 py-1 text-xs text-white"
+                        className="flex-1 bg-white border border-[#cccccc] rounded-xl px-2.5 py-1 text-xs text-black"
                       />
                       {(customSection.tableHeaders || []).length > 1 && (
                         <button
@@ -2047,7 +2047,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                               tableRows: curR,
                             });
                           }}
-                          className="p-1 text-gray-500 hover:text-red-400"
+                          className="p-1 text-[#666666] hover:text-red-400"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -2056,9 +2056,9 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                   ))}
                 </div>
 
-                <div className="pt-2 border-t border-[#1E293B]">
+                <div className="pt-2 border-t border-[#cccccc]">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-gray-300 text-[10.5px]">
+                    <span className="font-bold text-black text-[10.5px]">
                       Table Data ({(customSection.tableRows || []).length} rows)
                     </span>
                     <button
@@ -2077,22 +2077,22 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
 
                   <div className="space-y-2">
                     {(customSection.tableRows || []).map((row, rIdx) => (
-                      <div key={rIdx} className="p-2.5 bg-[#111827] rounded-xl border border-[#1E293B] space-y-1.5">
+                      <div key={rIdx} className="p-2.5 bg-white rounded-xl border border-[#cccccc] space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-bold text-indigo-400">Row {rIdx + 1}</span>
+                          <span className="text-[10px] font-bold text-[#0d3479]">Row {rIdx + 1}</span>
                           <button
                             onClick={() => {
                               const cur = (customSection.tableRows || []).filter((_, i) => i !== rIdx);
                               handleUpdateCustomSection({ tableRows: cur });
                             }}
-                            className="text-gray-500 hover:text-red-400 text-xs"
+                            className="text-[#666666] hover:text-red-400 text-xs"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                         {row.map((cell, cIdx) => (
                           <div key={cIdx} className="flex items-center space-x-1.5">
-                            <span className="text-[9px] text-gray-400 w-16 truncate">
+                            <span className="text-[9px] text-black w-16 truncate">
                               {(customSection.tableHeaders || [])[cIdx] || `Col ${cIdx + 1}`}:
                             </span>
                             <input
@@ -2105,7 +2105,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
                                 cur[rIdx] = curRow;
                                 handleUpdateCustomSection({ tableRows: cur });
                               }}
-                              className="flex-1 bg-[#1F293D] border border-[#1E293B] rounded-lg px-2 py-1 text-xs text-white"
+                              className="flex-1 bg-white border border-[#cccccc] rounded-lg px-2 py-1 text-xs text-black"
                             />
                           </div>
                         ))}

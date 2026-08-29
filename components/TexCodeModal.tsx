@@ -45,31 +45,31 @@ export const TexCodeModal: React.FC<TexCodeModalProps> = ({ isOpen, onClose, doc
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/50 backdrop-blur-sm animate-in fade-in duration-150">
       <div
-        className={`bg-[#18181b] border border-gray-700/80 rounded-xl shadow-2xl flex flex-col overflow-hidden text-gray-200 transition-all duration-200 ${
+        className={`bg-white border border-[#cccccc] rounded-xl shadow-2xl flex flex-col overflow-hidden text-black transition-all duration-200 ${
           isMaximized
             ? 'w-full h-full max-w-none rounded-none'
             : 'w-full max-w-4xl h-[88vh] max-h-[900px]'
         }`}
       >
         {/* Modal Header */}
-        <div className="h-12 bg-[#1e1e24] px-4 flex items-center justify-between border-b border-gray-700/80 shrink-0 select-none">
+        <div className="h-12 bg-[#f0efe6] px-4 flex items-center justify-between border-b border-[#cccccc] shrink-0 select-none">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-emerald-950/70 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <div className="w-8 h-8 rounded-lg bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479]">
               <FileCode className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-sm text-white">LaTeX Source Code</span>
-                <span className="text-[10px] bg-emerald-950/80 text-emerald-300 border border-emerald-700/50 px-2 py-0.5 rounded font-mono font-bold">
+                <span className="font-bold text-sm text-black">LaTeX Source Code</span>
+                <span className="text-[10px] bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de] px-2 py-0.5 rounded font-mono font-bold">
                   {lines.length} lines
                 </span>
-                <span className="text-[10px] bg-gray-800 text-gray-400 px-2 py-0.5 rounded font-mono">
+                <span className="text-[10px] bg-white text-[#666666] border border-[#cccccc] px-2 py-0.5 rounded font-mono">
                   {texCode.length.toLocaleString()} chars
                 </span>
               </div>
-              <p className="text-[11px] text-gray-400 truncate max-w-[280px] sm:max-w-md">
+              <p className="text-[11px] text-[#666666] truncate max-w-[280px] sm:max-w-md">
                 {doc.title || 'Document'}.tex • Standard LaTeX Compiler compatible
               </p>
             </div>
@@ -79,17 +79,17 @@ export const TexCodeModal: React.FC<TexCodeModalProps> = ({ isOpen, onClose, doc
             {/* Copy Button */}
             <button
               onClick={handleCopy}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer shadow-sm ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer shadow-xs ${
                 copied
                   ? 'bg-emerald-600 text-white'
-                  : 'bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-600/60 hover:text-white'
+                  : 'bg-[#0d3479] hover:bg-[#123f8f] text-white shadow-sm'
               }`}
               title="Copy LaTeX source to clipboard"
             >
               {copied ? (
                 <>
                   <Check className="w-3.5 h-3.5 text-white" />
-                  <span>Copied to Clipboard!</span>
+                  <span>Copied!</span>
                 </>
               ) : (
                 <>
@@ -102,7 +102,7 @@ export const TexCodeModal: React.FC<TexCodeModalProps> = ({ isOpen, onClose, doc
             {/* Download Button */}
             <button
               onClick={handleDownload}
-              className="px-3 py-1.5 bg-[#15803d] hover:bg-[#16a34a] text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+              className="px-3 py-1.5 bg-[#002057] hover:bg-[#0d3479] text-white rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all cursor-pointer shadow-xs active:scale-95"
               title="Download standalone .tex file"
             >
               <Download className="w-3.5 h-3.5" />
@@ -112,7 +112,7 @@ export const TexCodeModal: React.FC<TexCodeModalProps> = ({ isOpen, onClose, doc
             {/* Maximize Toggle */}
             <button
               onClick={() => setIsMaximized(!isMaximized)}
-              className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+              className="p-1.5 text-[#666666] hover:text-black hover:bg-white rounded-md transition-colors cursor-pointer border border-transparent hover:border-[#cccccc]"
               title={isMaximized ? 'Restore window' : 'Maximize window'}
             >
               {isMaximized ? (
@@ -125,7 +125,7 @@ export const TexCodeModal: React.FC<TexCodeModalProps> = ({ isOpen, onClose, doc
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+              className="p-1.5 text-[#666666] hover:text-black hover:bg-white rounded-md transition-colors cursor-pointer border border-transparent hover:border-[#cccccc]"
               title="Close"
             >
               <X className="w-4 h-4" />
@@ -134,7 +134,7 @@ export const TexCodeModal: React.FC<TexCodeModalProps> = ({ isOpen, onClose, doc
         </div>
 
         {/* Code Content Area with Line Numbers and Highlighting */}
-        <div className="flex-1 overflow-auto bg-[#121214] p-4 font-mono text-[13px] leading-relaxed select-text">
+        <div className="flex-1 overflow-auto bg-[#18181b] p-4 font-mono text-[13px] leading-relaxed select-text">
           <pre className="text-gray-300 font-mono">
             {lines.map((line, idx) => {
               const trimmed = line.trim();
@@ -168,10 +168,10 @@ export const TexCodeModal: React.FC<TexCodeModalProps> = ({ isOpen, onClose, doc
         </div>
 
         {/* Modal Footer Info */}
-        <div className="h-9 bg-[#19191d] px-4 border-t border-gray-800 flex items-center justify-between text-[11px] text-gray-400 shrink-0">
+        <div className="h-9 bg-[#f0efe6] px-4 border-t border-[#cccccc] flex items-center justify-between text-[11px] text-[#666666] shrink-0 font-medium">
           <div className="flex items-center space-x-3">
             <span className="flex items-center space-x-1">
-              <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+              <Terminal className="w-3.5 h-3.5 text-[#0d3479]" />
               <span>TeX Engine: pdfLaTeX / XeLaTeX compatible</span>
             </span>
             <span>•</span>

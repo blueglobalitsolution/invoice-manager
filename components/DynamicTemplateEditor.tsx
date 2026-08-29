@@ -40,7 +40,7 @@ export const DynamicTemplateEditor: React.FC<DynamicTemplateEditorProps> = ({
 
     return (
       <div key={field.id} className="space-y-1">
-        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">
+        <label className="block text-xs font-bold text-black mb-1">
           {field.label} {field.required && <span className="text-red-500">*</span>}
         </label>
         
@@ -49,14 +49,14 @@ export const DynamicTemplateEditor: React.FC<DynamicTemplateEditorProps> = ({
             value={value}
             onChange={(e) => handleFieldChange(field.name, e.target.value)}
             placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}...`}
-            className="w-full px-2.5 py-1.5 bg-[#070c18] border border-[#16233a] rounded-lg text-xs text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 focus:outline-none min-h-[80px]"
+            className="w-full px-3 py-2 bg-white border border-[#cccccc] rounded-lg text-xs text-black font-medium focus:border-[#0d3479] focus:outline-none min-h-[80px] shadow-xs"
           />
         ) : field.type === 'date' ? (
           <input
             type="date"
             value={value}
             onChange={(e) => handleFieldChange(field.name, e.target.value)}
-            className="w-full px-2.5 py-1.5 bg-[#070c18] border border-[#16233a] rounded-lg text-xs text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 focus:outline-none"
+            className="w-full px-3 py-2 bg-white border border-[#cccccc] rounded-lg text-xs text-black font-semibold focus:border-[#0d3479] focus:outline-none shadow-xs"
           />
         ) : (
           <input
@@ -64,7 +64,7 @@ export const DynamicTemplateEditor: React.FC<DynamicTemplateEditorProps> = ({
             value={value}
             onChange={(e) => handleFieldChange(field.name, e.target.value)}
             placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}...`}
-            className="w-full px-2.5 py-1.5 bg-[#070c18] border border-[#16233a] rounded-lg text-xs text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 focus:outline-none"
+            className="w-full px-3 py-2 bg-white border border-[#cccccc] rounded-lg text-xs text-black font-semibold focus:border-[#0d3479] focus:outline-none shadow-xs"
           />
         )}
       </div>
@@ -80,27 +80,27 @@ export const DynamicTemplateEditor: React.FC<DynamicTemplateEditorProps> = ({
         key={section.id} 
         id={`form-sec-${section.id}`}
         onClick={() => onSelectSection?.(section.id)}
-        className={`bg-[#0b1426] p-3.5 rounded-2xl border transition-colors ${
-          isActive ? 'border-emerald-500/50 ring-1 ring-emerald-500/20' : 'border-[#141f33]'
-        } space-y-3 cursor-default`}
+        className={`bg-white rounded-xl border overflow-hidden shadow-xs transition-colors ${
+          isActive ? 'border-[#0d3479] ring-2 ring-[#0d3479]/20' : 'border-[#cccccc]'
+        } cursor-default`}
       >
-        <div className="flex justify-between items-center">
-          <h3 
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleSection(section.id);
-            }}
-            className="font-bold text-xs text-emerald-400 uppercase tracking-wide flex items-center space-x-1.5 cursor-pointer hover:text-emerald-300 transition-colors select-none"
-          >
+        <div 
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleSection(section.id);
+          }}
+          className="bg-[#f0efe6] px-4 py-3 border-b border-[#cccccc] flex justify-between items-center cursor-pointer select-none"
+        >
+          <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wider flex items-center space-x-1.5">
             <span>{section.title}</span>
-            {isCollapsed ? <ChevronDown className="w-4 h-4 text-emerald-500" /> : <ChevronUp className="w-4 h-4 text-emerald-500" />}
           </h3>
+          {isCollapsed ? <ChevronDown className="w-4 h-4 text-[#0d3479]" /> : <ChevronUp className="w-4 h-4 text-[#0d3479]" />}
         </div>
 
         {!isCollapsed && (
-          <div className="space-y-4 mt-2">
+          <div className="p-4 space-y-4 bg-white">
             {section.description && (
-              <p className="text-[11px] text-gray-400">{section.description}</p>
+              <p className="text-xs text-[#666666]">{section.description}</p>
             )}
 
             {section.fields && (
@@ -110,7 +110,7 @@ export const DynamicTemplateEditor: React.FC<DynamicTemplateEditorProps> = ({
             )}
             
             {section.type === 'table' && (
-              <div className="text-xs text-amber-500/80 italic p-2 bg-amber-500/10 rounded">
+              <div className="text-xs text-[#0d3479] font-semibold p-3 bg-[#dfe7f4] border border-[#b9c7de] rounded-lg">
                 Dynamic table editor coming soon in Phase 2.
               </div>
             )}
@@ -121,17 +121,19 @@ export const DynamicTemplateEditor: React.FC<DynamicTemplateEditorProps> = ({
   };
 
   return (
-    <div className="h-full bg-[#030712] overflow-y-auto w-full custom-scrollbar">
-      <div className="p-4 space-y-4">
+    <div className="h-full bg-[#f4f3eb] overflow-y-auto w-full custom-scrollbar text-black">
+      <div className="p-4 md:p-6 space-y-6">
         
         {/* Schema Header Info */}
-        <div className="mb-6 pb-4 border-b border-gray-800">
-          <h2 className="text-lg font-bold text-white">{schema.name}</h2>
-          <p className="text-xs text-gray-400 mt-1">{schema.description}</p>
+        <div className="bg-white rounded-xl border border-[#cccccc] p-4 shadow-xs">
+          <h2 className="text-base font-bold text-black">{schema.name}</h2>
+          <p className="text-xs text-[#666666] mt-1">{schema.description}</p>
         </div>
 
         {/* Dynamic Sections */}
-        {schema.sections.map(renderSection)}
+        <div className="space-y-4">
+          {schema.sections.map(renderSection)}
+        </div>
         
       </div>
     </div>

@@ -81,10 +81,10 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
             {/* Left Brand */}
             <div className="w-[35%] pr-2">
               <div className="text-[26px] font-black tracking-tight leading-none text-black">
-                {companyName}
+                <FormattedText text={companyName} globalVars={globalVars} />
               </div>
               <div className="text-[17px] font-extrabold tracking-wider leading-tight text-black mt-0.5">
-                {companySubtitle}
+                <FormattedText text={companySubtitle} globalVars={globalVars} />
               </div>
             </div>
 
@@ -97,14 +97,14 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
                 <div>
                   {leftServices.map((svc, i) => (
                     <div key={i} className="truncate">
-                      {svc}
+                      <FormattedText text={svc} globalVars={globalVars} />
                     </div>
                   ))}
                 </div>
                 <div>
                   {rightServices.map((svc, i) => (
                     <div key={i} className="truncate">
-                      {svc}
+                      <FormattedText text={svc} globalVars={globalVars} />
                     </div>
                   ))}
                 </div>
@@ -115,8 +115,8 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
           {/* Divider and GST */}
           <div className="h-[0.8pt] bg-black w-full my-1.5" />
           <div className="flex justify-between items-center text-[10px] font-bold text-black tracking-wide">
-            <div>{applyVariables(companyAddressHeader, globalVars)}</div>
-            <div>GST NO. : {applyVariables(companyGstNo, globalVars)}</div>
+            <div><FormattedText text={companyAddressHeader} globalVars={globalVars} /></div>
+            <div>GST NO. : <FormattedText text={companyGstNo} globalVars={globalVars} /></div>
           </div>
         </div>
 
@@ -139,9 +139,9 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`grid grid-cols-12 border-b-[0.8pt] border-black transition-all cursor-pointer ${
               isClientActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 print:ring-0 print:bg-transparent print:shadow-none'
+                ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 print:ring-0 print:bg-transparent print:shadow-none'
                 : isClientHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-50/10 print:ring-0 print:bg-transparent print:shadow-none'
+                ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 print:ring-0 print:bg-transparent print:shadow-none'
                 : 'hover:bg-gray-50/50 print:bg-transparent'
             }`}
             title="Click to edit Client and Invoice details"
@@ -149,31 +149,31 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
             {/* Client Info (Left) */}
             <div className="col-span-6 border-r-[0.8pt] border-black p-2 flex flex-col justify-between">
               <div>
-                <div className="font-bold text-[12px]">{clientName}</div>
-                <div className="font-bold">{clientAddr1}</div>
-                <div className="font-bold">{clientAddr2}</div>
+                <div className="font-bold text-[12px]"><FormattedText text={clientName} globalVars={globalVars} /></div>
+                <div className="font-bold"><FormattedText text={clientAddr1} globalVars={globalVars} /></div>
+                <div className="font-bold"><FormattedText text={clientAddr2} globalVars={globalVars} /></div>
               </div>
               <div className="mt-4 font-bold">
-                GST NO. {clientGst}
+                GST NO. <FormattedText text={clientGst} globalVars={globalVars} />
               </div>
             </div>
 
             {/* Invoice Meta (Right) */}
             <div className="col-span-6 grid grid-cols-2 divide-y-[0.8pt] divide-black text-[11px]">
               <div className="p-1.5 font-bold border-r-[0.8pt] border-black">Invoice No.</div>
-              <div className="p-1.5 font-bold">{invoiceNo}</div>
+              <div className="p-1.5 font-bold"><FormattedText text={invoiceNo} globalVars={globalVars} /></div>
 
               <div className="p-1.5 font-bold border-r-[0.8pt] border-black">Invoice Date:</div>
-              <div className="p-1.5 font-bold">{invoiceDate}</div>
+              <div className="p-1.5 font-bold"><FormattedText text={invoiceDate} globalVars={globalVars} /></div>
 
               <div className="p-1.5 font-bold border-r-[0.8pt] border-black">P.O. No.</div>
-              <div className="p-1.5 font-bold">{poNo}</div>
+              <div className="p-1.5 font-bold"><FormattedText text={poNo} globalVars={globalVars} /></div>
 
               <div className="p-1.5 font-bold border-r-[0.8pt] border-black">P.O. Date:</div>
-              <div className="p-1.5 font-bold">{poDate}</div>
+              <div className="p-1.5 font-bold"><FormattedText text={poDate} globalVars={globalVars} /></div>
 
               <div className="p-1.5 font-bold border-r-[0.8pt] border-black">PROJECT NAME</div>
-              <div className="p-1.5 font-bold">{projectName}</div>
+              <div className="p-1.5 font-bold"><FormattedText text={projectName} globalVars={globalVars} /></div>
             </div>
           </div>
 
@@ -194,9 +194,9 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`divide-y-[0.8pt] divide-black transition-all cursor-pointer ${
               isItemsActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 print:ring-0 print:bg-transparent print:shadow-none'
+                ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 print:ring-0 print:bg-transparent print:shadow-none'
                 : isItemsHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-50/10 print:ring-0 print:bg-transparent print:shadow-none'
+                ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 print:ring-0 print:bg-transparent print:shadow-none'
                 : 'hover:bg-gray-50/40 print:bg-transparent'
             }`}
             title="Click to edit Invoice Items and Taxes"
@@ -268,20 +268,20 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
             onMouseLeave={() => onHoverSection?.(null)}
             className={`border-t-[0.8pt] border-black grid grid-cols-12 divide-x-[0.8pt] divide-black transition-all cursor-pointer ${
               isStatutoryActive
-                ? 'ring-2 ring-emerald-600 bg-emerald-50/20 print:ring-0 print:bg-transparent print:shadow-none'
+                ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 print:ring-0 print:bg-transparent print:shadow-none'
                 : isStatutoryHovered
-                ? 'ring-2 ring-emerald-400/80 bg-emerald-50/10 print:ring-0 print:bg-transparent print:shadow-none'
+                ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 print:ring-0 print:bg-transparent print:shadow-none'
                 : 'hover:bg-gray-50/30 print:bg-transparent'
             }`}
             title="Click to edit Terms, Bank details and Signatory"
           >
             {/* Left Statutory & Bank Info */}
             <div className="col-span-8 p-3 text-[10.5px] leading-[1.35]">
-              <div className="font-bold">GSTTIN: {inv.companyGstNo || '24CLNPS9550H1ZI'}</div>
-              <div className="font-bold mt-0.5">PAN NO. {inv.companyPanNo || 'CLNPS9550H'}</div>
-              <div className="font-bold mt-0.5 mb-1.5">EPF NO. {inv.companyEpfNo || 'VDBRD18741500'}</div>
+              <div className="font-bold">GSTTIN: <FormattedText text={inv.companyGstNo || '24CLNPS9550H1ZI'} globalVars={globalVars} /></div>
+              <div className="font-bold mt-0.5">PAN NO. <FormattedText text={inv.companyPanNo || 'CLNPS9550H'} globalVars={globalVars} /></div>
+              <div className="font-bold mt-0.5 mb-1.5">EPF NO. <FormattedText text={inv.companyEpfNo || 'VDBRD18741500'} globalVars={globalVars} /></div>
 
-              <div className="text-[9.5px] space-y-0.5 font-bold text-gray-800">
+              <div className="text-[9.5px] space-y-0.5 font-medium text-black">
                 {(inv.termsLines || [
                   '1. GOODS ONCE SOLD WILL NOT BE TAKEN BACK.',
                   '2. PAYMENT SHOULD BE MADE AS PER TERMS.',
@@ -290,18 +290,18 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
                   <div key={idx}><FormattedText text={line} globalVars={globalVars} /></div>
                 ))}
                 <div>
-                  4. COMPANAY&apos;S BANK DETAIS- {inv.bankDetails?.bankName || 'BANK OF BARODA'} - IFSC {inv.bankDetails?.ifsc || 'BARB0INDMAK'}
+                  4. COMPANAY&apos;S BANK DETAIS- <FormattedText text={inv.bankDetails?.bankName || 'BANK OF BARODA'} globalVars={globalVars} /> - IFSC <FormattedText text={inv.bankDetails?.ifsc || 'BARB0INDMAK'} globalVars={globalVars} />
                 </div>
                 <div className="pl-4">
-                  BANK A/C NO- {inv.bankDetails?.accountNo || '05730400000392'}, BRANCH: {inv.bankDetails?.branch || 'MAKARPURA GIDC.'}
+                  BANK A/C NO- <FormattedText text={inv.bankDetails?.accountNo || '05730400000392'} globalVars={globalVars} />, BRANCH: <FormattedText text={inv.bankDetails?.branch || 'MAKARPURA GIDC.'} globalVars={globalVars} />
                 </div>
               </div>
             </div>
 
             {/* Right Signatory Box */}
             <div className="col-span-4 p-3 flex flex-col justify-between text-right">
-              <div className="font-bold text-[11px]">
-                {inv.signatoryCompany || 'For, GLOBAL INDUSTRIES'}
+              <div className="font-medium text-[11px] text-black">
+                <FormattedText text={inv.signatoryCompany || 'For, GLOBAL INDUSTRIES'} globalVars={globalVars} />
               </div>
               <div className="text-center font-bold text-[10.5px] pt-12 pb-1 border-t border-dotted border-gray-300 mt-6">
                 (Authorized Signatory)
@@ -313,13 +313,13 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
 
       {/* ================= FOOTER (STATIC / UNSELECTABLE) ================= */}
       <div className="mt-auto pt-4 border-t-[0.8pt] border-black text-[10px] leading-tight text-black p-1 select-none">
-        <div className="font-medium">Phone: {applyVariables(companyPhone, globalVars)}</div>
+        <div className="font-medium">Phone: <FormattedText text={companyPhone} globalVars={globalVars} /></div>
         <div className="font-medium mt-0.5">
-          {applyVariables(companyAddressFooter, globalVars)}
+          <FormattedText text={companyAddressFooter} globalVars={globalVars} />
         </div>
         <div className="font-medium mt-0.5 flex space-x-6">
-          <span>Email: {applyVariables(companyEmail, globalVars)}</span>
-          <span>Website: {applyVariables(companyWebsite, globalVars)}</span>
+          <span>Email: <FormattedText text={companyEmail} globalVars={globalVars} /></span>
+          <span>Website: <FormattedText text={companyWebsite} globalVars={globalVars} /></span>
         </div>
       </div>
     </div>

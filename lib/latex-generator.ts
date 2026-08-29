@@ -1,38 +1,56 @@
 import { LatexDocument, CustomSectionItem } from '@/types/document';
 import { CompanyProfile } from '@/types/project';
 
+export function formatToLatex(text: string | undefined | null): string {
+  if (!text) return '';
+  let str = text;
+  // Convert Markdown bold: **text** => \textbf{text}
+  str = str.replace(/\*\*([\s\S]+?)\*\*/g, '\\textbf{$1}');
+  // Convert Markdown italic: *text* => \textit{text}
+  str = str.replace(/(?<!\*)\*([^\*\n]+?)\*(?!\*)/g, '\\textit{$1}');
+  // Convert HTML <u>text</u> => \underline{text}
+  str = str.replace(/<u\b[^>]*>([\s\S]+?)<\/u>/gi, '\\underline{$1}');
+  // Convert HTML <b>text</b> / <strong>text</strong> => \textbf{text}
+  str = str.replace(/<b\b[^>]*>([\s\S]+?)<\/b>/gi, '\\textbf{$1}');
+  str = str.replace(/<strong\b[^>]*>([\s\S]+?)<\/strong>/gi, '\\textbf{$1}');
+  // Convert HTML <i>text</i> / <em>text</em> => \textit{text}
+  str = str.replace(/<i\b[^>]*>([\s\S]+?)<\/i>/gi, '\\textit{$1}');
+  str = str.replace(/<em\b[^>]*>([\s\S]+?)<\/em>/gi, '\\textit{$1}');
+  return str;
+}
+
 function renderSectionToLatex(sec: CustomSectionItem): string {
-  let content = `\n{\\color{sectioncolor} \\large \\textbf{${sec.title}}}\n`;
+  let content = `\n{\\color{sectioncolor} \\large \\textbf{${formatToLatex(sec.title)}}}\n`;
 
   if (sec.contentType === 'bullet_list' && sec.bullets) {
     content += `\\begin{itemize}[leftmargin=14pt, topsep=2pt, itemsep=3pt]\n`;
-    content += sec.bullets.map((b) => `    \\item ${b}`).join('\n');
+    content += sec.bullets.map((b) => `    \\item ${formatToLatex(b)}`).join('\n');
     content += `\n\\end{itemize}\n`;
   } else if (sec.contentType === 'legal_clause' && sec.paragraphs) {
     content += `\\begin{enumerate}[label=\\textbf{\\arabic*.0}, leftmargin=18pt, topsep=2pt, itemsep=4pt]\n`;
-    content += sec.paragraphs.map((p) => `    \\item ${p}`).join('\n');
+    content += sec.paragraphs.map((p) => `    \\item ${formatToLatex(p)}`).join('\n');
     content += `\n\\end{enumerate}\n`;
   } else if (sec.contentType === 'paragraphs' && sec.paragraphs) {
-    content += sec.paragraphs.map((p) => `\\vspace{4pt}\n${p}\n`).join('\n');
+    content += sec.paragraphs.map((p) => `\\vspace{4pt}\n${formatToLatex(p)}\n`).join('\n');
   } else if (sec.contentType === 'table' && sec.tableHeaders && sec.tableRows) {
     const colsCount = sec.tableHeaders.length;
     const colSpec = '|' + Array(colsCount).fill('X').join('|') + '|';
     content += `\\begin{center}\n\\begin{tabularx}{\\textwidth}{${colSpec}}\n\\hline\n`;
-    content += sec.tableHeaders.map((h) => `\\textbf{${h}}`).join(' & ') + ` \\\\\n\\hline\n`;
+    content += sec.tableHeaders.map((h) => `\\textbf{${formatToLatex(h)}}`).join(' & ') + ` \\\\\n\\hline\n`;
     content += sec.tableRows
-      .map((row) => row.join(' & ') + ` \\\\`)
+      .map((row) => row.map(formatToLatex).join(' & ') + ` \\\\`)
       .join('\n');
     content += `\n\\hline\n\\end{tabularx}\n\\end{center}\n`;
   } else if (sec.contentType === 'key_value' && sec.keyValuePairs) {
     content += `\\begin{center}\n\\begin{tabularx}{\\textwidth}{|p{3.5cm}|X|}\n\\hline\n`;
     content += sec.keyValuePairs
-      .map((kv) => `\\textbf{${kv.key}} & ${kv.value} \\\\`)
+      .map((kv) => `\\textbf{${formatToLatex(kv.key)}} & ${formatToLatex(kv.value)} \\\\`)
       .join('\n\\hline\n');
     content += `\n\\hline\n\\end{tabularx}\n\\end{center}\n`;
   } else if (sec.contentType === 'callout' && sec.calloutText) {
     content += `\\begin{center}\n\\fbox{\\begin{minipage}{0.96\\textwidth}\n`;
     content += `\\textbf{${(sec.calloutType || 'NOTICE').toUpperCase()}}\\\\\n`;
-    content += `\\textit{${sec.calloutText}}\n`;
+    content += `\\textit{${formatToLatex(sec.calloutText)}}\n`;
     content += `\\end{minipage}}\n\\end{center}\n`;
   }
 

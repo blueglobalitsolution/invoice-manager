@@ -203,17 +203,17 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   const getFormatBadge = (contentType: SectionContentType) => {
     switch (contentType) {
       case 'bullet_list':
-        return { label: 'Bullet Points', color: 'bg-blue-950/80 text-blue-300 border-blue-800' };
+        return { label: 'Bullet Points', color: 'bg-[#dfe7f4] text-[#0d3479] border-[#b9c7de]' };
       case 'table':
-        return { label: 'Data Table', color: 'bg-emerald-950/80 text-emerald-300 border-emerald-800' };
+        return { label: 'Data Table', color: 'bg-emerald-50 text-emerald-800 border-emerald-300' };
       case 'legal_clause':
-        return { label: 'Numbered Clauses', color: 'bg-amber-950/80 text-amber-300 border-amber-800' };
+        return { label: 'Numbered Clauses', color: 'bg-amber-50 text-amber-800 border-amber-300' };
       case 'key_value':
-        return { label: 'Key-Value Table', color: 'bg-purple-950/80 text-purple-300 border-purple-800' };
+        return { label: 'Key-Value Table', color: 'bg-purple-50 text-purple-800 border-purple-300' };
       case 'callout':
-        return { label: 'Notice Box', color: 'bg-rose-950/80 text-rose-300 border-rose-800' };
+        return { label: 'Notice Box', color: 'bg-rose-50 text-rose-800 border-rose-300' };
       default:
-        return { label: 'Standard Text', color: 'bg-slate-800 text-slate-300 border-slate-700' };
+        return { label: 'Standard Text', color: 'bg-slate-100 text-slate-700 border-slate-300' };
     }
   };
 
@@ -221,42 +221,37 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
   return (
     <div className="fixed top-0 bottom-0 left-14 right-0 z-40 overflow-hidden select-none">
-      {/* Backdrop (Only covers workspace to the right of left sidebar rail) */}
       <div
         onClick={onClose}
-        className="fixed top-0 bottom-0 left-14 right-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in cursor-pointer"
+        className="fixed top-0 bottom-0 left-14 right-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in cursor-pointer"
       />
 
-      {/* Spacious Studio Drawer anchored seamlessly to the right edge of Left Rail */}
-      <div className="fixed top-0 bottom-0 left-14 w-full md:w-[1160px] lg:w-[1240px] max-w-[calc(100vw-3.5rem)] bg-[#0c1322] border-r border-gray-700/80 shadow-[14px_0_45px_rgba(0,0,0,0.85)] z-50 flex flex-col p-6 text-gray-200 animate-in slide-in-from-left duration-300 ease-out space-y-4">
+      <div className="fixed top-0 bottom-0 left-14 w-full md:w-[1160px] lg:w-[1240px] max-w-[calc(100vw-3.5rem)] bg-[#f7f7f2] border-r border-[#cccccc] shadow-[14px_0_45px_rgba(0,0,0,0.25)] z-50 flex flex-col p-6 text-black animate-in slide-in-from-left duration-300 ease-out space-y-4">
         
-        {/* Top Header */}
-        <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+        <div className="flex items-center justify-between border-b border-[#cccccc] pb-3">
           <div>
-            <h3 className="font-bold text-lg text-white">Add Section to Document</h3>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <h3 className="font-bold text-lg text-black">Add Section to Document</h3>
+            <p className="text-xs text-[#666666] mt-0.5">
               Choose a pre-built section from the library or search for specific clauses, tables, and terms
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white p-2 rounded-xl hover:bg-gray-800 transition-colors cursor-pointer"
+            className="text-[#666666] hover:text-black p-2 rounded-xl hover:bg-white border border-transparent hover:border-[#cccccc] transition-colors cursor-pointer"
             title="Close Drawer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* 1. Template Library Filter Pills & Search Bar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-gray-800 pb-3">
-          {/* Library Tabs */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[#cccccc] pb-3">
           <div className="flex items-center space-x-2 overflow-x-auto scrollbar-none py-0.5">
             <button
               onClick={() => handleSelectLibrary('all')}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 activeLibraryId === 'all'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-[#1e293b] text-gray-300 hover:bg-gray-700'
+                  ? 'bg-[#0d3479] text-white shadow-xs'
+                  : 'bg-white text-[#444444] border border-[#cccccc] hover:bg-slate-50'
               }`}
             >
               🌟 All Sections (30+)
@@ -265,8 +260,8 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
               onClick={() => handleSelectLibrary('quotation')}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 activeLibraryId === 'quotation'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-[#1e293b] text-gray-300 hover:bg-gray-700'
+                  ? 'bg-[#0d3479] text-white shadow-xs'
+                  : 'bg-white text-[#444444] border border-[#cccccc] hover:bg-slate-50'
               }`}
             >
               🏢 Quotation Sections
@@ -275,8 +270,8 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
               onClick={() => handleSelectLibrary('labour_po')}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 activeLibraryId === 'labour_po'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-[#1e293b] text-gray-300 hover:bg-gray-700'
+                  ? 'bg-[#0d3479] text-white shadow-xs'
+                  : 'bg-white text-[#444444] border border-[#cccccc] hover:bg-slate-50'
               }`}
             >
               🔨 Work Order & Labour PO
@@ -285,8 +280,8 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
               onClick={() => handleSelectLibrary('invoice')}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 activeLibraryId === 'invoice'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-[#1e293b] text-gray-300 hover:bg-gray-700'
+                  ? 'bg-[#0d3479] text-white shadow-xs'
+                  : 'bg-white text-[#444444] border border-[#cccccc] hover:bg-slate-50'
               }`}
             >
               🧾 Tax Invoice & Billing
@@ -295,28 +290,27 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
               onClick={() => handleSelectLibrary('subcontract')}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 activeLibraryId === 'subcontract'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-[#1e293b] text-gray-300 hover:bg-gray-700'
+                  ? 'bg-[#0d3479] text-white shadow-xs'
+                  : 'bg-white text-[#444444] border border-[#cccccc] hover:bg-slate-50'
               }`}
             >
               📋 Subcontract Agreements
             </button>
           </div>
 
-          {/* Search Box */}
           <div className="relative w-full md:w-72 shrink-0">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#8b9dbc] absolute left-3 top-2.5 pointer-events-none" />
             <input
               type="text"
               placeholder="Search sections (e.g. payment, safety, scope)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#1e293b] border border-gray-700 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 transition-colors"
+              className="w-full bg-white border border-[#cccccc] rounded-xl pl-9 pr-3 py-2 text-xs text-black placeholder-[#888888] focus:outline-none focus:border-[#0d3479] transition-colors"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-2.5 text-gray-400 hover:text-white text-xs"
+                className="absolute right-2.5 top-2.5 text-[#888888] hover:text-black text-xs cursor-pointer"
               >
                 Clear
               </button>
@@ -324,27 +318,23 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           </div>
         </div>
 
-        {/* Main 2-Column Spacious Studio Layout */}
         <div className="grid grid-cols-12 gap-5 flex-1 min-h-0">
           
-          {/* Left Column: Categories & Preset Templates Browser (5 Cols) */}
-          <div className="col-span-5 flex flex-col space-y-3 min-h-0 bg-[#0d1420] p-4 rounded-2xl border border-gray-800">
+          <div className="col-span-5 flex flex-col space-y-3 min-h-0 bg-white p-4 rounded-2xl border border-[#cccccc] shadow-xs">
             
-            {/* Step 1 Label */}
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase text-emerald-400 tracking-wider flex items-center space-x-1.5">
+              <span className="text-[11px] font-bold uppercase text-[#0d3479] tracking-wider flex items-center space-x-1.5">
                 <span>1. Select Section Template</span>
               </span>
-              <span className="text-[10px] text-gray-400 font-mono">
+              <span className="text-[10px] text-[#666666] font-mono">
                 {displayedPresets.length} available
               </span>
             </div>
 
-            {/* Category Dropdown Filter (Replaces horizontal slider) */}
             {!searchQuery && (
-              <div className="flex items-center justify-between gap-2 bg-[#16202f] border border-gray-700/80 rounded-xl px-3 py-2 shrink-0">
-                <span className="text-[11px] font-bold text-gray-300 shrink-0 flex items-center space-x-1.5">
-                  <Layers className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="flex items-center justify-between gap-2 bg-[#f7f7f2] border border-[#cccccc] rounded-xl px-3 py-2 shrink-0">
+                <span className="text-[11px] font-bold text-[#333333] shrink-0 flex items-center space-x-1.5">
+                  <Layers className="w-3.5 h-3.5 text-[#0d3479]" />
                   <span>Category:</span>
                 </span>
                 <select
@@ -360,13 +350,13 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                       }
                     }
                   }}
-                  className="bg-transparent text-xs text-emerald-300 font-bold focus:outline-none cursor-pointer w-full text-right"
+                  className="bg-transparent text-xs text-[#0d3479] font-bold focus:outline-none cursor-pointer w-full text-right"
                 >
-                  <option value="all_cats" className="bg-[#16202f] text-white">
+                  <option value="all_cats" className="bg-white text-black">
                     🌟 All Categories ({availableCategories.reduce((a, c) => a + c.sections.length, 0)} templates)
                   </option>
                   {availableCategories.map((cat) => (
-                    <option key={cat.id} value={cat.id} className="bg-[#16202f] text-white">
+                    <option key={cat.id} value={cat.id} className="bg-white text-black">
                       {cat.name} ({cat.sections.length})
                     </option>
                   ))}
@@ -374,10 +364,9 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
               </div>
             )}
 
-            {/* Presets List */}
             <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 scrollbar-thin">
               {displayedPresets.length === 0 ? (
-                <div className="p-8 text-center text-gray-500 text-xs">
+                <div className="p-8 text-center text-[#888888] text-xs">
                   No sections match your search. Try another keyword.
                 </div>
               ) : (
@@ -391,12 +380,12 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                       onClick={() => handleSelectPreset(preset)}
                       className={`p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between space-y-1.5 ${
                         isSelected
-                          ? 'bg-emerald-950/70 border-emerald-500 text-white shadow-md ring-1 ring-emerald-500/50'
-                          : 'bg-[#16202f] border-gray-800 text-gray-300 hover:bg-[#1d2b3f] hover:border-gray-700'
+                          ? 'bg-[#dfe7f4] border-[#0d3479] text-black shadow-xs ring-1 ring-[#0d3479]/30'
+                          : 'bg-[#f7f7f2] border-[#cccccc] text-[#333333] hover:bg-white hover:border-[#999999]'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
-                        <h4 className="font-bold text-xs leading-snug text-white flex-1">
+                        <h4 className="font-bold text-xs leading-snug text-black flex-1">
                           {preset.name}
                         </h4>
                         <span className={`text-[9px] font-medium px-2 py-0.5 rounded-md border shrink-0 ${badge.color}`}>
@@ -404,11 +393,11 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                         </span>
                       </div>
 
-                      <p className="text-[11px] text-gray-400 line-clamp-2 leading-relaxed">
+                      <p className="text-[11px] text-[#555555] line-clamp-2 leading-relaxed">
                         {preset.description}
                       </p>
 
-                      <div className="text-[9px] text-emerald-400/90 font-mono flex items-center space-x-1 pt-0.5">
+                      <div className="text-[9px] text-[#0d3479] font-mono flex items-center space-x-1 pt-0.5 font-semibold">
                         <span>📁 {parentCat.name}</span>
                       </div>
                     </div>
@@ -419,23 +408,21 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
           </div>
 
-          {/* Right Column: Spacious Real Document Paper Preview (7 Cols) */}
-          <div className="col-span-7 flex flex-col space-y-3 bg-[#0d1420] p-4 rounded-2xl border border-gray-800 overflow-hidden">
+          <div className="col-span-7 flex flex-col space-y-3 bg-white p-4 rounded-2xl border border-[#cccccc] overflow-hidden shadow-xs">
             
-            {/* Step 2 Header & Custom Title Input */}
             <div className="flex flex-col space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold uppercase text-emerald-400 tracking-wider flex items-center space-x-1.5">
-                  <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-[11px] font-bold uppercase text-[#0d3479] tracking-wider flex items-center space-x-1.5">
+                  <Eye className="w-3.5 h-3.5 text-[#0d3479]" />
                   <span>2. Live Document Print Preview</span>
                 </span>
-                <span className="text-[10px] text-gray-400">
+                <span className="text-[10px] text-[#666666]">
                   Exact print appearance
                 </span>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-300 mb-1">
+                <label className="block text-[10px] font-bold text-[#333333] mb-1">
                   Section Header on Document:
                 </label>
                 <input
@@ -443,76 +430,66 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                   value={customTitle}
                   onChange={(e) => setCustomTitle(e.target.value)}
                   placeholder="Enter section title in document..."
-                  className="w-full bg-[#16202f] border border-gray-700 focus:border-emerald-500 rounded-xl px-3.5 py-2 text-xs text-white font-bold placeholder-gray-500 focus:outline-none transition-colors"
+                  className="w-full bg-[#f7f7f2] border border-[#cccccc] focus:border-[#0d3479] rounded-xl px-3.5 py-2 text-xs text-black font-bold placeholder-[#888888] focus:outline-none transition-colors"
                 />
               </div>
             </div>
 
-            {/* Large White Document Canvas Sheet */}
-            <div className="flex-1 bg-[#070b13] border border-gray-800 rounded-xl p-4 overflow-y-auto scrollbar-thin flex flex-col items-center">
+            <div className="flex-1 overflow-y-auto bg-[#e5e3d9] p-4 rounded-xl border border-[#cccccc] shadow-inner">
               {!activePresetItem ? (
-                <div className="text-gray-500 text-center py-20 text-xs">
-                  Select a section from the left panel to preview how it will appear in your document.
+                <div className="h-full flex items-center justify-center text-[#888888] text-xs">
+                  Select a section template from the left list to view live preview
                 </div>
               ) : (
-                <div className="w-full bg-white text-gray-900 rounded-lg p-6 shadow-2xl border border-gray-300 font-sans min-h-full">
-                  {/* Authentic Document Section Header */}
-                  <h2 className="text-[13px] font-bold text-[#505050] mb-3 uppercase tracking-wide border-b border-gray-300 pb-1">
-                    {customTitle.trim() || activePresetItem.title || activePresetItem.name}
-                  </h2>
+                <div className="bg-white text-black p-6 rounded-lg shadow-sm border border-gray-200 text-xs font-serif leading-relaxed space-y-3 min-h-[360px]">
+                  
+                  <div className="border-b border-black pb-1.5 mb-2">
+                    <h3 className="font-bold text-[13px] uppercase tracking-wide text-black">
+                      {customTitle || activePresetItem.title}
+                    </h3>
+                  </div>
 
-                  {/* Bullet List Content */}
+                  {activePresetItem.contentType === 'paragraphs' && (
+                    <div className="space-y-2 text-[11.5px] leading-relaxed text-black text-justify">
+                      {(activePresetItem.paragraphs || []).map((p, i) => (
+                        <p key={i}>{p}</p>
+                      ))}
+                    </div>
+                  )}
+
                   {activePresetItem.contentType === 'bullet_list' && (
-                    <ul className="list-disc list-inside space-y-2 pl-1 text-[11.5px] text-black leading-relaxed text-justify">
+                    <ul className="list-disc list-inside space-y-1.5 text-[11.5px] pl-1 text-black">
                       {(activePresetItem.bullets || []).map((b, i) => (
-                        <li key={i} className="text-black">
-                          {b}
-                        </li>
+                        <li key={i} className="leading-snug">{b}</li>
                       ))}
                     </ul>
                   )}
 
-                  {/* Legal Clauses Content */}
                   {activePresetItem.contentType === 'legal_clause' && (
-                    <div className="space-y-2.5 text-justify leading-relaxed text-black text-[11.5px]">
+                    <ol className="list-decimal list-inside space-y-2 text-[11.5px] pl-1 text-black text-justify">
                       {(activePresetItem.paragraphs || []).map((p, i) => (
-                        <div key={i} className="flex items-start space-x-2">
-                          <span className="font-bold text-black font-mono shrink-0 text-[11.5px]">
-                            {i + 1}.0
-                          </span>
-                          <p className="flex-1 text-black">{p}</p>
-                        </div>
+                        <li key={i} className="leading-relaxed">{p}</li>
                       ))}
-                    </div>
+                    </ol>
                   )}
 
-                  {/* Paragraphs Content */}
-                  {activePresetItem.contentType === 'paragraphs' && (
-                    <div className="space-y-2.5 text-justify leading-relaxed text-black text-[11.5px]">
-                      {(activePresetItem.paragraphs || []).map((p, i) => (
-                        <p key={i} className="text-black">{p}</p>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Data Table Content */}
                   {activePresetItem.contentType === 'table' && (
-                    <div className="border border-black my-2 overflow-x-auto">
-                      <table className="w-full border-collapse text-[11px]">
+                    <div className="border border-black my-2 text-[11px]">
+                      <table className="w-full border-collapse">
                         <thead>
-                          <tr className="border-b border-black bg-gray-100 font-bold">
+                          <tr className="bg-gray-100 border-b border-black font-bold">
                             {(activePresetItem.tableHeaders || []).map((h, i) => (
-                              <th key={i} className="p-2 border-r border-black last:border-r-0 text-left text-black font-bold">
+                              <th key={i} className="p-1.5 text-left border-r border-black last:border-r-0 text-black">
                                 {h}
                               </th>
                             ))}
                           </tr>
                         </thead>
                         <tbody>
-                          {(activePresetItem.tableRows || []).map((row, rI) => (
-                            <tr key={rI} className="border-b border-black last:border-b-0">
-                              {row.map((cell, cI) => (
-                                <td key={cI} className="p-2 border-r border-black last:border-r-0 align-top text-black">
+                          {(activePresetItem.tableRows || []).map((row, rIdx) => (
+                            <tr key={rIdx} className="border-b border-black last:border-b-0">
+                              {row.map((cell, cIdx) => (
+                                <td key={cIdx} className="p-1.5 border-r border-black last:border-r-0 text-black">
                                   {cell}
                                 </td>
                               ))}
@@ -522,8 +499,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                       </table>
                     </div>
                   )}
-
-                  {/* Key-Value Table Content */}
+                  
                   {activePresetItem.contentType === 'key_value' && (
                     <div className="border border-black my-2 text-[11.5px]">
                       <table className="w-full border-collapse">
@@ -543,7 +519,6 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                     </div>
                   )}
 
-                  {/* Notice Box / Callout Content */}
                   {activePresetItem.contentType === 'callout' && (
                     <div className="border-2 border-black p-3 my-2 bg-gray-50 text-[11.5px] leading-relaxed">
                       <div className="font-bold text-[12px] uppercase tracking-wider mb-1 text-black">
@@ -561,21 +536,19 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
             </div>
 
           </div>
-
         </div>
 
-        {/* Footer Actions */}
-        <div className="flex items-center justify-end space-x-3 border-t border-gray-800 pt-3.5">
+        <div className="flex items-center justify-end space-x-3 border-t border-[#cccccc] pt-3.5">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+            className="px-5 py-2.5 bg-white hover:bg-slate-50 text-black border border-[#cccccc] rounded-xl text-xs font-semibold transition-colors cursor-pointer shadow-xs"
           >
             Cancel
           </button>
           <button
             onClick={handleCreate}
             disabled={!activePresetItem}
-            className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold flex items-center space-x-2 shadow-lg shadow-emerald-900/50 transition-all cursor-pointer active:scale-95"
+            className="bg-[#0d3479] hover:bg-[#123f8f] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold flex items-center space-x-2 shadow-md transition-all cursor-pointer active:scale-95 px-6 py-2.5"
           >
             <Plus className="w-4 h-4" />
             <span>+ Add Section to Document</span>

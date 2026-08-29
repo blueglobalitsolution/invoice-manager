@@ -26,9 +26,9 @@ export const DynamicTemplatePreview: React.FC<DynamicTemplatePreviewProps> = ({
   const getSectionHighlightClass = (sectionId: string) => {
     const isActive = activeSectionId === sectionId;
     const isHovered = hoveredSectionId === sectionId && !isActive;
-    if (isActive) return 'ring-2 ring-emerald-600 bg-emerald-50/20 shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
-    if (isHovered) return 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.05] shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
-    return 'hover:ring-1 hover:ring-emerald-300/40 print:ring-0 print:bg-transparent print:shadow-none';
+    if (isActive) return 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
+    if (isHovered) return 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs print:ring-0 print:bg-transparent print:shadow-none';
+    return 'hover:ring-1 hover:ring-[#0d3479]/30 print:ring-0 print:bg-transparent print:shadow-none';
   };
 
   const renderSection = (section: TemplateSection) => {

@@ -34,6 +34,11 @@ export default function DashboardPage() {
       .then((data) => {
         if (Array.isArray(data)) {
           setProjects(data);
+          // Prefetch top projects and editor routes for instant page-to-page navigation
+          data.slice(0, 5).forEach((p: ProjectItem) => {
+            router.prefetch(`/project/${p.id}`);
+            router.prefetch(`/editor/${p.id}`);
+          });
         }
         setLoading(false);
       })
@@ -41,7 +46,9 @@ export default function DashboardPage() {
         console.error('Fetch projects error:', err);
         setLoading(false);
       });
-  }, [currentUser]);
+
+    router.prefetch('/template-builder');
+  }, [currentUser, router]);
 
   const handleCreateProject = ({
     title,

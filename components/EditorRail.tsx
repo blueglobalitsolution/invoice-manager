@@ -35,7 +35,7 @@ export const EditorRail: React.FC<EditorRailProps> = ({
   isInvoice = false,
 }) => {
   return (
-    <div className="w-14 bg-[#070A13] border-r border-[#151C2C] flex flex-col justify-between items-center py-3.5 shrink-0 relative z-50 select-none">
+    <div className="w-14 bg-[#002057] border-r border-[#15428a] flex flex-col justify-between items-center py-3.5 shrink-0 relative z-50 select-none">
       {/* Top Rail Navigation Icons */}
       <div className="flex flex-col items-center space-y-3.5 w-full">
         {/* Document Pages & Sections Icon (Hidden on Invoice) */}
@@ -44,8 +44,8 @@ export const EditorRail: React.FC<EditorRailProps> = ({
             onClick={() => setActiveTab('filetree')}
             className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all relative cursor-pointer ${
               activeTab === 'filetree'
-                ? 'bg-[#4F46E5] text-white shadow-[0_0_18px_rgba(79,70,229,0.55)] ring-1 ring-indigo-400/50'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+                ? 'bg-white text-[#002057] shadow-md'
+                : 'text-white/70 hover:text-white hover:bg-white/10'
             }`}
             title="Document Outline & Sections"
           >
@@ -57,7 +57,7 @@ export const EditorRail: React.FC<EditorRailProps> = ({
         {!isInvoice && onOpenAddSection && (
           <button
             onClick={onOpenAddSection}
-            className="w-10 h-10 rounded-2xl flex items-center justify-center transition-all cursor-pointer bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white border border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.25)] active:scale-95 group"
+            className="w-10 h-10 rounded-2xl flex items-center justify-center transition-all cursor-pointer bg-white/10 text-white hover:bg-white/20 border border-white/20 shadow-xs active:scale-95 group"
             title="Add Pre-defined Section Preset"
           >
             <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-200" />
@@ -69,15 +69,13 @@ export const EditorRail: React.FC<EditorRailProps> = ({
           onClick={() => setActiveTab('header_footer')}
           className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all relative cursor-pointer ${
             activeTab === 'header_footer'
-              ? 'bg-[#4F46E5] text-white shadow-[0_0_18px_rgba(79,70,229,0.55)] ring-1 ring-indigo-400/50'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+              ? 'bg-white text-[#002057] shadow-md'
+              : 'text-white/70 hover:text-white hover:bg-white/10'
           }`}
           title="Header & Footer Configuration"
         >
           <LayoutTemplate className="w-5 h-5" />
         </button>
-
-
 
         {/* LaTeX Code Viewer */}
         <button
@@ -90,8 +88,8 @@ export const EditorRail: React.FC<EditorRailProps> = ({
           }}
           className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all cursor-pointer ${
             activeTab === 'code'
-              ? 'bg-[#4F46E5] text-white shadow-[0_0_18px_rgba(79,70,229,0.55)] ring-1 ring-indigo-400/50'
-              : 'text-cyan-400 hover:text-cyan-200 hover:bg-slate-800/40'
+              ? 'bg-white text-[#002057] shadow-md'
+              : 'text-white/70 hover:text-white hover:bg-white/10'
           }`}
           title="View & Export LaTeX Source Code (.tex)"
         >
@@ -103,8 +101,8 @@ export const EditorRail: React.FC<EditorRailProps> = ({
           onClick={() => setActiveTab('media')}
           className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all cursor-pointer ${
             activeTab === 'media'
-              ? 'bg-[#4F46E5] text-white shadow-[0_0_18px_rgba(79,70,229,0.55)] ring-1 ring-indigo-400/50'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+              ? 'bg-white text-[#002057] shadow-md'
+              : 'text-white/70 hover:text-white hover:bg-white/10'
           }`}
           title="Figures and Images"
         >

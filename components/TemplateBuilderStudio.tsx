@@ -298,7 +298,7 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
                 onClick={() => setViewMode('library')}
                 className="px-3 py-1 text-xs font-semibold rounded-[4px] transition-all cursor-pointer flex items-center space-x-1.5 bg-[#0d3479] text-white shadow"
               >
-                <Sparkles className="w-3.5 h-3.5 text-blue-200" />
+                <Sparkles className="w-3.5 h-3.5 text-[#0d3479]" />
                 <span>Category & Section Presets</span>
               </button>
             </div>
@@ -444,20 +444,20 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-screen w-full bg-[#111827] text-gray-100 font-sans overflow-hidden select-none">
+    <div className="flex flex-col h-screen w-full bg-white text-gray-100 font-sans overflow-hidden select-none">
       {/* Studio Header Bar */}
-      <header className="h-14 bg-white/80 border-b border-[#cccccc] px-4 md:px-6 flex items-center justify-between shrink-0 shadow-xs backdrop-blur-md">
+      <header className="h-11 bg-[#002057] border-b border-[#15428a] px-4 md:px-6 flex items-center justify-between shrink-0 shadow-xs select-none">
         <div className="flex items-center space-x-3">
           <button
             onClick={onBack}
-            className="p-1.5 text-[#666666] hover:text-black hover:bg-white rounded-[6px] transition-colors flex items-center space-x-1.5 cursor-pointer text-xs font-semibold"
+            className="p-1.5 text-white/90 hover:text-white hover:bg-[#0d3479] rounded-lg transition-colors flex items-center space-x-1.5 cursor-pointer text-xs font-semibold"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Back</span>
           </button>
-          <div className="h-4 w-px bg-[#cccccc] hidden sm:block"></div>
+          <div className="h-4 w-px bg-white/20 hidden sm:block"></div>
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-[8px] bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479] shadow-xs">
+            <div className="w-8 h-8 rounded-lg bg-[#0d3479] border border-[#2356a8] flex items-center justify-center text-white shadow-xs">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
@@ -466,14 +466,14 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
                   type="text"
                   value={templateName}
                   onChange={(e) => setTemplateName(e.target.value)}
-                  className="text-sm font-bold text-black bg-transparent border-b border-dashed border-[#cccccc] hover:border-[#0d3479] focus:border-[#0d3479] focus:outline-none transition-colors px-1 max-w-[240px] sm:max-w-xs md:max-w-md truncate"
+                  className="text-sm font-bold text-white bg-transparent border-b border-dashed border-[#2356a8] hover:border-white focus:border-white focus:outline-none transition-colors px-1 max-w-[240px] sm:max-w-xs md:max-w-md truncate"
                   placeholder="Template Name..."
                 />
-                <span className="bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de] text-[10px] px-2 py-0.5 rounded-[4px] font-mono hidden md:inline">
+                <span className="bg-[#0d3479] text-white border border-[#2356a8] text-[10px] px-2 py-0.5 rounded font-mono font-bold hidden md:inline">
                   Template Studio
                 </span>
               </div>
-              <p className="text-[10px] text-[#666666] truncate hidden sm:block">
+              <p className="text-[10px] text-white/60 truncate hidden sm:block">
                 Visual Architect • Live A4 Preview & Multi-Page Layout Engine
               </p>
             </div>
@@ -483,13 +483,13 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
         {/* Studio Top Actions */}
         <div className="flex items-center space-x-2">
           {/* Mode Switcher Tabs */}
-          <div className="flex items-center bg-slate-100/90 border border-[#cccccc] rounded-[6px] p-0.5">
+          <div className="flex items-center bg-[#0d3479] border border-[#2356a8] rounded-lg p-0.5">
             <button
               onClick={() => setViewMode('studio')}
-              className={`px-3 py-1 text-xs font-semibold rounded-[4px] transition-all cursor-pointer flex items-center space-x-1.5 ${
+              className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer flex items-center space-x-1.5 ${
                 viewMode === 'studio'
-                  ? 'bg-[#0d3479] text-white shadow'
-                  : 'text-[#666666] hover:text-black hover:bg-white/80'
+                  ? 'bg-white text-[#002057] shadow-xs font-bold'
+                  : 'text-white/80 hover:text-white'
               }`}
             >
               <Building2 className="w-3.5 h-3.5" />
@@ -497,50 +497,50 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
             </button>
             <button
               onClick={() => setViewMode('library')}
-              className={`px-3 py-1 text-xs font-semibold rounded-[4px] transition-all cursor-pointer flex items-center space-x-1.5 ${
+              className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer flex items-center space-x-1.5 ${
                 viewMode === 'library'
-                  ? 'bg-[#0d3479] text-white shadow'
-                  : 'text-[#666666] hover:text-black hover:bg-white/80'
+                  ? 'bg-white text-[#002057] shadow-xs font-bold'
+                  : 'text-white/80 hover:text-white'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5 text-blue-300" />
+              <Sparkles className="w-3.5 h-3.5" />
               <span>Category & Section Presets</span>
             </button>
           </div>
 
-          <div className="h-4 w-px bg-[#cccccc] hidden sm:block"></div>
+          <div className="h-4 w-px bg-white/20 hidden sm:block"></div>
 
           {/* Import / Export */}
-          <label className="p-1.5 text-[#666666] hover:text-black hover:bg-white rounded-[6px] border border-transparent hover:border-[#cccccc] transition-colors cursor-pointer text-xs flex items-center space-x-1">
-            <Upload className="w-3.5 h-3.5 text-[#0d3479]" />
+          <label className="p-1.5 text-white/90 hover:text-white hover:bg-[#0d3479] rounded-lg transition-colors cursor-pointer text-xs flex items-center space-x-1">
+            <Upload className="w-3.5 h-3.5 text-white" />
             <span className="hidden lg:inline text-[11px] font-semibold">Import</span>
             <input type="file" accept=".json" onChange={handleImportJson} className="hidden" />
           </label>
 
           <button
             onClick={handleExportJson}
-            className="p-1.5 text-[#666666] hover:text-black hover:bg-white rounded-[6px] border border-transparent hover:border-[#cccccc] transition-colors cursor-pointer text-xs flex items-center space-x-1"
+            className="p-1.5 text-white/90 hover:text-white hover:bg-[#0d3479] rounded-lg transition-colors cursor-pointer text-xs flex items-center space-x-1"
             title="Export Template as JSON"
           >
-            <Download className="w-3.5 h-3.5 text-[#0d3479]" />
+            <Download className="w-3.5 h-3.5 text-white" />
             <span className="hidden lg:inline text-[11px] font-semibold">Export</span>
           </button>
 
-          <div className="h-4 w-px bg-[#cccccc]"></div>
+          <div className="h-4 w-px bg-white/20"></div>
 
           {/* Save to Library */}
           <button
             onClick={handleSaveToLibrary}
-            className="bg-white hover:bg-slate-50 active:scale-95 text-black font-semibold px-3 py-1.5 rounded-[6px] text-xs flex items-center space-x-1.5 border border-[#cccccc] shadow-xs transition-all cursor-pointer"
+            className="bg-[#0d3479] hover:bg-[#123f8f] text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1.5 border border-[#2356a8] shadow-xs transition-all cursor-pointer"
           >
-            <Save className="w-3.5 h-3.5 text-[#0d3479]" />
+            <Save className="w-3.5 h-3.5 text-white" />
             <span>Save Template</span>
           </button>
 
           {/* Create Project from this Template */}
           <button
             onClick={handleCreateProject}
-            className="brand-button active:scale-95 text-white font-bold px-3.5 py-1.5 rounded-[6px] text-xs flex items-center space-x-1.5 shadow-sm transition-all cursor-pointer"
+            className="bg-white hover:bg-slate-100 active:scale-95 text-[#002057] font-bold px-3.5 py-1.5 rounded-lg text-xs flex items-center space-x-1.5 shadow-xs transition-all cursor-pointer"
           >
             <FileText className="w-3.5 h-3.5" />
             <span>Use Template</span>
@@ -557,9 +557,9 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
         /* Main 2-Pane Workspace */
         <div className="flex-1 flex overflow-hidden">
         {/* Left Config Studio Panel */}
-        <div className="w-full md:w-[480px] lg:w-[540px] bg-[#161f2e] border-r border-gray-800 flex flex-col shrink-0 h-full overflow-hidden">
+        <div className="w-full md:w-[480px] lg:w-[540px] bg-[#f4f3eb] border-r border-[#cccccc] flex flex-col shrink-0 h-full overflow-hidden text-black">
           {/* Navigation Tabs */}
-          <div className="flex items-center border-b border-gray-800 bg-[#131a26] px-2 pt-2">
+          <div className="flex items-center border-b border-[#cccccc] bg-white px-2 pt-2">
             {[
               { id: 'basics', label: 'Company & Meta', icon: Building2 },
               { id: 'sections', label: 'Pages & Sections', icon: Layers },
@@ -573,8 +573,8 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`flex-1 flex items-center justify-center space-x-1.5 py-2.5 text-xs font-medium border-b-2 transition-colors cursor-pointer ${
                     activeTab === tab.id
-                      ? 'border-emerald-500 text-emerald-400 bg-[#161f2e] font-semibold'
-                      : 'border-transparent text-gray-400 hover:text-gray-200 hover:bg-[#161f2e]/40'
+                      ? 'border-[#0d3479] text-[#0d3479] bg-[#f4f3eb] font-bold'
+                      : 'border-transparent text-[#666666] hover:text-black hover:bg-slate-50'
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -585,97 +585,101 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
           </div>
 
           {/* Tab Content Panels */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-5 text-xs">
+          <div className="flex-1 overflow-y-auto p-4 md:p-5 space-y-5 text-xs bg-[#f4f3eb]">
             {/* TAB 1: Company & Meta */}
             {activeTab === 'basics' && (
               <div className="space-y-4">
-                <div className="bg-[#1a2332] p-4 rounded-xl border border-gray-800 space-y-3">
-                  <h3 className="font-semibold text-white flex items-center space-x-2">
-                    <BookOpen className="w-4 h-4 text-emerald-400" />
-                    <span>Template Metadata</span>
-                  </h3>
-                  <div>
-                    <label className="block text-gray-400 text-[11px] mb-1">Category</label>
-                    <select
-                      value={templateCategory}
-                      onChange={(e) => setTemplateCategory(e.target.value)}
-                      className="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
-                    >
-                      {TEMPLATE_CATEGORIES.map((cat) => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      ))}
-                    </select>
+                <div className="bg-white rounded-xl border border-[#cccccc] overflow-hidden shadow-xs">
+                  <div className="bg-[#f0efe6] px-4 py-3 border-b border-[#cccccc] flex items-center space-x-2">
+                    <BookOpen className="w-4 h-4 text-[#0d3479]" />
+                    <h3 className="text-xs font-bold text-[#0d3479] tracking-wider uppercase">Template Metadata</h3>
                   </div>
-                  <div>
-                    <label className="block text-gray-400 text-[11px] mb-1">Description</label>
-                    <textarea
-                      rows={2}
-                      value={templateDesc}
-                      onChange={(e) => setTemplateDesc(e.target.value)}
-                      placeholder="Template purpose & scope summary..."
-                      className="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 resize-none"
-                    />
+                  <div className="p-4 space-y-4 bg-white">
+                    <div>
+                      <label className="block text-xs font-bold text-black mb-1.5">Category</label>
+                      <select
+                        value={templateCategory}
+                        onChange={(e) => setTemplateCategory(e.target.value)}
+                        className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                      >
+                        {TEMPLATE_CATEGORIES.map((cat) => (
+                          <option key={cat} value={cat}>
+                            {cat}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-black mb-1.5">Description</label>
+                      <textarea
+                        rows={2}
+                        value={templateDesc}
+                        onChange={(e) => setTemplateDesc(e.target.value)}
+                        placeholder="Template purpose & scope summary..."
+                        className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-black font-medium placeholder-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs resize-none"
+                      />
+                    </div>
                   </div>
                 </div>
 
                 {/* Company Branding Info */}
-                <div className="bg-[#1a2332] p-4 rounded-xl border border-gray-800 space-y-3">
-                  <h3 className="font-semibold text-white flex items-center space-x-2">
-                    <Building2 className="w-4 h-4 text-emerald-400" />
-                    <span>Header Branding & Company Identity</span>
-                  </h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-gray-400 text-[11px] mb-1">Company Prefix</label>
-                      <input
-                        type="text"
-                        value={po.companyName || ''}
-                        onChange={(e) => updatePO({ companyName: e.target.value })}
-                        className="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500 font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-400 text-[11px] mb-1">Company Suffix</label>
-                      <input
-                        type="text"
-                        value={po.companySubtitle || ''}
-                        onChange={(e) => updatePO({ companySubtitle: e.target.value })}
-                        className="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
-                      />
-                    </div>
+                <div className="bg-white rounded-xl border border-[#cccccc] overflow-hidden shadow-xs">
+                  <div className="bg-[#f0efe6] px-4 py-3 border-b border-[#cccccc] flex items-center space-x-2">
+                    <Building2 className="w-4 h-4 text-[#0d3479]" />
+                    <h3 className="text-xs font-bold text-[#0d3479] tracking-wider uppercase">Header Branding & Company Identity</h3>
                   </div>
+                  <div className="p-4 space-y-4 bg-white">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-black mb-1.5">Company Prefix</label>
+                        <input
+                          type="text"
+                          value={po.companyName || ''}
+                          onChange={(e) => updatePO({ companyName: e.target.value })}
+                          className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs font-bold"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-black mb-1.5">Company Suffix</label>
+                        <input
+                          type="text"
+                          value={po.companySubtitle || ''}
+                          onChange={(e) => updatePO({ companySubtitle: e.target.value })}
+                          className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                        />
+                      </div>
+                    </div>
 
-                  <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-black mb-1.5">GSTIN Number</label>
+                        <input
+                          type="text"
+                          value={po.gstNo || ''}
+                          onChange={(e) => updatePO({ gstNo: e.target.value })}
+                          className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs font-mono text-[11px]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-black mb-1.5">Phone / Support</label>
+                        <input
+                          type="text"
+                          value={po.companyPhone || ''}
+                          onChange={(e) => updatePO({ companyPhone: e.target.value })}
+                          className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                        />
+                      </div>
+                    </div>
+
                     <div>
-                      <label className="block text-gray-400 text-[11px] mb-1">GSTIN Number</label>
+                      <label className="block text-xs font-bold text-black mb-1.5">Address Line (Footer)</label>
                       <input
                         type="text"
-                        value={po.gstNo || ''}
-                        onChange={(e) => updatePO({ gstNo: e.target.value })}
-                        className="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500 font-mono text-[11px]"
+                        value={po.companyAddressFooter || ''}
+                        onChange={(e) => updatePO({ companyAddressFooter: e.target.value })}
+                        className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
                       />
                     </div>
-                    <div>
-                      <label className="block text-gray-400 text-[11px] mb-1">Phone / Support</label>
-                      <input
-                        type="text"
-                        value={po.companyPhone || ''}
-                        onChange={(e) => updatePO({ companyPhone: e.target.value })}
-                        className="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-400 text-[11px] mb-1">Address Line (Footer)</label>
-                    <input
-                      type="text"
-                      value={po.companyAddressFooter || ''}
-                      onChange={(e) => updatePO({ companyAddressFooter: e.target.value })}
-                      className="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
-                    />
                   </div>
                 </div>
               </div>
@@ -686,10 +690,10 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
               <div className="space-y-4">
                 {/* Page Manager */}
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-white">Multi-Page Architecture</span>
+                  <span className="font-bold text-black text-xs uppercase tracking-wider">Multi-Page Architecture</span>
                   <button
                     onClick={handleAddCustomPage}
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-2.5 py-1 rounded-md text-[11px] flex items-center space-x-1 cursor-pointer transition-colors shadow"
+                    className="bg-[#002057] hover:bg-[#0d3479] text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1.5 cursor-pointer transition-colors shadow-xs"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Annexure Page</span>
@@ -698,54 +702,54 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
 
                 {/* Built-in Sections Cards */}
                 <div className="space-y-2">
-                  <div className="bg-[#1a2332] p-3 rounded-lg border border-gray-800 flex items-center justify-between">
+                  <div className="bg-white p-3 rounded-xl border border-[#cccccc] flex items-center justify-between shadow-xs">
                     <div className="flex items-center space-x-2">
-                      <div className="w-6 h-6 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[10px]">
+                      <div className="w-6 h-6 rounded-lg bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de] flex items-center justify-center font-bold text-[10px]">
                         1
                       </div>
                       <div>
-                        <div className="font-semibold text-white">Header & Scope of Work</div>
-                        <div className="text-[10px] text-gray-400">Page 1 • Standard Built-in</div>
+                        <div className="font-bold text-black">Header & Scope of Work</div>
+                        <div className="text-[10px] text-[#666666]">Page 1 • Standard Built-in</div>
                       </div>
                     </div>
-                    <span className="text-[10px] bg-gray-800 text-gray-400 px-2 py-0.5 rounded">Core</span>
+                    <span className="text-[10px] bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de] font-mono px-2 py-0.5 rounded-full font-bold">Core</span>
                   </div>
 
-                  <div className="bg-[#1a2332] p-3 rounded-lg border border-gray-800 flex items-center justify-between">
+                  <div className="bg-white p-3 rounded-xl border border-[#cccccc] flex items-center justify-between shadow-xs">
                     <div className="flex items-center space-x-2">
-                      <div className="w-6 h-6 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[10px]">
+                      <div className="w-6 h-6 rounded-lg bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de] flex items-center justify-center font-bold text-[10px]">
                         2
                       </div>
                       <div>
-                        <div className="font-semibold text-white">Rates & Scope of Contractor</div>
-                        <div className="text-[10px] text-gray-400">Page 2 • Standard Built-in</div>
+                        <div className="font-bold text-black">Rates & Scope of Contractor</div>
+                        <div className="text-[10px] text-[#666666]">Page 2 • Standard Built-in</div>
                       </div>
                     </div>
-                    <span className="text-[10px] bg-gray-800 text-gray-400 px-2 py-0.5 rounded">Core</span>
+                    <span className="text-[10px] bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de] font-mono px-2 py-0.5 rounded-full font-bold">Core</span>
                   </div>
 
-                  <div className="bg-[#1a2332] p-3 rounded-lg border border-gray-800 flex items-center justify-between">
+                  <div className="bg-white p-3 rounded-xl border border-[#cccccc] flex items-center justify-between shadow-xs">
                     <div className="flex items-center space-x-2">
-                      <div className="w-6 h-6 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[10px]">
+                      <div className="w-6 h-6 rounded-lg bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de] flex items-center justify-center font-bold text-[10px]">
                         3
                       </div>
                       <div>
-                        <div className="font-semibold text-white">Terms & Milestone Payments</div>
-                        <div className="text-[10px] text-gray-400">Page 3 • Standard Built-in</div>
+                        <div className="font-bold text-black">Terms & Milestone Payments</div>
+                        <div className="text-[10px] text-[#666666]">Page 3 • Standard Built-in</div>
                       </div>
                     </div>
-                    <span className="text-[10px] bg-gray-800 text-gray-400 px-2 py-0.5 rounded">Core</span>
+                    <span className="text-[10px] bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de] font-mono px-2 py-0.5 rounded-full font-bold">Core</span>
                   </div>
                 </div>
 
                 {/* Custom Sections List */}
                 <div className="pt-2">
-                  <h4 className="font-semibold text-gray-300 mb-2 flex items-center justify-between">
+                  <h4 className="font-bold text-black mb-2 flex items-center justify-between text-xs uppercase tracking-wider">
                     <span>Custom Sections & Annexures ({po.customSections?.length || 0})</span>
                   </h4>
 
                   {(!po.customSections || po.customSections.length === 0) ? (
-                    <div className="p-4 bg-[#111827] border border-dashed border-gray-800 rounded-xl text-center text-gray-500">
+                    <div className="p-4 bg-white border border-dashed border-[#cccccc] rounded-xl text-center text-[#666666]">
                       No custom annexure sections yet. Choose a preset below to add one instantly.
                     </div>
                   ) : (
@@ -753,17 +757,17 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
                       {po.customSections.map((sec) => (
                         <div
                           key={sec.id}
-                          className="bg-[#1a2332] p-3 rounded-lg border border-gray-800 flex items-center justify-between group"
+                          className="bg-white p-3 rounded-xl border border-[#cccccc] flex items-center justify-between shadow-xs group"
                         >
                           <div>
-                            <div className="font-medium text-white">{sec.title}</div>
-                            <div className="text-[10px] text-gray-400">
+                            <div className="font-bold text-black">{sec.title}</div>
+                            <div className="text-[10px] text-[#666666]">
                               Assigned to Page {sec.pageNumber} • Type: {sec.contentType}
                             </div>
                           </div>
                           <button
                             onClick={() => handleDeleteCustomSection(sec.id)}
-                            className="p-1 text-gray-500 hover:text-red-400 rounded hover:bg-gray-800 transition-colors cursor-pointer"
+                            className="p-1.5 text-[#888888] hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
                             title="Remove Section"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -777,12 +781,12 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
                 {/* Predefined Presets Quick Add */}
                 <div className="pt-2 space-y-2">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-gray-300">Quick Add Preset Module:</h4>
+                    <h4 className="font-bold text-black text-xs uppercase tracking-wider">Quick Add Preset Module:</h4>
                     <button
                       onClick={() => setViewMode('library')}
-                      className="text-[10px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center space-x-1 hover:underline cursor-pointer"
+                      className="text-xs text-[#0d3479] hover:text-[#002057] font-bold flex items-center space-x-1 hover:underline cursor-pointer"
                     >
-                      <Sparkles className="w-3 h-3" />
+                      <Sparkles className="w-3.5 h-3.5" />
                       <span>Manage Categories & Sections →</span>
                     </button>
                   </div>
@@ -791,12 +795,12 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
                       <button
                         key={preset.type}
                         onClick={() => handleAddPresetSection(preset.type)}
-                        className="p-2.5 bg-[#1a2332] hover:bg-[#202c3f] border border-gray-800 hover:border-emerald-500/50 rounded-lg text-left transition-colors cursor-pointer group"
+                        className="p-3 bg-white hover:bg-slate-50 border border-[#cccccc] hover:border-[#0d3479] rounded-xl text-left transition-colors cursor-pointer shadow-xs group"
                       >
-                        <div className="font-semibold text-white group-hover:text-emerald-300 text-[11px]">
+                        <div className="font-bold text-[#0d3479] text-xs">
                           + {preset.label}
                         </div>
-                        <div className="text-[10px] text-gray-400 line-clamp-1 mt-0.5">
+                        <div className="text-[10px] text-[#666666] line-clamp-1 mt-0.5">
                           {preset.description}
                         </div>
                       </button>
@@ -809,76 +813,79 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
             {/* TAB 3: Colors & Style */}
             {activeTab === 'style' && (
               <div className="space-y-4">
-                <div className="bg-[#1a2332] p-4 rounded-xl border border-gray-800 space-y-3">
-                  <h3 className="font-semibold text-white flex items-center space-x-2">
-                    <Palette className="w-4 h-4 text-emerald-400" />
-                    <span>Accent Theme Palette</span>
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {ACCENT_COLORS.map((item) => (
-                      <button
-                        key={item.color}
-                        onClick={() => handleAccentColorChange(item.color)}
-                        className={`p-2.5 rounded-lg border flex items-center space-x-2.5 transition-all cursor-pointer ${
-                          templateDoc.settings?.accentColor === item.color
-                            ? 'border-emerald-400 bg-[#223044] shadow'
-                            : 'border-gray-800 bg-[#111827] hover:border-gray-700'
-                        }`}
-                      >
-                        <div
-                          className="w-4 h-4 rounded-full border border-white/20 shrink-0"
-                          style={{ backgroundColor: item.color }}
-                        />
-                        <span className="text-[11px] text-gray-200 font-medium truncate">
-                          {item.name}
-                        </span>
-                      </button>
-                    ))}
+                <div className="bg-white rounded-xl border border-[#cccccc] overflow-hidden shadow-xs">
+                  <div className="bg-[#f0efe6] px-4 py-3 border-b border-[#cccccc] flex items-center space-x-2">
+                    <Palette className="w-4 h-4 text-[#0d3479]" />
+                    <h3 className="text-xs font-bold text-[#0d3479] tracking-wider uppercase">Accent Theme Palette</h3>
+                  </div>
+                  <div className="p-4 space-y-4 bg-white">
+                    <div className="grid grid-cols-2 gap-2">
+                      {ACCENT_COLORS.map((item) => (
+                        <button
+                          key={item.color}
+                          onClick={() => handleAccentColorChange(item.color)}
+                          className={`p-2.5 rounded-lg border flex items-center space-x-2.5 transition-all cursor-pointer ${
+                            templateDoc.settings?.accentColor === item.color
+                              ? 'border-[#0d3479] bg-[#dfe7f4]/40 shadow-xs'
+                              : 'border-[#cccccc] bg-white hover:border-[#0d3479]'
+                          }`}
+                        >
+                          <div
+                            className="w-4 h-4 rounded-full border border-black/10 shrink-0"
+                            style={{ backgroundColor: item.color }}
+                          />
+                          <span className="text-xs text-black font-semibold truncate">
+                            {item.name}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
                 {/* Typography & Layout */}
-                <div className="bg-[#1a2332] p-4 rounded-xl border border-gray-800 space-y-3">
-                  <h3 className="font-semibold text-white flex items-center space-x-2">
-                    <PenTool className="w-4 h-4 text-emerald-400" />
-                    <span>Typography & Print Specs</span>
-                  </h3>
+                <div className="bg-white rounded-xl border border-[#cccccc] overflow-hidden shadow-xs">
+                  <div className="bg-[#f0efe6] px-4 py-3 border-b border-[#cccccc] flex items-center space-x-2">
+                    <PenTool className="w-4 h-4 text-[#0d3479]" />
+                    <h3 className="text-xs font-bold text-[#0d3479] tracking-wider uppercase">Typography & Print Specs</h3>
+                  </div>
+                  <div className="p-4 space-y-4 bg-white">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-black mb-1.5">Font Family</label>
+                        <select
+                          value={templateDoc.settings?.fontFamily || 'helvetica'}
+                          onChange={(e) =>
+                            setTemplateDoc({
+                              ...templateDoc,
+                              settings: { ...templateDoc.settings, fontFamily: e.target.value as any },
+                            })
+                          }
+                          className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                        >
+                          <option value="helvetica">Helvetica / Sans-Serif</option>
+                          <option value="times">Times New Roman / Serif</option>
+                          <option value="courier">Courier / Monospace</option>
+                        </select>
+                      </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-gray-400 text-[11px] mb-1">Font Family</label>
-                      <select
-                        value={templateDoc.settings?.fontFamily || 'helvetica'}
-                        onChange={(e) =>
-                          setTemplateDoc({
-                            ...templateDoc,
-                            settings: { ...templateDoc.settings, fontFamily: e.target.value as any },
-                          })
-                        }
-                        className="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
-                      >
-                        <option value="helvetica">Helvetica / Sans-Serif</option>
-                        <option value="times">Times New Roman / Serif</option>
-                        <option value="courier">Courier / Monospace</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-400 text-[11px] mb-1">Base Font Size</label>
-                      <select
-                        value={templateDoc.settings?.fontSize || '10pt'}
-                        onChange={(e) =>
-                          setTemplateDoc({
-                            ...templateDoc,
-                            settings: { ...templateDoc.settings, fontSize: e.target.value as any },
-                          })
-                        }
-                        className="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
-                      >
-                        <option value="9pt">9pt (Compact Dense)</option>
-                        <option value="10pt">10pt (Standard A4)</option>
-                        <option value="11pt">11pt (Spacious)</option>
-                      </select>
+                      <div>
+                        <label className="block text-xs font-bold text-black mb-1.5">Base Font Size</label>
+                        <select
+                          value={templateDoc.settings?.fontSize || '10pt'}
+                          onChange={(e) =>
+                            setTemplateDoc({
+                              ...templateDoc,
+                              settings: { ...templateDoc.settings, fontSize: e.target.value as any },
+                            })
+                          }
+                          className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                        >
+                          <option value="9pt">9pt (Compact Dense)</option>
+                          <option value="10pt">10pt (Standard A4)</option>
+                          <option value="11pt">11pt (Spacious)</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -888,44 +895,46 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
             {/* TAB 4: Dynamic Variables & Placeholders */}
             {activeTab === 'variables' && (
               <div className="space-y-4">
-                <div className="bg-[#1a2332] p-4 rounded-xl border border-gray-800 space-y-3">
-                  <h3 className="font-semibold text-white flex items-center space-x-2">
-                    <Sliders className="w-4 h-4 text-emerald-400" />
-                    <span>Dynamic Placeholders</span>
-                  </h3>
-                  <p className="text-gray-400 text-[11px]">
-                    Use these tags anywhere in your template text to automatically auto-fill values when a new document is generated.
-                  </p>
+                <div className="bg-white rounded-xl border border-[#cccccc] overflow-hidden shadow-xs">
+                  <div className="bg-[#f0efe6] px-4 py-3 border-b border-[#cccccc] flex items-center space-x-2">
+                    <Sliders className="w-4 h-4 text-[#0d3479]" />
+                    <h3 className="text-xs font-bold text-[#0d3479] tracking-wider uppercase">Dynamic Placeholders</h3>
+                  </div>
+                  <div className="p-4 space-y-4 bg-white">
+                    <p className="text-[#666666] text-xs">
+                      Use these tags anywhere in your template text to automatically auto-fill values when a new document is generated.
+                    </p>
 
-                  <div className="space-y-2 pt-1">
-                    {[
-                      { tag: '{{CONTRACTOR_NAME}}', desc: 'Full Name of the Contractor / Vendor' },
-                      { tag: '{{PROJECT_NAME}}', desc: 'Name of the Civil / PEB Construction Project' },
-                      { tag: '{{PROJECT_LOCATION}}', desc: 'Site location address and TP/City' },
-                      { tag: '{{PO_NUMBER}}', desc: 'Document Reference Number (e.g. GI/CIVIL/2026/101)' },
-                      { tag: '{{PO_DATE}}', desc: 'Issuance date in DD/MM/YYYY format' },
-                      { tag: '{{TOTAL_AMOUNT}}', desc: 'Total contract valuation in INR' },
-                      { tag: '{{COMPANY_NAME}}', desc: 'Primary issuing corporate entity' },
-                    ].map((item) => (
-                      <div
-                        key={item.tag}
-                        onClick={() => copyVariable(item.tag)}
-                        className="p-2.5 bg-[#111827] hover:bg-[#1a2536] border border-gray-800 hover:border-emerald-500/40 rounded-lg flex items-center justify-between transition-colors cursor-pointer group"
-                      >
-                        <div>
-                          <div className="font-mono text-emerald-400 font-semibold text-xs flex items-center space-x-1.5">
-                            <span>{item.tag}</span>
-                            {copiedVariable === item.tag && (
-                              <span className="text-[10px] text-emerald-300 font-sans font-normal">
-                                Copied!
-                              </span>
-                            )}
+                    <div className="space-y-2 pt-1">
+                      {[
+                        { tag: '{{CONTRACTOR_NAME}}', desc: 'Full Name of the Contractor / Vendor' },
+                        { tag: '{{PROJECT_NAME}}', desc: 'Name of the Civil / PEB Construction Project' },
+                        { tag: '{{PROJECT_LOCATION}}', desc: 'Site location address and TP/City' },
+                        { tag: '{{PO_NUMBER}}', desc: 'Document Reference Number (e.g. GI/CIVIL/2026/101)' },
+                        { tag: '{{PO_DATE}}', desc: 'Issuance date in DD/MM/YYYY format' },
+                        { tag: '{{TOTAL_AMOUNT}}', desc: 'Total contract valuation in INR' },
+                        { tag: '{{COMPANY_NAME}}', desc: 'Primary issuing corporate entity' },
+                      ].map((item) => (
+                        <div
+                          key={item.tag}
+                          onClick={() => copyVariable(item.tag)}
+                          className="p-3 bg-white hover:bg-slate-50 border border-[#cccccc] hover:border-[#0d3479] rounded-xl flex items-center justify-between transition-colors cursor-pointer group shadow-xs"
+                        >
+                          <div>
+                            <div className="font-mono text-[#0d3479] font-bold text-xs flex items-center space-x-1.5">
+                              <span>{item.tag}</span>
+                              {copiedVariable === item.tag && (
+                                <span className="text-[10px] text-emerald-600 font-sans font-bold">
+                                  Copied!
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[10px] text-[#666666] mt-0.5">{item.desc}</div>
                           </div>
-                          <div className="text-[10px] text-gray-400 mt-0.5">{item.desc}</div>
+                          <Copy className="w-3.5 h-3.5 text-[#888888] group-hover:text-[#0d3479] transition-colors" />
                         </div>
-                        <Copy className="w-3.5 h-3.5 text-gray-500 group-hover:text-emerald-400 transition-colors" />
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -934,37 +943,37 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
         </div>
 
         {/* Right Live A4 Preview Canvas */}
-        <div className="flex-1 bg-[#0b1320] flex flex-col h-full overflow-hidden relative">
+        <div className="flex-1 bg-[#64748b] flex flex-col h-full overflow-hidden relative">
           {/* Zoom / Canvas Controls */}
-          <div className="h-10 bg-[#131c2a] border-b border-gray-800 px-4 flex items-center justify-between text-xs text-gray-300 shrink-0">
+          <div className="h-10 bg-[#f0efe6] border-b border-[#cccccc] px-4 flex items-center justify-between text-xs text-black font-bold shrink-0">
             <div className="flex items-center space-x-2">
-              <span className="font-semibold text-white">Live A4 Layout Canvas</span>
-              <span className="text-[10px] text-gray-500">• WYSIWYG Print Emulation</span>
+              <span className="font-bold text-[#0d3479] uppercase tracking-wider text-xs">Live A4 Layout Canvas</span>
+              <span className="text-[10px] text-[#666666]">• WYSIWYG Print Emulation</span>
             </div>
 
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setPreviewZoom((z) => Math.max(50, z - 10))}
-                className="p-1 hover:bg-gray-800 text-gray-400 hover:text-white rounded"
+                className="p-1.5 hover:bg-white text-black rounded border border-[#cccccc] shadow-xs cursor-pointer"
                 title="Zoom Out"
               >
                 <ZoomOut className="w-3.5 h-3.5" />
               </button>
-              <span className="text-[11px] font-mono text-gray-400 w-10 text-center">
+              <span className="text-xs font-mono text-black font-bold w-12 text-center bg-white px-2 py-0.5 rounded border border-[#cccccc]">
                 {previewZoom}%
               </span>
               <button
                 onClick={() => setPreviewZoom((z) => Math.min(150, z + 10))}
-                className="p-1 hover:bg-gray-800 text-gray-400 hover:text-white rounded"
+                className="p-1.5 hover:bg-white text-black rounded border border-[#cccccc] shadow-xs cursor-pointer"
                 title="Zoom In"
               >
                 <ZoomIn className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => setPreviewZoom(90)}
-                className="px-2 py-0.5 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white rounded text-[10px]"
+                className="px-2.5 py-1 bg-white hover:bg-slate-100 text-[#0d3479] font-bold border border-[#cccccc] rounded-lg text-xs shadow-xs cursor-pointer"
               >
-                Fit
+                Reset
               </button>
             </div>
           </div>
@@ -992,8 +1001,8 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
 
       {/* Floating Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-emerald-700 text-white px-4 py-2.5 rounded-xl shadow-2xl flex items-center space-x-2 text-xs font-medium border border-emerald-500/40 animate-in fade-in slide-in-from-bottom-3 duration-200">
-          <CheckCircle2 className="w-4 h-4 shrink-0" />
+        <div className="fixed bottom-6 right-6 z-50 bg-[#002057] text-white px-4 py-2.5 rounded-xl shadow-2xl flex items-center space-x-2 text-xs font-bold border border-[#15428a] animate-in fade-in slide-in-from-bottom-3 duration-200">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}

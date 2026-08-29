@@ -44,6 +44,11 @@ export default function ProjectDetailPage() {
         console.error('Fetch project details error:', err);
         router.push('/dashboard');
       });
+
+    // Prefetch editor and dashboard for instant navigation
+    router.prefetch('/dashboard');
+    router.prefetch(`/editor/${projectId}`);
+    router.prefetch(`/project/${projectId}/company-profile`);
   }, [projectId, currentUser, router]);
 
   const handleOpenDocument = (docId: string) => {

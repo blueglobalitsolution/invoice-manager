@@ -61,14 +61,6 @@ export const CreateDocumentModal: React.FC<CreateDocumentModalProps> = ({
   const [contractorName, setContractorName] = useState(project.clientName || 'Mohammad Kamil Shaikh');
   const [agreedAmount, setAgreedAmount] = useState('₹ 4,70,000.00');
 
-  useEffect(() => {
-    if (isOpen) {
-      handleSelectType(selectedType);
-    }
-  }, [isOpen, project]);
-
-  if (!isOpen) return null;
-
   const handleSelectType = (type: ProjectDocType) => {
     setSelectedType(type);
     const tmpl = PROJECT_DOC_TEMPLATES.find((t) => t.type === type);
@@ -95,6 +87,24 @@ export const CreateDocumentModal: React.FC<CreateDocumentModalProps> = ({
       setTitle(`${tmpl?.name || 'Document'} - ${project.title}`);
     }
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      handleSelectType(selectedType);
+    }
+  }, [isOpen, project]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,267 +134,281 @@ export const CreateDocumentModal: React.FC<CreateDocumentModalProps> = ({
     onClose();
   };
 
-  const getDocTypeIcon = (type: ProjectDocType) => {
+  const getDocTypeIcon = (type: ProjectDocType, isSelected: boolean) => {
+    const iconClass = isSelected ? 'w-5 h-5 text-white' : 'w-5 h-5 text-[#0d3479]';
     switch (type) {
       case 'quotation':
-        return <FileSpreadsheet className="w-5 h-5 text-blue-400" />;
+        return <FileSpreadsheet className={iconClass} />;
       case 'work_order':
-        return <FileCheck className="w-5 h-5 text-emerald-400" />;
+        return <FileCheck className={iconClass} />;
       case 'invoice':
-        return <Receipt className="w-5 h-5 text-rose-400" />;
+        return <Receipt className={iconClass} />;
       default:
-        return <FileText className="w-5 h-5 text-gray-400" />;
+        return <FileText className={iconClass} />;
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200 select-none">
-      <div className="bg-[#111827] border border-gray-700/80 rounded-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[92vh] shadow-2xl text-gray-200">
-        
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between bg-[#16202f]">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-xs select-none">
+      {/* Backdrop overlay for closing */}
+      <div onClick={onClose} className="fixed inset-0 cursor-pointer" title="Click outside to close" />
+
+      {/* Right Drawer Container */}
+      <div className="relative w-full sm:max-w-2xl lg:max-w-3xl bg-white border-l border-[#cccccc] h-full flex flex-col shadow-2xl text-black z-10">
+        {/* Drawer Header */}
+        <div className="px-6 py-4.5 border-b border-[#cccccc] flex items-center justify-between bg-[#f0efe6] shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-950/80 border border-emerald-700/60 flex items-center justify-center text-emerald-400 shadow-xs">
-              <FilePlus className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479] shadow-xs">
+              <FilePlus className="w-5 h-5 text-[#0d3479]" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h2 className="text-lg font-bold text-white leading-tight">Create Document in Project</h2>
-                <span className="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded font-mono font-medium">
+                <h2 className="text-base md:text-lg font-bold text-black leading-tight">Create Document in Project</h2>
+                <span className="text-xs bg-[#dfe7f4] text-[#0d3479] border border-[#b9c7de] px-2.5 py-0.5 rounded-full font-semibold">
                   {project.title}
                 </span>
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">
-                Client: <span className="text-gray-200 font-semibold">{project.clientName || 'M/s. ALEMBIC LTD'}</span> • Location: <span className="text-gray-200">{project.location || 'Vadodara'}</span>
+              <p className="text-xs text-[#555555] mt-0.5">
+                Client: <span className="text-black font-semibold">{project.clientName || 'M/s. ALEMBIC LTD'}</span> • Location: <span className="text-black font-medium">{project.location || 'Vadodara'}</span>
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800 transition-colors cursor-pointer"
+            className="p-2 text-[#666666] hover:text-black rounded-xl hover:bg-white border border-transparent hover:border-[#cccccc] transition-colors cursor-pointer"
+            title="Close Drawer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="overflow-y-auto p-6 space-y-5 scrollbar-thin">
+        {/* Drawer Form Body */}
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
           
-          {/* 1. Document Type Picker */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">
-              1. Choose Document Type
-            </label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {PROJECT_DOC_TEMPLATES.map((tmpl) => {
-                const isSelected = selectedType === tmpl.type;
-                return (
-                  <div
-                    key={tmpl.type}
-                    onClick={() => handleSelectType(tmpl.type)}
-                    className={`p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
-                      isSelected
-                        ? 'bg-emerald-950/70 border-emerald-500 text-white shadow-sm ring-1 ring-emerald-500/50'
-                        : 'bg-[#16202f] border-gray-800 text-gray-400 hover:bg-[#1d2b3f] hover:border-gray-700'
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <div
-                          className={`p-2 rounded-lg ${
-                            isSelected ? 'bg-emerald-600 text-white' : 'bg-gray-800 text-gray-400'
-                          }`}
-                        >
-                          {getDocTypeIcon(tmpl.type)}
+          <div className="overflow-y-auto flex-1 p-6 space-y-6 scrollbar-thin bg-white">
+            {/* 1. Document Type Picker */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#0d3479] mb-2.5">
+                1. Choose Document Type
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {PROJECT_DOC_TEMPLATES.map((tmpl) => {
+                  const isSelected = selectedType === tmpl.type;
+                  return (
+                    <div
+                      key={tmpl.type}
+                      onClick={() => handleSelectType(tmpl.type)}
+                      className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                        isSelected
+                          ? 'bg-[#dfe7f4] border-[#0d3479] text-[#0d3479] shadow-sm'
+                          : 'bg-white border-[#cccccc] text-black hover:bg-[#f7f7f2] hover:border-[#0d3479]/50 shadow-xs'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <div
+                            className={`p-2 rounded-lg ${
+                              isSelected ? 'bg-[#002057] text-white shadow-xs' : 'bg-[#eef2f8] text-[#0d3479]'
+                            }`}
+                          >
+                            {getDocTypeIcon(tmpl.type, isSelected)}
+                          </div>
+                          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                            isSelected ? 'bg-[#002057] text-white' : 'bg-[#eef2f8] text-[#0d3479]'
+                          }`}>
+                            {tmpl.badge}
+                          </span>
                         </div>
-                        <span className="text-[10px] font-mono font-semibold text-emerald-400">
-                          {tmpl.badge}
-                        </span>
+                        <h4 className={`font-bold text-xs mb-0.5 ${isSelected ? 'text-[#002057]' : 'text-black'}`}>{tmpl.name}</h4>
+                        <p className={`text-[10.5px] leading-snug ${isSelected ? 'text-[#153e82]' : 'text-[#666666]'}`}>{tmpl.description}</p>
                       </div>
-                      <h4 className="font-bold text-xs text-white mb-0.5">{tmpl.name}</h4>
-                      <p className="text-[10px] text-gray-400 leading-snug">{tmpl.description}</p>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 2. Core Document Metadata */}
-          <div className="border-t border-gray-800 pt-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-3">
-              2. Document Title & References
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-gray-300 mb-1.5">
-                  Document Title <span className="text-emerald-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500 font-bold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-300 mb-1.5 flex items-center space-x-1">
-                  <Hash className="w-3.5 h-3.5 text-gray-400" />
-                  <span>Document / Ref No.</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={docNumber}
-                  onChange={(e) => setDocNumber(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500 font-bold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-300 mb-1.5 flex items-center space-x-1">
-                  <Calendar className="w-3.5 h-3.5 text-gray-400" />
-                  <span>Document Date</span>
-                </label>
-                <input
-                  type="text"
-                  value={docDate}
-                  onChange={(e) => setDocDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-300 mb-1.5 flex items-center space-x-1">
-                  <DollarSign className="w-3.5 h-3.5 text-gray-400" />
-                  <span>Target Amount / Value</span>
-                </label>
-                <input
-                  type="text"
-                  value={agreedAmount}
-                  onChange={(e) => setAgreedAmount(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-emerald-500"
-                />
+                  );
+                })}
               </div>
             </div>
-          </div>
 
-          {/* 3. Document-Specific Fields */}
-          <div className="border-t border-gray-800 pt-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-3 flex items-center space-x-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-              <span>3. Specific {selectedType.toUpperCase().replace('_', ' ')} Details</span>
-            </h3>
-
-            {/* If Tax Invoice */}
-            {selectedType === 'invoice' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#16202f] p-4 rounded-xl border border-gray-800">
-                <div>
-                  <label className="block text-xs font-bold text-gray-300 mb-1.5">
-                    Client P.O. Number
-                  </label>
-                  <input
-                    type="text"
-                    value={clientPoNumber}
-                    onChange={(e) => setClientPoNumber(e.target.value)}
-                    placeholder="e.g. 1300000567"
-                    className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-300 mb-1.5">
-                    Client P.O. Date
-                  </label>
-                  <input
-                    type="text"
-                    value={clientPoDate}
-                    onChange={(e) => setClientPoDate(e.target.value)}
-                    placeholder="DD/MM/YYYY"
-                    className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* If Commercial Quotation */}
-            {selectedType === 'quotation' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#16202f] p-4 rounded-xl border border-gray-800">
+            {/* 2. Core Document Metadata */}
+            <div className="border-t border-[#cccccc] pt-5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0d3479] mb-3">
+                2. Document Title & References
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-bold text-gray-300 mb-1.5">
-                    Offer Subject Line
+                  <label className="block text-xs font-bold text-black mb-1.5">
+                    Document Title <span className="text-[#0d3479]">*</span>
                   </label>
                   <input
                     type="text"
-                    value={subjectLine}
-                    onChange={(e) => setSubjectLine(e.target.value)}
-                    placeholder="e.g. Quotation for Construction of Round Roof System (Trussless Roof)"
-                    className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white font-bold focus:outline-none focus:border-emerald-500"
+                    required
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:outline-none focus:border-[#0d3479] font-bold shadow-xs"
                   />
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-300 mb-1.5">
-                    Building Total Area (SQFT)
-                  </label>
-                  <input
-                    type="text"
-                    value={buildingAreaSqft}
-                    onChange={(e) => setBuildingAreaSqft(e.target.value)}
-                    placeholder="e.g. 8775.00 SQFT"
-                    className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
-              </div>
-            )}
 
-            {/* If Work Order / Labour PO */}
-            {selectedType === 'work_order' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#16202f] p-4 rounded-xl border border-gray-800">
                 <div>
-                  <label className="block text-xs font-bold text-gray-300 mb-1.5">
-                    Contractor / Agency Name
+                  <label className="block text-xs font-bold text-black mb-1.5 flex items-center space-x-1">
+                    <Hash className="w-3.5 h-3.5 text-[#0d3479]" />
+                    <span>Document / Ref No.</span>
                   </label>
                   <input
                     type="text"
-                    value={contractorName}
-                    onChange={(e) => setContractorName(e.target.value)}
-                    placeholder="e.g. Mohammad Kamil Shaikh"
-                    className="w-full px-3 py-2 bg-[#1e293b] border border-gray-700 rounded-xl text-xs text-white font-bold focus:outline-none focus:border-emerald-500"
+                    required
+                    value={docNumber}
+                    onChange={(e) => setDocNumber(e.target.value)}
+                    className="w-full px-3 py-2 bg-[#f7f7f2] border border-[#cccccc] rounded-xl text-xs font-mono text-[#002057] focus:outline-none focus:border-[#0d3479] font-bold shadow-xs"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-xs font-bold text-gray-300 mb-1.5">
-                    Project Site Location
+                  <label className="block text-xs font-bold text-black mb-1.5 flex items-center space-x-1">
+                    <Calendar className="w-3.5 h-3.5 text-[#0d3479]" />
+                    <span>Document Date</span>
                   </label>
                   <input
                     type="text"
-                    value={project.location || 'Sevasi TP-1, Vadodara, Gujarat'}
-                    disabled
-                    className="w-full px-3 py-2 bg-[#1e293b]/60 border border-gray-800 rounded-xl text-xs text-gray-400 cursor-not-allowed"
+                    value={docDate}
+                    onChange={(e) => setDocDate(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-[#cccccc] rounded-xl text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-black mb-1.5 flex items-center space-x-1">
+                    <DollarSign className="w-3.5 h-3.5 text-[#0d3479]" />
+                    <span>Target Amount / Value</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={agreedAmount}
+                    onChange={(e) => setAgreedAmount(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-[#cccccc] rounded-xl text-xs font-mono text-black font-bold focus:outline-none focus:border-[#0d3479] shadow-xs"
                   />
                 </div>
               </div>
-            )}
+            </div>
+
+            {/* 3. Document-Specific Fields */}
+            <div className="border-t border-[#cccccc] pt-5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0d3479] mb-3 flex items-center space-x-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#0d3479]" />
+                <span>3. Specific {selectedType.toUpperCase().replace('_', ' ')} Details</span>
+              </h3>
+
+              {/* If Tax Invoice */}
+              {selectedType === 'invoice' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#f7f7f2] p-4 rounded-xl border border-[#cccccc] shadow-xs">
+                  <div>
+                    <label className="block text-xs font-bold text-black mb-1.5">
+                      Client P.O. Number
+                    </label>
+                    <input
+                      type="text"
+                      value={clientPoNumber}
+                      onChange={(e) => setClientPoNumber(e.target.value)}
+                      placeholder="e.g. 1300000567"
+                      className="w-full px-3 py-2 bg-white border border-[#cccccc] rounded-xl text-xs text-black font-mono focus:outline-none focus:border-[#0d3479] shadow-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-black mb-1.5">
+                      Client P.O. Date
+                    </label>
+                    <input
+                      type="text"
+                      value={clientPoDate}
+                      onChange={(e) => setClientPoDate(e.target.value)}
+                      placeholder="DD/MM/YYYY"
+                      className="w-full px-3 py-2 bg-white border border-[#cccccc] rounded-xl text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* If Commercial Quotation */}
+              {selectedType === 'quotation' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#f7f7f2] p-4 rounded-xl border border-[#cccccc] shadow-xs">
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-bold text-black mb-1.5">
+                      Offer Subject Line
+                    </label>
+                    <input
+                      type="text"
+                      value={subjectLine}
+                      onChange={(e) => setSubjectLine(e.target.value)}
+                      placeholder="e.g. Quotation for Construction of Round Roof System (Trussless Roof)"
+                      className="w-full px-3 py-2 bg-white border border-[#cccccc] rounded-xl text-xs text-black font-bold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-black mb-1.5">
+                      Building Total Area (SQFT)
+                    </label>
+                    <input
+                      type="text"
+                      value={buildingAreaSqft}
+                      onChange={(e) => setBuildingAreaSqft(e.target.value)}
+                      placeholder="e.g. 8775.00 SQFT"
+                      className="w-full px-3 py-2 bg-white border border-[#cccccc] rounded-xl text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* If Work Order / Labour PO */}
+              {selectedType === 'work_order' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#f7f7f2] p-4 rounded-xl border border-[#cccccc] shadow-xs">
+                  <div>
+                    <label className="block text-xs font-bold text-black mb-1.5">
+                      Contractor / Agency Name
+                    </label>
+                    <input
+                      type="text"
+                      value={contractorName}
+                      onChange={(e) => setContractorName(e.target.value)}
+                      placeholder="e.g. Mohammad Kamil Shaikh"
+                      className="w-full px-3 py-2 bg-white border border-[#cccccc] rounded-xl text-xs text-black font-bold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-black mb-1.5">
+                      Project Site Location
+                    </label>
+                    <input
+                      type="text"
+                      value={project.location || 'Sevasi TP-1, Vadodara, Gujarat'}
+                      disabled
+                      className="w-full px-3 py-2 bg-white/70 border border-[#cccccc] rounded-xl text-xs text-[#555555] font-semibold cursor-not-allowed shadow-xs"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Footer Actions */}
-          <div className="border-t border-gray-800 pt-4 flex items-center justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={!title.trim() || !docNumber.trim()}
-              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold flex items-center space-x-2 shadow-lg shadow-emerald-900/40 transition-all cursor-pointer active:scale-95"
-            >
-              <FilePlus className="w-4 h-4" />
-              <span>Create Document</span>
-            </button>
+          {/* Sticky Drawer Footer Actions */}
+          <div className="border-t border-[#cccccc] px-6 py-4 bg-[#f0efe6] flex items-center justify-between shrink-0">
+            <div className="text-xs text-[#666666]">
+              Project: <span className="font-semibold text-black">{project.title}</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 bg-white hover:bg-slate-100 text-black border border-[#cccccc] rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-xs active:scale-95"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={!title.trim() || !docNumber.trim()}
+                className="px-5 py-2 bg-[#002057] hover:bg-[#0d3479] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold flex items-center space-x-2 shadow-md transition-all cursor-pointer active:scale-95"
+              >
+                <FilePlus className="w-4 h-4 text-white" />
+                <span>Create Document</span>
+              </button>
+            </div>
           </div>
 
         </form>

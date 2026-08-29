@@ -23,33 +23,33 @@ export function formatDocumentHtml(
 
   // 2. Normalize LaTeX formatting
   processed = processed
-    .replace(/\\textbf{([^}]+)}/g, '<strong style="font-weight: 800;">$1</strong>')
-    .replace(/\\textit{([^}]+)}/g, '<em style="font-style: italic;">$1</em>')
-    .replace(/\\underline{([^}]+)}/g, '<span style="text-decoration: underline; text-underline-offset: 2.5px;">$1</span>')
+    .replace(/\\textbf{([^}]+)}/g, '<b class="font-bold font-extrabold" style="font-weight: 800;">$1</b>')
+    .replace(/\\textit{([^}]+)}/g, '<i class="italic" style="font-style: italic;">$1</i>')
+    .replace(/\\underline{([^}]+)}/g, '<u style="text-decoration: underline; text-underline-offset: 2.5px;">$1</u>')
     .replace(/\\textsuperscript{([^}]+)}/g, '<sup>$1</sup>')
     .replace(/\\newline/g, '<br/>')
     .replace(/\\%/g, '%')
     .replace(/\\&/g, '&');
 
   // 3. Markdown Bold + Italic: ***text***
-  processed = processed.replace(/\*\*\*([\s\S]+?)\*\*\*/g, '<strong style="font-weight: 800;"><em style="font-style: italic;">$1</em></strong>');
+  processed = processed.replace(/\*\*\*([\s\S]+?)\*\*\*/g, '<b class="font-bold font-extrabold" style="font-weight: 800;"><i class="italic" style="font-style: italic;">$1</i></b>');
 
   // 4. Markdown Bold: **text**
-  processed = processed.replace(/\*\*([\s\S]+?)\*\*/g, '<strong style="font-weight: 800;">$1</strong>');
+  processed = processed.replace(/\*\*([\s\S]+?)\*\*/g, '<b class="font-bold font-extrabold" style="font-weight: 800;">$1</b>');
 
   // 5. Markdown Italic: *text* (matching single asterisks)
-  processed = processed.replace(/(?<!\*)\*([^\*\n]+?)\*(?!\*)/g, '<em style="font-style: italic;">$1</em>');
+  processed = processed.replace(/(?<!\*)\*([^\*\n]+?)\*(?!\*)/g, '<i class="italic" style="font-style: italic;">$1</i>');
 
   // 6. Underline HTML tag: <u>text</u>
-  processed = processed.replace(/<u\b[^>]*>([\s\S]+?)<\/u>/gi, '<span style="text-decoration: underline; text-underline-offset: 2.5px;">$1</span>');
+  processed = processed.replace(/<u\b[^>]*>([\s\S]+?)<\/u>/gi, '<u style="text-decoration: underline; text-underline-offset: 2.5px;">$1</u>');
 
   // 7. Bold HTML tag: <b>text</b> or <strong>text</strong>
-  processed = processed.replace(/<b\b[^>]*>([\s\S]+?)<\/b>/gi, '<strong style="font-weight: 800;">$1</strong>');
-  processed = processed.replace(/<strong\b[^>]*>([\s\S]+?)<\/strong>/gi, '<strong style="font-weight: 800;">$1</strong>');
+  processed = processed.replace(/<b\b[^>]*>([\s\S]+?)<\/b>/gi, '<b class="font-bold font-extrabold" style="font-weight: 800;">$1</b>');
+  processed = processed.replace(/<strong\b[^>]*>([\s\S]+?)<\/strong>/gi, '<b class="font-bold font-extrabold" style="font-weight: 800;">$1</b>');
 
   // 8. Italic HTML tag: <i>text</i> or <em>text</em>
-  processed = processed.replace(/<i\b[^>]*>([\s\S]+?)<\/i>/gi, '<em style="font-style: italic;">$1</em>');
-  processed = processed.replace(/<em\b[^>]*>([\s\S]+?)<\/em>/gi, '<em style="font-style: italic;">$1</em>');
+  processed = processed.replace(/<i\b[^>]*>([\s\S]+?)<\/i>/gi, '<i class="italic" style="font-style: italic;">$1</i>');
+  processed = processed.replace(/<em\b[^>]*>([\s\S]+?)<\/em>/gi, '<i class="italic" style="font-style: italic;">$1</i>');
 
   return processed;
 }

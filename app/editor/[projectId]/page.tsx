@@ -575,7 +575,7 @@ export default function EditorPage() {
     const targetUrl = projectId && projectId !== 'default' ? `/project/${projectId}` : '/dashboard';
 
     if (!project) {
-      window.location.href = targetUrl;
+      router.push(targetUrl);
       return;
     }
 
@@ -607,11 +607,10 @@ export default function EditorPage() {
         }),
       });
 
-      // Direct navigation guarantees exit to project dashboard
-      window.location.href = targetUrl;
+      router.push(targetUrl);
     } catch (err) {
       console.error('Save & Exit error:', err);
-      window.location.href = targetUrl;
+      router.push(targetUrl);
     }
   };
 
@@ -627,7 +626,7 @@ export default function EditorPage() {
   const templateId = docState.quotation ? 'quotation' : docState.purchaseOrder ? 'labour_po' : undefined;
 
   return (
-    <div className="app-shell flex flex-col h-screen w-full text-slate-300 font-sans overflow-hidden bg-[#070A13]">
+    <div className="app-shell flex flex-col h-screen w-full text-black font-sans overflow-hidden">
       <div className="print:hidden w-full shrink-0">
         <Header
           document={docState}
@@ -727,8 +726,8 @@ export default function EditorPage() {
                 e.preventDefault();
                 setIsDragging(true);
               }}
-              className={`hidden md:block w-[1px] hover:w-1 hover:bg-[#6366f1] bg-[#151C2C] cursor-col-resize h-full shrink-0 transition-all z-20 print:hidden ${
-                isDragging ? 'bg-[#6366f1] w-1' : ''
+              className={`hidden md:block w-[1px] hover:w-1 hover:bg-[#0d3479] bg-[#cccccc] cursor-col-resize h-full shrink-0 transition-all z-20 print:hidden ${
+                isDragging ? 'bg-[#0d3479] w-1' : ''
               }`}
             />
 

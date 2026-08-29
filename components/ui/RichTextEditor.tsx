@@ -128,11 +128,11 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     <div className={`space-y-2 select-none ${className}`}>
       {/* Header Label and Status */}
       <div className="flex items-center justify-between">
-        <label className="text-xs font-semibold text-slate-300 flex items-center space-x-1.5">
+        <label className="text-xs font-bold text-black flex items-center space-x-1.5">
           <FileText className="w-3.5 h-3.5 text-[#0d3479]" />
           <span>{label}</span>
         </label>
-        <div className="flex items-center space-x-2 text-[10px] text-slate-400 font-mono">
+        <div className="flex items-center space-x-2 text-[10px] text-[#666666] font-mono">
           <span>{paragraphsCount} Paragraph{paragraphsCount !== 1 ? 's' : ''}</span>
           <span>&bull;</span>
           <span>{wordsCount} Words</span>
@@ -140,15 +140,15 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       </div>
 
       {/* Editor Box */}
-      <div className="border border-[#1E2538] focus-within:border-[#0d3479] rounded-xl bg-[#070A13] overflow-hidden transition-all shadow-xs">
+      <div className="border border-[#cccccc] focus-within:border-[#0d3479] focus-within:ring-1 focus-within:ring-[#0d3479]/20 rounded-xl bg-white overflow-hidden transition-all shadow-xs">
         {/* Formatting Toolbar */}
-        <div className="px-2.5 py-1.5 bg-[#0b1220] border-b border-[#1E2538] flex flex-wrap items-center justify-between gap-1.5 text-xs">
+        <div className="px-2.5 py-1.5 bg-[#f0efe6] border-b border-[#cccccc] flex flex-wrap items-center justify-between gap-1.5 text-xs">
           <div className="flex items-center space-x-1">
             {/* Bold */}
             <button
               type="button"
               onClick={() => applyFormat('**', '**', 'bold text')}
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded transition-colors cursor-pointer"
+              className="p-1.5 text-[#444444] hover:text-black hover:bg-white rounded transition-colors cursor-pointer"
               title="Bold (Ctrl+B)"
             >
               <Bold className="w-3.5 h-3.5" />
@@ -158,7 +158,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onClick={() => applyFormat('*', '*', 'italic text')}
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded transition-colors cursor-pointer"
+              className="p-1.5 text-[#444444] hover:text-black hover:bg-white rounded transition-colors cursor-pointer"
               title="Italic (Ctrl+I)"
             >
               <Italic className="w-3.5 h-3.5" />
@@ -168,19 +168,19 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onClick={() => applyFormat('<u>', '</u>', 'underlined text')}
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded transition-colors cursor-pointer"
+              className="p-1.5 text-[#444444] hover:text-black hover:bg-white rounded transition-colors cursor-pointer"
               title="Underline (Ctrl+U)"
             >
               <Underline className="w-3.5 h-3.5" />
             </button>
 
-            <div className="h-3.5 w-px bg-slate-700 mx-1" />
+            <div className="h-3.5 w-px bg-[#cccccc] mx-1" />
 
             {/* Bullet List */}
             <button
               type="button"
               onClick={() => handleInsertList(false)}
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded transition-colors cursor-pointer"
+              className="p-1.5 text-[#444444] hover:text-black hover:bg-white rounded transition-colors cursor-pointer"
               title="Bullet List"
             >
               <List className="w-3.5 h-3.5" />
@@ -190,7 +190,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onClick={() => handleInsertList(true)}
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded transition-colors cursor-pointer"
+              className="p-1.5 text-[#444444] hover:text-black hover:bg-white rounded transition-colors cursor-pointer"
               title="Numbered List"
             >
               <ListOrdered className="w-3.5 h-3.5" />
@@ -206,7 +206,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           style={{ minHeight }}
-          className="w-full p-3.5 bg-transparent border-0 text-slate-200 text-xs focus:outline-none resize-y leading-relaxed font-sans placeholder-slate-500 whitespace-pre-wrap select-text"
+          className="w-full p-3.5 bg-transparent border-0 text-black text-xs focus:outline-none resize-y leading-relaxed font-sans placeholder-[#888888] whitespace-pre-wrap select-text"
         />
       </div>
     </div>

@@ -33,6 +33,7 @@ import {
   getIconComponent,
 } from '@/lib/section-presets';
 import { SectionContentType } from '@/types/document';
+import { FormattedText } from '@/lib/format-text';
 
 interface SectionLibraryManagerProps {
   onInsertToDocument?: (section: SectionPresetItem) => void;
@@ -222,7 +223,6 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
   // Duplicate Section
   const handleDuplicateSection = (sec: SectionPresetItem) => {
     if (!activeLibrary || !activeCategory) return;
-
     const cloned: SectionPresetItem = {
       ...JSON.parse(JSON.stringify(sec)),
       id: `sec_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
@@ -285,18 +285,18 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-[#0d1522] text-gray-200 overflow-hidden select-none">
+    <div className="flex flex-col h-full w-full bg-[#f4f3eb] text-black overflow-hidden select-none">
       {/* Top Banner Toolbar */}
-      <div className="h-13 bg-[#131c2d] border-b border-[#1f2c42] px-4 flex items-center justify-between shrink-0">
-        <div className="flex items-center space-x-3">
-          <div className="p-1.5 bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 rounded-lg">
-            <Layers className="w-4 h-4" />
+      <div className="h-11 bg-[#002057] border-b border-[#15428a] px-4 flex items-center justify-between shrink-0 text-white shadow-md">
+        <div className="flex items-center space-x-2.5">
+          <div className="p-1.5 bg-[#0d3479] text-white border border-[#2356a8] rounded-lg">
+            <Layers className="w-3.5 h-3.5" />
           </div>
           <div>
             <h2 className="text-xs font-bold text-white uppercase tracking-wider">
               Section & Preset Library
             </h2>
-            <p className="text-[10px] text-gray-400">
+            <p className="text-[10px] text-white/70">
               Customize pre-filled sections and tables for document templates
             </p>
           </div>
@@ -305,7 +305,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
         <div className="flex items-center space-x-2">
           {/* Toast alert */}
           {toastMessage && (
-            <div className="text-xs font-medium text-emerald-300 bg-emerald-950/90 border border-emerald-800 px-2.5 py-1 rounded-lg animate-in fade-in">
+            <div className="text-xs font-bold text-white bg-emerald-700 border border-emerald-600 px-2.5 py-1 rounded-lg animate-in fade-in">
               ✓ {toastMessage}
             </div>
           )}
@@ -313,10 +313,10 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
           {/* Reset button */}
           <button
             onClick={handleResetDefaults}
-            className="px-2.5 py-1 text-gray-400 hover:text-white bg-[#1a2538] hover:bg-gray-800 border border-gray-700/80 rounded-lg text-xs flex items-center space-x-1.5 cursor-pointer transition-colors"
+            className="px-3 py-1.5 text-[#002057] hover:bg-slate-100 bg-white font-bold rounded-lg text-xs flex items-center space-x-1.5 cursor-pointer transition-colors shadow-xs"
             title="Reset library to system defaults"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-3.5 h-3.5 text-[#002057]" />
             <span className="hidden sm:inline">Reset Defaults</span>
           </button>
         </div>
@@ -327,16 +327,16 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
         {/* =========================================================================
             COLUMN 1: TEMPLATE & CATEGORIES LIST
             ========================================================================= */}
-        <div className="w-64 bg-[#101827] border-r border-[#1e293b] flex flex-col shrink-0 overflow-hidden">
+        <div className="w-64 bg-[#f7f7f2] border-r border-[#cccccc] flex flex-col shrink-0 overflow-hidden">
           {/* Template Blueprint Switcher */}
-          <div className="p-3 border-b border-[#1e293b] bg-[#0c1320] space-y-1.5">
-            <label className="block text-[10px] font-bold uppercase text-gray-400 tracking-wider">
+          <div className="p-3 border-b border-[#cccccc] bg-[#f0efe6] space-y-1.5">
+            <label className="block text-[10px] font-bold uppercase text-[#0d3479] tracking-wider">
               Template Blueprint
             </label>
             <select
               value={activeTemplateId}
               onChange={(e) => handleSelectTemplate(e.target.value)}
-              className="w-full bg-[#162133] border border-[#25354e] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-semibold"
+              className="w-full bg-white border border-[#cccccc] rounded-lg px-2.5 py-1.5 text-xs text-black focus:outline-none focus:border-[#0d3479] font-bold shadow-xs cursor-pointer"
             >
               {libraries.map((lib) => (
                 <option key={lib.templateId} value={lib.templateId}>
@@ -347,14 +347,14 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
           </div>
 
           {/* Categories Header */}
-          <div className="p-3 border-b border-[#1e293b] flex items-center justify-between bg-[#0e1624]">
-            <span className="text-[11px] font-bold text-gray-300 uppercase tracking-wider">
+          <div className="p-3 border-b border-[#cccccc] flex items-center justify-between bg-[#f0efe6]">
+            <span className="text-[11px] font-bold text-[#0d3479] uppercase tracking-wider">
               Categories ({activeLibrary?.categories.length || 0})
             </span>
           </div>
 
           {/* Categories List */}
-          <div className="flex-1 overflow-y-auto p-2 space-y-1">
+          <div className="flex-1 overflow-y-auto p-2 space-y-1.5 scrollbar-thin">
             {activeLibrary?.categories.map((cat) => {
               const Icon = getIconComponent(cat.iconName);
               const isSelected = cat.id === activeCategoryId;
@@ -362,28 +362,28 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                 <div
                   key={cat.id}
                   onClick={() => handleSelectCategory(cat.id)}
-                  className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
+                  className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all shadow-xs ${
                     isSelected
-                      ? 'bg-[#18263c] border-emerald-500/80 shadow-md text-white'
-                      : 'bg-[#121b2a] border-[#1e293b] text-gray-300 hover:bg-[#152236]'
+                      ? 'bg-[#dfe7f4] border-[#0d3479] text-[#0d3479] font-bold ring-1 ring-[#0d3479]/30'
+                      : 'bg-white border-[#cccccc] text-black hover:bg-slate-50 font-medium'
                   }`}
                 >
                   <div className="flex items-center space-x-2.5 min-w-0">
                     <div
                       className={`p-1.5 rounded-lg ${
                         isSelected
-                          ? 'bg-emerald-600 text-white'
-                          : 'bg-gray-800 text-gray-400'
+                          ? 'bg-[#0d3479] text-white'
+                          : 'bg-[#dfe7f4] text-[#0d3479]'
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
                     </div>
                     <div className="truncate">
-                      <div className="font-semibold text-xs truncate">{cat.name}</div>
-                      <div className="text-[10px] text-gray-400 flex items-center space-x-1.5">
+                      <div className="font-bold text-xs truncate">{cat.name}</div>
+                      <div className="text-[10px] text-[#666666] flex items-center space-x-1.5">
                         <span>{cat.sections.length} sections</span>
                         <span>•</span>
-                        <span className="text-emerald-400 font-mono">{cat.badge}</span>
+                        <span className="text-[#0d3479] font-mono font-semibold">{cat.badge}</span>
                       </div>
                     </div>
                   </div>
@@ -391,7 +391,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                   <div className="flex items-center space-x-1 shrink-0">
                     <ChevronRight
                       className={`w-3.5 h-3.5 ${
-                        isSelected ? 'text-emerald-400' : 'text-gray-600'
+                        isSelected ? 'text-[#0d3479]' : 'text-gray-400'
                       }`}
                     />
                   </div>
@@ -404,13 +404,13 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
         {/* =========================================================================
             COLUMN 2: SECTIONS LIST UNDER SELECTED CATEGORY
             ========================================================================= */}
-        <div className="w-72 bg-[#121a28] border-r border-[#1e293b] flex flex-col shrink-0 overflow-hidden">
-          <div className="p-3 border-b border-[#1e293b] flex items-center justify-between bg-[#0e1624]">
+        <div className="w-72 bg-[#f7f7f2] border-r border-[#cccccc] flex flex-col shrink-0 overflow-hidden">
+          <div className="p-3 border-b border-[#cccccc] flex items-center justify-between bg-[#f0efe6]">
             <div>
-              <span className="text-[11px] font-bold text-gray-300 uppercase tracking-wider block">
+              <span className="text-[11px] font-bold text-[#0d3479] uppercase tracking-wider block">
                 {activeCategory?.name || 'Sections'}
               </span>
-              <span className="text-[10px] text-gray-400">
+              <span className="text-[10px] text-[#666666]">
                 {activeCategory?.sections.length || 0} template presets
               </span>
             </div>
@@ -419,7 +419,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
             <div className="flex items-center space-x-1">
               <button
                 onClick={handleOpenAddSectionModal}
-                className="px-2.5 py-1 bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 rounded-lg text-[11px] font-semibold flex items-center space-x-1.5 cursor-pointer transition-colors"
+                className="px-2.5 py-1 bg-[#002057] hover:bg-[#0d3479] text-white rounded-lg text-[11px] font-bold flex items-center space-x-1 cursor-pointer transition-colors shadow-xs"
                 title="Create a new section under this category"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -429,13 +429,13 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
           </div>
 
           {/* Preset List */}
-          <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+          <div className="flex-1 overflow-y-auto p-2 space-y-1.5 scrollbar-thin">
             {(!activeCategory?.sections || activeCategory.sections.length === 0) ? (
-              <div className="p-6 text-center text-gray-500 space-y-2 border border-dashed border-gray-800 rounded-xl my-4">
+              <div className="p-6 text-center text-[#666666] space-y-2 border border-dashed border-[#cccccc] rounded-xl my-4 bg-white">
                 <p className="text-xs">No sections in this category yet.</p>
                 <button
                   onClick={handleOpenAddSectionModal}
-                  className="text-xs text-emerald-400 hover:underline font-semibold cursor-pointer"
+                  className="text-xs text-[#0d3479] hover:underline font-bold cursor-pointer"
                 >
                   + Add First Section
                 </button>
@@ -447,43 +447,47 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                   <div
                     key={sec.id}
                     onClick={() => handleSelectSection(sec.id)}
-                    className={`p-3 rounded-xl border cursor-pointer transition-all space-y-1.5 ${
+                    className={`p-3 rounded-xl border cursor-pointer transition-all space-y-1.5 shadow-xs ${
                       isSelected
-                        ? 'bg-[#1b283d] border-emerald-500/80 shadow text-white ring-1 ring-emerald-500/30'
-                        : 'bg-[#141e2e] border-[#1e293b] text-gray-300 hover:bg-[#172336]'
+                        ? 'bg-[#dfe7f4] border-[#0d3479] text-[#0d3479] font-bold ring-1 ring-[#0d3479]/30'
+                        : 'bg-white border-[#cccccc] text-black hover:bg-slate-50 font-medium'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-xs truncate max-w-[170px]">
+                      <span className={`text-xs truncate max-w-[160px] ${isSelected ? 'font-bold text-[#0d3479]' : 'font-semibold text-black'}`}>
                         {sec.name}
                       </span>
-                      <span className="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-gray-800 text-gray-300 border border-gray-700">
+                      <span className={`text-[9px] uppercase font-mono px-1.5 py-0.5 rounded border ${
+                        isSelected 
+                          ? 'bg-[#0d3479] text-white border-[#0d3479]' 
+                          : 'bg-[#f0efe6] text-[#0d3479] border-[#cccccc]'
+                      }`}>
                         {sec.contentType}
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between pt-1 border-t border-gray-800/80 text-[10px] text-gray-500">
-                      <span className="truncate max-w-[150px] font-medium text-gray-400">{sec.title}</span>
+                    <div className="flex items-center justify-between pt-1 border-t border-[#cccccc] text-[10px]">
+                      <span className={`truncate max-w-[140px] ${isSelected ? 'text-[#0d3479]/80 font-semibold' : 'text-[#666666]'}`}>{sec.title}</span>
                       <div className="flex items-center space-x-1.5">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDuplicateSection(sec);
                           }}
-                          className="hover:text-emerald-400 cursor-pointer p-0.5"
+                          className="text-[#666666] hover:text-[#0d3479] cursor-pointer p-0.5 transition-colors"
                           title="Duplicate Section"
                         >
-                          <Copy className="w-3 h-3" />
+                          <Copy className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeleteSection(sec.id);
                           }}
-                          className="hover:text-red-400 cursor-pointer p-0.5"
+                          className="text-[#666666] hover:text-red-600 cursor-pointer p-0.5 transition-colors"
                           title="Delete Section"
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
@@ -497,40 +501,40 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
         {/* =========================================================================
             COLUMN 3: INTERACTIVE LIVE SECTION EDITOR & LIVE A4 PREVIEW
             ========================================================================= */}
-        <div className="flex-1 flex overflow-hidden bg-[#0c1320]">
+        <div className="flex-1 flex overflow-hidden bg-[#f4f3eb]">
           {!editingSection ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-gray-500 p-8 space-y-3 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-gray-800/50 flex items-center justify-center text-gray-400">
+            <div className="flex-1 flex flex-col items-center justify-center text-[#666666] p-8 space-y-3 text-center">
+              <div className="w-12 h-12 rounded-2xl bg-white border border-[#cccccc] flex items-center justify-center text-[#0d3479] shadow-xs">
                 <Layers className="w-6 h-6" />
               </div>
-              <h3 className="text-sm font-bold text-gray-400">Select a section to customize</h3>
-              <p className="text-xs max-w-sm">
+              <h3 className="text-sm font-bold text-black">Select a section to customize</h3>
+              <p className="text-xs max-w-sm text-[#666666]">
                 Choose any preset from the left columns to modify its contents, table rows, bullet lists, or statutory clauses.
               </p>
             </div>
           ) : (
             <div className="flex-1 flex flex-col h-full overflow-hidden">
               {/* Editor Header */}
-              <div className="p-4 bg-[#141e2e] border-b border-[#1f2d42] flex items-center justify-between shrink-0">
+              <div className="px-5 py-3 bg-[#f0efe6] border-b border-[#cccccc] flex items-center justify-between shrink-0 shadow-xs">
                 <div>
-                  <h3 className="text-sm font-bold text-white flex items-center space-x-2">
+                  <h3 className="text-sm font-bold text-black flex items-center space-x-2">
                     <span>Editing Preset: {editingSection.name}</span>
                     {hasUnsavedChanges && (
-                      <span className="text-[10px] bg-amber-900/60 text-amber-300 border border-amber-700 px-2 py-0.5 rounded font-mono">
+                      <span className="text-[10px] bg-amber-100 text-amber-800 border border-amber-300 font-bold px-2 py-0.5 rounded font-mono">
                         Unsaved Changes
                       </span>
                     )}
                   </h3>
-                  <p className="text-[11px] text-gray-400">
-                    Category: <strong className="text-emerald-400">{activeCategory?.name}</strong> • Template:{' '}
-                    <strong className="text-gray-300">{activeLibrary?.templateName}</strong>
+                  <p className="text-[11px] text-[#666666] mt-0.5">
+                    Category: <strong className="text-[#0d3479]">{activeCategory?.name}</strong> • Template:{' '}
+                    <strong className="text-black font-semibold">{activeLibrary?.templateName}</strong>
                   </p>
                 </div>
 
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={handleSaveSection}
-                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow flex items-center space-x-1.5 cursor-pointer transition-transform active:scale-95"
+                    className="px-3.5 py-1.5 bg-[#002057] hover:bg-[#0d3479] text-white font-bold text-xs rounded-lg shadow-xs flex items-center space-x-1.5 cursor-pointer transition-all active:scale-95"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>Save Section</span>
@@ -541,73 +545,75 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
               {/* Editor Body (Form on left, A4 Preview on right) */}
               <div className="flex-1 flex overflow-hidden">
                 {/* Form Controls */}
-                <div className="w-1/2 p-5 overflow-y-auto space-y-5 border-r border-[#1f2d42] text-xs scrollbar-thin pb-28">
+                <div className="w-1/2 p-5 overflow-y-auto space-y-4 border-r border-[#cccccc] bg-[#f4f3eb] text-xs scrollbar-thin pb-28">
                   {/* Meta Settings */}
-                  <div className="bg-[#152133] p-3.5 rounded-xl border border-[#21324c] space-y-3">
-                    <div className="font-bold text-white flex items-center space-x-1.5">
-                      <Sliders className="w-3.5 h-3.5 text-emerald-400" />
+                  <div className="bg-white rounded-xl border border-[#cccccc] overflow-hidden shadow-xs">
+                    <div className="bg-[#f0efe6] px-4 py-2.5 border-b border-[#cccccc] flex items-center space-x-2 font-bold text-xs text-[#0d3479] uppercase tracking-wider">
+                      <Sliders className="w-4 h-4 text-[#0d3479]" />
                       <span>Section Metadata</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="p-4 space-y-3 bg-white">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-bold text-black mb-1.5">
+                            Preset Display Name
+                          </label>
+                          <input
+                            type="text"
+                            value={editingSection.name}
+                            onChange={(e) => {
+                              setEditingSection({ ...editingSection, name: e.target.value });
+                              setHasUnsavedChanges(true);
+                            }}
+                            className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-black mb-1.5">
+                            Section Content Type
+                          </label>
+                          <select
+                            value={editingSection.contentType}
+                            onChange={(e) => {
+                              const newType = e.target.value as SectionContentType;
+                              setEditingSection({
+                                ...editingSection,
+                                contentType: newType,
+                                bullets: newType === 'bullet_list' ? (editingSection.bullets || ['New item here']) : editingSection.bullets,
+                                tableHeaders: newType === 'table' ? (editingSection.tableHeaders || ['Item', 'Description', 'Unit']) : editingSection.tableHeaders,
+                                tableRows: newType === 'table' ? (editingSection.tableRows || [['1', 'Sample Description', 'Nos']]) : editingSection.tableRows,
+                                keyValuePairs: newType === 'key_value' ? (editingSection.keyValuePairs || [{ key: 'Key', value: 'Value' }]) : editingSection.keyValuePairs,
+                              });
+                              setHasUnsavedChanges(true);
+                            }}
+                            className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-mono font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                          >
+                            <option value="bullet_list">bullet_list (Itemized List)</option>
+                            <option value="legal_clause">legal_clause (Numbered Terms)</option>
+                            <option value="table">table (Tabular Matrix)</option>
+                            <option value="key_value">key_value (Properties Grid)</option>
+                            <option value="callout">callout (Alert / Notice Box)</option>
+                            <option value="paragraphs">paragraphs (Narrative Text)</option>
+                          </select>
+                        </div>
+                      </div>
+
                       <div>
-                        <label className="block text-[10px] font-semibold text-gray-400 mb-1">
-                          Preset Display Name
+                        <label className="block text-xs font-bold text-black mb-1.5">
+                          Document Printed Header Title
                         </label>
                         <input
                           type="text"
-                          value={editingSection.name}
+                          value={editingSection.title}
                           onChange={(e) => {
-                            setEditingSection({ ...editingSection, name: e.target.value });
+                            setEditingSection({ ...editingSection, title: e.target.value });
                             setHasUnsavedChanges(true);
                           }}
-                          className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-[#253752] rounded-lg text-white font-medium"
+                          className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-bold focus:outline-none focus:border-[#0d3479] shadow-xs"
                         />
                       </div>
-
-                      <div>
-                        <label className="block text-[10px] font-semibold text-gray-400 mb-1">
-                          Section Content Type
-                        </label>
-                        <select
-                          value={editingSection.contentType}
-                          onChange={(e) => {
-                            const newType = e.target.value as SectionContentType;
-                            setEditingSection({
-                              ...editingSection,
-                              contentType: newType,
-                              bullets: newType === 'bullet_list' ? (editingSection.bullets || ['New item here']) : editingSection.bullets,
-                              tableHeaders: newType === 'table' ? (editingSection.tableHeaders || ['Item', 'Description', 'Unit']) : editingSection.tableHeaders,
-                              tableRows: newType === 'table' ? (editingSection.tableRows || [['1', 'Sample Description', 'Nos']]) : editingSection.tableRows,
-                              keyValuePairs: newType === 'key_value' ? (editingSection.keyValuePairs || [{ key: 'Key', value: 'Value' }]) : editingSection.keyValuePairs,
-                            });
-                            setHasUnsavedChanges(true);
-                          }}
-                          className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-[#253752] rounded-lg text-white font-mono"
-                        >
-                          <option value="bullet_list">bullet_list (Itemized List)</option>
-                          <option value="legal_clause">legal_clause (Numbered Terms)</option>
-                          <option value="table">table (Tabular Matrix)</option>
-                          <option value="key_value">key_value (Properties Grid)</option>
-                          <option value="callout">callout (Alert / Notice Box)</option>
-                          <option value="paragraphs">paragraphs (Narrative Text)</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-[10px] font-semibold text-gray-400 mb-1">
-                        Document Printed Header Title
-                      </label>
-                      <input
-                        type="text"
-                        value={editingSection.title}
-                        onChange={(e) => {
-                          setEditingSection({ ...editingSection, title: e.target.value });
-                          setHasUnsavedChanges(true);
-                        }}
-                        className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-[#253752] rounded-lg text-white font-bold"
-                      />
                     </div>
                   </div>
 
@@ -615,10 +621,10 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
 
                   {/* 1. BULLET LIST EDITOR */}
                   {editingSection.contentType === 'bullet_list' && (
-                    <div className="bg-[#152133] p-4 rounded-xl border border-[#21324c] space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-white flex items-center space-x-1.5">
-                          <ListChecks className="w-3.5 h-3.5 text-emerald-400" />
+                    <div className="bg-white rounded-xl border border-[#cccccc] overflow-hidden shadow-xs">
+                      <div className="bg-[#f0efe6] px-4 py-2.5 border-b border-[#cccccc] flex items-center justify-between">
+                        <span className="font-bold text-[#0d3479] text-xs uppercase tracking-wider flex items-center space-x-1.5">
+                          <ListChecks className="w-3.5 h-3.5 text-[#0d3479]" />
                           <span>Bullet Items ({editingSection.bullets?.length || 0})</span>
                         </span>
                         <button
@@ -627,16 +633,16 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                             setEditingSection({ ...editingSection, bullets: updated });
                             setHasUnsavedChanges(true);
                           }}
-                          className="px-2.5 py-1 bg-emerald-700/40 hover:bg-emerald-600 text-emerald-300 hover:text-white rounded-lg text-[10px] font-bold cursor-pointer transition-colors"
+                          className="px-2.5 py-1 bg-[#002057] hover:bg-[#0d3479] text-white rounded-lg text-[10px] font-bold cursor-pointer transition-colors shadow-xs"
                         >
                           + Add Item
                         </button>
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="p-4 space-y-2 bg-white">
                         {(editingSection.bullets || []).map((bullet, idx) => (
                           <div key={idx} className="flex items-start space-x-2">
-                            <span className="text-xs font-mono text-gray-500 pt-1.5">•</span>
+                            <span className="text-xs font-bold text-black pt-2">•</span>
                             <textarea
                               rows={2}
                               value={bullet}
@@ -646,7 +652,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                                 setEditingSection({ ...editingSection, bullets: updated });
                                 setHasUnsavedChanges(true);
                               }}
-                              className="flex-1 px-2.5 py-1.5 bg-[#0e1624] border border-[#253752] rounded-lg text-white text-xs leading-relaxed focus:border-emerald-500 focus:outline-none"
+                              className="flex-1 bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-medium focus:outline-none focus:border-[#0d3479] shadow-xs resize-none"
                             />
                             <button
                               onClick={() => {
@@ -654,7 +660,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                                 setEditingSection({ ...editingSection, bullets: updated });
                                 setHasUnsavedChanges(true);
                               }}
-                              className="p-1.5 text-gray-500 hover:text-red-400 pt-2 cursor-pointer transition-colors"
+                              className="p-1.5 text-[#888888] hover:text-red-600 pt-2 cursor-pointer transition-colors"
                               title="Delete Item"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -667,10 +673,10 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
 
                   {/* 2. LEGAL CLAUSE & PARAGRAPHS EDITOR */}
                   {(editingSection.contentType === 'legal_clause' || editingSection.contentType === 'paragraphs') && (
-                    <div className="bg-[#152133] p-4 rounded-xl border border-[#21324c] space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-white flex items-center space-x-1.5">
-                          <Scale className="w-3.5 h-3.5 text-emerald-400" />
+                    <div className="bg-white rounded-xl border border-[#cccccc] overflow-hidden shadow-xs">
+                      <div className="bg-[#f0efe6] px-4 py-2.5 border-b border-[#cccccc] flex items-center justify-between">
+                        <span className="font-bold text-[#0d3479] text-xs uppercase tracking-wider flex items-center space-x-1.5">
+                          <Scale className="w-3.5 h-3.5 text-[#0d3479]" />
                           <span>Legal Clauses & Paragraphs ({editingSection.paragraphs?.length || 0})</span>
                         </span>
                         <button
@@ -682,16 +688,16 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                             setEditingSection({ ...editingSection, paragraphs: updated });
                             setHasUnsavedChanges(true);
                           }}
-                          className="px-2.5 py-1 bg-emerald-700/40 hover:bg-emerald-600 text-emerald-300 hover:text-white rounded-lg text-[10px] font-bold cursor-pointer transition-colors"
+                          className="px-2.5 py-1 bg-[#002057] hover:bg-[#0d3479] text-white rounded-lg text-[10px] font-bold cursor-pointer transition-colors shadow-xs"
                         >
                           + Add Clause
                         </button>
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="p-4 space-y-3 bg-white">
                         {(editingSection.paragraphs || []).map((para, idx) => (
-                          <div key={idx} className="bg-[#0e1624] p-3 rounded-lg border border-[#253752] space-y-1.5">
-                            <div className="flex items-center justify-between text-[11px] text-gray-400 font-mono">
+                          <div key={idx} className="bg-[#f7f7f2] p-3 rounded-xl border border-[#cccccc] space-y-2 shadow-xs">
+                            <div className="flex items-center justify-between text-[11px] text-black font-bold font-mono">
                               <span>Clause {idx + 1}.0</span>
                               <button
                                 onClick={() => {
@@ -699,7 +705,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                                   setEditingSection({ ...editingSection, paragraphs: updated });
                                   setHasUnsavedChanges(true);
                                 }}
-                                className="text-gray-500 hover:text-red-400 cursor-pointer p-0.5"
+                                className="text-[#888888] hover:text-red-600 cursor-pointer p-0.5 transition-colors"
                                 title="Delete Clause"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -714,7 +720,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                                 setEditingSection({ ...editingSection, paragraphs: updated });
                                 setHasUnsavedChanges(true);
                               }}
-                              className="w-full px-2.5 py-1.5 bg-[#141f30] border border-[#253752] rounded-lg text-white text-xs leading-relaxed focus:border-emerald-500 focus:outline-none"
+                              className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-medium focus:outline-none focus:border-[#0d3479] shadow-xs resize-none"
                             />
                           </div>
                         ))}
@@ -724,10 +730,10 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
 
                   {/* 3. TABLE EDITOR */}
                   {editingSection.contentType === 'table' && (
-                    <div className="bg-[#152133] p-4 rounded-xl border border-[#21324c] space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-white flex items-center space-x-1.5">
-                          <TableIcon className="w-3.5 h-3.5 text-emerald-400" />
+                    <div className="bg-white rounded-xl border border-[#cccccc] overflow-hidden shadow-xs">
+                      <div className="bg-[#f0efe6] px-4 py-2.5 border-b border-[#cccccc] flex items-center justify-between">
+                        <span className="font-bold text-[#0d3479] text-xs uppercase tracking-wider flex items-center space-x-1.5">
+                          <TableIcon className="w-3.5 h-3.5 text-[#0d3479]" />
                           <span>Table Matrix ({editingSection.tableRows?.length || 0} rows)</span>
                         </span>
                         <div className="flex items-center space-x-2">
@@ -738,7 +744,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                               setEditingSection({ ...editingSection, tableHeaders: headers, tableRows: rows });
                               setHasUnsavedChanges(true);
                             }}
-                            className="px-2.5 py-1 bg-blue-900/50 hover:bg-blue-800 text-blue-300 rounded-lg text-[10px] font-bold cursor-pointer transition-colors"
+                            className="px-2.5 py-1 bg-white hover:bg-slate-100 text-[#002057] border border-[#cccccc] rounded-lg text-[10px] font-bold cursor-pointer transition-colors shadow-xs"
                           >
                             + Add Column
                           </button>
@@ -750,75 +756,77 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                               setEditingSection({ ...editingSection, tableRows: rows });
                               setHasUnsavedChanges(true);
                             }}
-                            className="px-2.5 py-1 bg-emerald-700/40 hover:bg-emerald-600 text-emerald-300 hover:text-white rounded-lg text-[10px] font-bold cursor-pointer transition-colors"
+                            className="px-2.5 py-1 bg-[#002057] hover:bg-[#0d3479] text-white rounded-lg text-[10px] font-bold cursor-pointer transition-colors shadow-xs"
                           >
                             + Add Row
                           </button>
                         </div>
                       </div>
 
-                      {/* Header Inputs */}
-                      <div className="space-y-1.5">
-                        <label className="block text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Column Headers</label>
-                        <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 scrollbar-thin">
-                          {(editingSection.tableHeaders || []).map((hdr, hIdx) => (
-                            <input
-                              key={hIdx}
-                              type="text"
-                              value={hdr}
-                              onChange={(e) => {
-                                const updatedHeaders = [...(editingSection.tableHeaders || [])];
-                                updatedHeaders[hIdx] = e.target.value;
-                                setEditingSection({ ...editingSection, tableHeaders: updatedHeaders });
-                                setHasUnsavedChanges(true);
-                              }}
-                              className="px-2.5 py-1 bg-[#0e1624] border border-gray-700 rounded-lg text-xs font-bold text-emerald-300 min-w-[100px] focus:border-emerald-500 focus:outline-none"
-                            />
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Rows Inputs */}
-                      <div className="space-y-2">
-                        {(editingSection.tableRows || []).map((row, rIdx) => (
-                          <div key={rIdx} className="flex items-center space-x-1.5 bg-[#0e1624] p-2 rounded-lg border border-[#253752]">
-                            {row.map((cell, cIdx) => (
+                      <div className="p-4 space-y-3 bg-white">
+                        {/* Header Inputs */}
+                        <div className="space-y-1.5">
+                          <label className="block text-xs font-bold text-black mb-1 uppercase tracking-wider">Column Headers</label>
+                          <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 scrollbar-thin">
+                            {(editingSection.tableHeaders || []).map((hdr, hIdx) => (
                               <input
-                                key={cIdx}
+                                key={hIdx}
                                 type="text"
-                                value={cell}
+                                value={hdr}
                                 onChange={(e) => {
-                                  const updatedRows = (editingSection.tableRows || []).map((r) => [...r]);
-                                  updatedRows[rIdx][cIdx] = e.target.value;
+                                  const updatedHeaders = [...(editingSection.tableHeaders || [])];
+                                  updatedHeaders[hIdx] = e.target.value;
+                                  setEditingSection({ ...editingSection, tableHeaders: updatedHeaders });
+                                  setHasUnsavedChanges(true);
+                                }}
+                                className="px-2.5 py-1.5 bg-[#f7f7f2] border border-[#cccccc] rounded-lg text-xs font-bold text-[#0d3479] min-w-[100px] focus:outline-none focus:border-[#0d3479] shadow-xs"
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Rows Inputs */}
+                        <div className="space-y-2">
+                          {(editingSection.tableRows || []).map((row, rIdx) => (
+                            <div key={rIdx} className="flex items-center space-x-1.5 bg-[#f7f7f2] p-2 rounded-xl border border-[#cccccc] shadow-xs">
+                              {row.map((cell, cIdx) => (
+                                <input
+                                  key={cIdx}
+                                  type="text"
+                                  value={cell}
+                                  onChange={(e) => {
+                                    const updatedRows = (editingSection.tableRows || []).map((r) => [...r]);
+                                    updatedRows[rIdx][cIdx] = e.target.value;
+                                    setEditingSection({ ...editingSection, tableRows: updatedRows });
+                                    setHasUnsavedChanges(true);
+                                  }}
+                                  className="flex-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-lg text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                                />
+                              ))}
+                              <button
+                                onClick={() => {
+                                  const updatedRows = (editingSection.tableRows || []).filter((_, i) => i !== rIdx);
                                   setEditingSection({ ...editingSection, tableRows: updatedRows });
                                   setHasUnsavedChanges(true);
                                 }}
-                                className="flex-1 px-2 py-1 bg-[#141f30] border border-gray-800 rounded text-xs text-white focus:border-emerald-500 focus:outline-none"
-                              />
-                            ))}
-                            <button
-                              onClick={() => {
-                                const updatedRows = (editingSection.tableRows || []).filter((_, i) => i !== rIdx);
-                                setEditingSection({ ...editingSection, tableRows: updatedRows });
-                                setHasUnsavedChanges(true);
-                              }}
-                              className="p-1.5 text-gray-500 hover:text-red-400 cursor-pointer transition-colors"
-                              title="Delete Row"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        ))}
+                                className="p-1.5 text-[#888888] hover:text-red-600 cursor-pointer transition-colors"
+                                title="Delete Row"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
 
                   {/* 4. KEY VALUE MATRIX */}
                   {editingSection.contentType === 'key_value' && (
-                    <div className="bg-[#152133] p-4 rounded-xl border border-[#21324c] space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-white flex items-center space-x-1.5">
-                          <Layers className="w-3.5 h-3.5 text-emerald-400" />
+                    <div className="bg-white rounded-xl border border-[#cccccc] overflow-hidden shadow-xs">
+                      <div className="bg-[#f0efe6] px-4 py-2.5 border-b border-[#cccccc] flex items-center justify-between">
+                        <span className="font-bold text-[#0d3479] text-xs uppercase tracking-wider flex items-center space-x-1.5">
+                          <Layers className="w-3.5 h-3.5 text-[#0d3479]" />
                           <span>Key-Value Pairs ({editingSection.keyValuePairs?.length || 0})</span>
                         </span>
                         <button
@@ -827,13 +835,13 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                             setEditingSection({ ...editingSection, keyValuePairs: updated });
                             setHasUnsavedChanges(true);
                           }}
-                          className="px-2.5 py-1 bg-emerald-700/40 hover:bg-emerald-600 text-emerald-300 hover:text-white rounded-lg text-[10px] font-bold cursor-pointer transition-colors"
+                          className="px-2.5 py-1 bg-[#002057] hover:bg-[#0d3479] text-white rounded-lg text-[10px] font-bold cursor-pointer transition-colors shadow-xs"
                         >
                           + Add Pair
                         </button>
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="p-4 space-y-2 bg-white">
                         {(editingSection.keyValuePairs || []).map((kv, idx) => (
                           <div key={idx} className="flex items-center space-x-2">
                             <input
@@ -846,7 +854,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                                 setEditingSection({ ...editingSection, keyValuePairs: updated });
                                 setHasUnsavedChanges(true);
                               }}
-                              className="w-2/5 px-2.5 py-1.5 bg-[#0e1624] border border-[#253752] rounded-lg text-xs text-emerald-300 font-semibold focus:border-emerald-500 focus:outline-none"
+                              className="w-2/5 px-3 py-2 bg-white border border-[#cccccc] rounded-lg text-xs text-black font-bold focus:outline-none focus:border-[#0d3479] shadow-xs"
                             />
                             <input
                               type="text"
@@ -858,7 +866,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                                 setEditingSection({ ...editingSection, keyValuePairs: updated });
                                 setHasUnsavedChanges(true);
                               }}
-                              className="flex-1 px-2.5 py-1.5 bg-[#0e1624] border border-[#253752] rounded-lg text-xs text-white focus:border-emerald-500 focus:outline-none"
+                              className="flex-1 px-3 py-2 bg-white border border-[#cccccc] rounded-lg text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
                             />
                             <button
                               onClick={() => {
@@ -866,7 +874,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                                 setEditingSection({ ...editingSection, keyValuePairs: updated });
                                 setHasUnsavedChanges(true);
                               }}
-                              className="p-1.5 text-gray-500 hover:text-red-400 cursor-pointer transition-colors"
+                              className="p-1.5 text-[#888888] hover:text-red-600 cursor-pointer transition-colors"
                               title="Delete Pair"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -879,55 +887,57 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
 
                   {/* 5. CALLOUT NOTICE EDITOR */}
                   {editingSection.contentType === 'callout' && (
-                    <div className="bg-[#152133] p-3.5 rounded-xl border border-[#21324c] space-y-3">
-                      <div className="font-bold text-white flex items-center space-x-1.5">
-                        <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                    <div className="bg-white rounded-xl border border-[#cccccc] overflow-hidden shadow-xs">
+                      <div className="bg-[#f0efe6] px-4 py-2.5 border-b border-[#cccccc] flex items-center space-x-2 font-bold text-xs text-[#0d3479] uppercase tracking-wider">
+                        <AlertTriangle className="w-4 h-4 text-amber-600" />
                         <span>Notice & Alert Box Settings</span>
                       </div>
 
-                      <div>
-                        <label className="block text-[10px] font-semibold text-gray-400 mb-1">Callout Tone</label>
-                        <select
-                          value={editingSection.calloutType || 'warning'}
-                          onChange={(e) => {
-                            setEditingSection({
-                              ...editingSection,
-                              calloutType: e.target.value as any,
-                            });
-                            setHasUnsavedChanges(true);
-                          }}
-                          className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-[#253752] rounded-lg text-white"
-                        >
-                          <option value="warning">Warning / Penalty Alert</option>
-                          <option value="important">Important Directive</option>
-                          <option value="info">Informational Notice</option>
-                        </select>
-                      </div>
+                      <div className="p-4 space-y-3 bg-white">
+                        <div>
+                          <label className="block text-xs font-bold text-black mb-1.5">Callout Tone</label>
+                          <select
+                            value={editingSection.calloutType || 'warning'}
+                            onChange={(e) => {
+                              setEditingSection({
+                                ...editingSection,
+                                calloutType: e.target.value as any,
+                              });
+                              setHasUnsavedChanges(true);
+                            }}
+                            className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
+                          >
+                            <option value="warning">Warning / Penalty Alert</option>
+                            <option value="important">Important Directive</option>
+                            <option value="info">Informational Notice</option>
+                          </select>
+                        </div>
 
-                      <div>
-                        <label className="block text-[10px] font-semibold text-gray-400 mb-1">Callout Message</label>
-                        <textarea
-                          rows={4}
-                          value={editingSection.calloutText || ''}
-                          onChange={(e) => {
-                            setEditingSection({ ...editingSection, calloutText: e.target.value });
-                            setHasUnsavedChanges(true);
-                          }}
-                          className="w-full px-2.5 py-1.5 bg-[#0e1624] border border-[#253752] rounded-lg text-white text-[11px] leading-relaxed"
-                        />
+                        <div>
+                          <label className="block text-xs font-bold text-black mb-1.5">Callout Message</label>
+                          <textarea
+                            rows={4}
+                            value={editingSection.calloutText || ''}
+                            onChange={(e) => {
+                              setEditingSection({ ...editingSection, calloutText: e.target.value });
+                              setHasUnsavedChanges(true);
+                            }}
+                            className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-medium focus:outline-none focus:border-[#0d3479] shadow-xs resize-none"
+                          />
+                        </div>
                       </div>
                     </div>
                   )}
                 </div>
 
                 {/* Live A4 Print Preview Pane */}
-                <div className="w-1/2 p-4 bg-[#080d17] overflow-y-auto flex flex-col items-center">
-                  <div className="w-full max-w-[420px] bg-white text-black p-6 rounded shadow-2xl border border-gray-300 font-sans space-y-3 min-h-[300px]">
-                    <div className="flex items-center justify-between border-b border-gray-200 pb-1.5">
-                      <h4 className="font-bold text-[13px] uppercase tracking-wide text-[#111]">
-                        {editingSection.title}
+                <div className="w-1/2 p-6 bg-[#64748b] overflow-y-auto flex flex-col items-center justify-start scrollbar-thin">
+                  <div className="w-full max-w-[440px] bg-white text-black p-8 rounded-xl shadow-2xl border border-gray-300 font-sans space-y-4 min-h-[360px]">
+                    <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                      <h4 className="font-bold text-[13px] uppercase tracking-wide text-black">
+                        <FormattedText text={editingSection.title} />
                       </h4>
-                      <span className="text-[9px] font-mono uppercase bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200">
+                      <span className="text-[9px] font-mono uppercase bg-[#dfe7f4] text-[#0d3479] font-bold px-2 py-0.5 rounded-full border border-[#b9c7de]">
                         Live Preview
                       </span>
                     </div>
@@ -936,7 +946,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                     {editingSection.contentType === 'bullet_list' && (
                       <ul className="list-disc pl-4 space-y-1.5 text-[11px] leading-snug">
                         {(editingSection.bullets || []).map((b, i) => (
-                          <li key={i}>{b}</li>
+                          <li key={i}><FormattedText text={b} /></li>
                         ))}
                       </ul>
                     )}
@@ -946,7 +956,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                         {(editingSection.paragraphs || []).map((p, i) => (
                           <div key={i} className="flex items-start space-x-2">
                             <span className="font-bold shrink-0">{i + 1}.0</span>
-                            <p>{p}</p>
+                            <p><FormattedText text={p} /></p>
                           </div>
                         ))}
                       </div>
@@ -955,7 +965,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                     {editingSection.contentType === 'paragraphs' && (
                       <div className="space-y-2 text-[11px] leading-relaxed">
                         {(editingSection.paragraphs || []).map((p, i) => (
-                          <p key={i}>{p}</p>
+                          <p key={i}><FormattedText text={p} /></p>
                         ))}
                       </div>
                     )}
@@ -965,8 +975,8 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                         <thead>
                           <tr className="bg-gray-100 border-b border-black font-bold">
                             {(editingSection.tableHeaders || []).map((h, i) => (
-                              <th key={i} className="border-r border-black p-1 text-left last:border-r-0">
-                                {h}
+                              <th key={i} className="border-r border-black p-1.5 text-left last:border-r-0">
+                                <FormattedText text={h} />
                               </th>
                             ))}
                           </tr>
@@ -975,8 +985,8 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                           {(editingSection.tableRows || []).map((row, rI) => (
                             <tr key={rI} className="border-b border-black last:border-b-0">
                               {row.map((c, cI) => (
-                                <td key={cI} className="border-r border-black p-1 last:border-r-0">
-                                  {c}
+                                <td key={cI} className="border-r border-black p-1.5 last:border-r-0">
+                                  <FormattedText text={c} />
                                 </td>
                               ))}
                             </tr>
@@ -989,10 +999,10 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                       <div className="border border-black text-[10.5px]">
                         {(editingSection.keyValuePairs || []).map((kv, i) => (
                           <div key={i} className="flex border-b border-black last:border-b-0">
-                            <div className="w-1/3 bg-gray-50 border-r border-black p-1 font-bold">
-                              {kv.key}
+                            <div className="w-1/3 bg-gray-50 border-r border-black p-1.5 font-bold">
+                              <FormattedText text={kv.key} />
                             </div>
-                            <div className="w-2/3 p-1">{kv.value}</div>
+                            <div className="w-2/3 p-1.5"><FormattedText text={kv.value} /></div>
                           </div>
                         ))}
                       </div>
@@ -1000,7 +1010,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
 
                     {editingSection.contentType === 'callout' && (
                       <div
-                        className={`p-2.5 rounded border text-[10.5px] leading-snug ${
+                        className={`p-3 rounded-lg border text-[10.5px] leading-snug ${
                           editingSection.calloutType === 'warning'
                             ? 'bg-amber-50 border-amber-400 text-amber-950 font-medium'
                             : editingSection.calloutType === 'important'
@@ -1008,7 +1018,7 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                             : 'bg-blue-50 border-blue-400 text-blue-950'
                         }`}
                       >
-                        {editingSection.calloutText}
+                        <FormattedText text={editingSection.calloutText} />
                       </div>
                     )}
                   </div>
@@ -1021,35 +1031,35 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
 
       {/* ADD SECTION METADATA MODAL POPUP */}
       {isAddSectionModalOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 select-none animate-in fade-in duration-150">
-          <div className="bg-[#141d2b] border border-gray-700/80 rounded-2xl max-w-lg w-full p-6 text-gray-200 space-y-5 shadow-2xl animate-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 flex items-center justify-center p-4 select-none animate-in fade-in duration-150">
+          <div className="bg-[#f4f3eb] border border-[#cccccc] rounded-2xl max-w-lg w-full overflow-hidden text-black shadow-2xl animate-in zoom-in-95 duration-150">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+            <div className="px-6 py-4 bg-[#f0efe6] border-b border-[#cccccc] flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-emerald-950 text-emerald-400 rounded-lg border border-emerald-800/60 shadow-xs">
+                <div className="p-2 bg-[#dfe7f4] text-[#0d3479] rounded-xl border border-[#b9c7de] shadow-xs">
                   <Plus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base text-white">Create New Section</h3>
-                  <p className="text-xs text-gray-400">
-                    Category: <strong className="text-emerald-400">{activeCategory?.name}</strong>
+                  <h3 className="font-bold text-base text-black">Create New Section</h3>
+                  <p className="text-xs text-[#666666] mt-0.5">
+                    Category: <strong className="text-[#0d3479]">{activeCategory?.name}</strong>
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsAddSectionModalOpen(false)}
-                className="text-gray-400 hover:text-white p-1 rounded transition-colors cursor-pointer"
+                className="text-[#666666] hover:text-black p-1.5 rounded-lg hover:bg-white transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Modal Form: Section Metadata */}
-            <div className="space-y-4 text-xs">
+            <div className="p-6 space-y-4 text-xs bg-[#f4f3eb]">
               {/* Preset Display Name */}
               <div>
-                <label className="block text-[11px] font-bold uppercase text-gray-400 mb-1">
-                  Preset Display Name <span className="text-red-400">*</span>
+                <label className="block text-xs font-bold text-black mb-1.5">
+                  Preset Display Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -1061,14 +1071,14 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                       setNewSectionTitle(e.target.value.toUpperCase());
                     }
                   }}
-                  className="w-full px-3 py-2 bg-[#0e1624] border border-[#253752] rounded-lg text-white font-medium focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
                   autoFocus
                 />
               </div>
 
               {/* Document Printed Header Title */}
               <div>
-                <label className="block text-[11px] font-bold uppercase text-gray-400 mb-1">
+                <label className="block text-xs font-bold text-black mb-1.5">
                   Document Printed Header Title
                 </label>
                 <input
@@ -1076,14 +1086,14 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                   placeholder="e.g. MANDATORY MATERIAL INSPECTION MATRIX"
                   value={newSectionTitle}
                   onChange={(e) => setNewSectionTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#0e1624] border border-[#253752] rounded-lg text-white font-bold focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-bold focus:outline-none focus:border-[#0d3479] shadow-xs"
                 />
               </div>
 
               {/* Section Content Type Selection */}
               <div>
-                <label className="block text-[11px] font-bold uppercase text-gray-400 mb-2">
-                  Section Content Type <span className="text-red-400">*</span>
+                <label className="block text-xs font-bold text-black mb-2">
+                  Section Content Type <span className="text-red-500">*</span>
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
@@ -1101,22 +1111,22 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
                         key={opt.type}
                         type="button"
                         onClick={() => setNewSectionContentType(opt.type as SectionContentType)}
-                        className={`p-2.5 rounded-xl border text-left flex items-start space-x-2.5 transition-all cursor-pointer ${
+                        className={`p-2.5 rounded-xl border text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-xs ${
                           isSelected
-                            ? 'bg-emerald-950/70 border-emerald-500 text-white ring-1 ring-emerald-500/40 shadow-xs'
-                            : 'bg-[#0e1624] border-[#253752] text-gray-400 hover:bg-[#152236] hover:text-gray-200'
+                            ? 'bg-[#dfe7f4] border-[#0d3479] text-[#0d3479] ring-1 ring-[#0d3479]/30'
+                            : 'bg-white border-[#cccccc] text-black hover:bg-slate-50'
                         }`}
                       >
                         <div
                           className={`p-1.5 rounded-lg shrink-0 mt-0.5 ${
-                            isSelected ? 'bg-emerald-700 text-white' : 'bg-gray-800 text-gray-400'
+                            isSelected ? 'bg-[#0d3479] text-white' : 'bg-[#dfe7f4] text-[#0d3479]'
                           }`}
                         >
                           <Icon className="w-3.5 h-3.5" />
                         </div>
                         <div className="min-w-0">
-                          <div className="font-bold text-xs truncate text-white">{opt.label}</div>
-                          <div className="text-[10px] text-gray-400 truncate">{opt.desc}</div>
+                          <div className={`font-bold text-xs truncate ${isSelected ? 'text-[#0d3479]' : 'text-black'}`}>{opt.label}</div>
+                          <div className="text-[10px] text-[#666666] truncate">{opt.desc}</div>
                         </div>
                       </button>
                     );
@@ -1126,18 +1136,18 @@ export const SectionLibraryManager: React.FC<SectionLibraryManagerProps> = ({
             </div>
 
             {/* Modal Actions */}
-            <div className="flex items-center justify-end space-x-2 border-t border-gray-800 pt-3">
+            <div className="px-6 py-3.5 bg-[#f0efe6] border-t border-[#cccccc] flex items-center justify-end space-x-2.5">
               <button
                 type="button"
                 onClick={() => setIsAddSectionModalOpen(false)}
-                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                className="px-4 py-2 bg-white hover:bg-slate-50 text-black border border-[#cccccc] font-semibold text-xs rounded-xl transition-colors cursor-pointer shadow-xs"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleConfirmCreateSection}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold rounded-lg shadow-md flex items-center space-x-1.5 transition-all cursor-pointer"
+                className="px-5 py-2 bg-[#002057] hover:bg-[#0d3479] active:scale-95 text-white text-xs font-bold rounded-xl shadow-md flex items-center space-x-1.5 transition-all cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Create Section</span>

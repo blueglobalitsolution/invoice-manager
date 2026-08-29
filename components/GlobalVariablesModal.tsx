@@ -115,43 +115,43 @@ export const GlobalVariablesModal: React.FC<GlobalVariablesModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 select-none">
-      <div className="bg-[#141b26] border border-gray-700 rounded-xl max-w-2xl w-full flex flex-col max-h-[88vh] text-gray-200 shadow-2xl overflow-hidden">
+      <div className="bg-white border border-[#cccccc] rounded-xl max-w-2xl w-full flex flex-col max-h-[88vh] text-black shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 bg-[#0f1520] border-b border-gray-800 flex items-center justify-between shrink-0">
+        <div className="px-6 py-4 bg-[#f0efe6] border-b border-[#cccccc] flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-emerald-950 text-emerald-400 rounded-lg border border-emerald-800/60">
+            <div className="p-2 bg-[#dfe7f4] text-[#0d3479] rounded-lg border border-[#b9c7de]">
               <Braces className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-white flex items-center space-x-2">
+              <h3 className="font-bold text-base text-black flex items-center space-x-2">
                 <span>Global Variables & Placeholders</span>
-                <span className="text-[10px] px-2 py-0.5 bg-emerald-900/60 text-emerald-300 font-mono rounded-full border border-emerald-700/50">
+                <span className="text-[10px] px-2 py-0.5 bg-[#dfe7f4] text-[#0d3479] font-mono rounded-full border border-[#b9c7de]">
                   Live Synced
                 </span>
               </h3>
-              <p className="text-xs text-gray-400 mt-0.5">
-                Define reusable dynamic placeholders (e.g. <code className="text-emerald-400 font-mono">{`{{CLIENT_NAME}}`}</code>) used across all sections.
+              <p className="text-xs text-[#666666] mt-0.5">
+                Define reusable dynamic placeholders (e.g. <code className="text-[#0d3479] font-mono font-bold">{`{{CLIENT_NAME}}`}</code>) used across all sections.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white p-1.5 rounded-lg hover:bg-gray-800 transition-colors"
+            className="text-[#666666] hover:text-black p-1.5 rounded-lg hover:bg-gray-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Add New Variable Bar */}
-        <div className="p-4 bg-[#182232] border-b border-gray-800 shrink-0">
+        <div className="p-4 bg-white border-b border-[#cccccc] shrink-0">
           <form onSubmit={handleAddCustom} className="space-y-2">
-            <div className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center space-x-1.5">
+            <div className="text-[11px] font-bold text-[#0d3479] uppercase tracking-wider flex items-center space-x-1.5">
               <Plus className="w-3.5 h-3.5" />
               <span>Add Custom Global Placeholder</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="relative w-1/3">
-                <span className="absolute left-2.5 top-2 font-mono text-emerald-500 font-bold text-xs select-none">
+                <span className="absolute left-2.5 top-2 font-mono text-[#0d3479] font-bold text-xs select-none">
                   {`{{`}
                 </span>
                 <input
@@ -159,9 +159,9 @@ export const GlobalVariablesModal: React.FC<GlobalVariablesModalProps> = ({
                   placeholder="VARIABLE_NAME"
                   value={newKey}
                   onChange={(e) => setNewKey(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ''))}
-                  className="w-full bg-[#0e141f] border border-gray-700 rounded-lg pl-7 pr-7 py-2 text-xs font-mono font-bold text-emerald-300 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-white border border-[#cccccc] rounded-lg pl-7 pr-7 py-2 text-xs font-mono font-bold text-[#0d3479] focus:outline-none focus:border-[#0d3479]"
                 />
-                <span className="absolute right-2.5 top-2 font-mono text-emerald-500 font-bold text-xs select-none">
+                <span className="absolute right-2.5 top-2 font-mono text-[#0d3479] font-bold text-xs select-none">
                   {`}}`}
                 </span>
               </div>
@@ -170,12 +170,12 @@ export const GlobalVariablesModal: React.FC<GlobalVariablesModalProps> = ({
                 placeholder="Variable replacement value (e.g. Acme Corp / 45 Days)"
                 value={newValue}
                 onChange={(e) => setNewValue(e.target.value)}
-                className="flex-1 bg-[#0e141f] border border-gray-700 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500"
+                className="flex-1 bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black placeholder-gray-500 focus:outline-none focus:border-[#0d3479]"
               />
               <button
                 type="submit"
                 disabled={!newKey.trim() || !newValue.trim()}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer shrink-0"
+                className="px-4 py-2 bg-[#002057] hover:bg-[#0d3479] disabled:opacity-50 text-black rounded-lg text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer shrink-0"
               >
                 + Add Variable
               </button>
@@ -184,23 +184,23 @@ export const GlobalVariablesModal: React.FC<GlobalVariablesModalProps> = ({
         </div>
 
         {/* Filter & Search Bar */}
-        <div className="px-6 py-2.5 bg-[#121924] border-b border-gray-800/80 flex items-center justify-between shrink-0 text-xs">
+        <div className="px-6 py-2.5 bg-white border-b border-[#cccccc]/80 flex items-center justify-between shrink-0 text-xs">
           <div className="relative w-64">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-gray-400" />
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#666666]" />
             <input
               type="text"
               placeholder="Search variables or values..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#1b2535] border border-gray-700/80 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-emerald-500"
+              className="w-full bg-white border border-[#cccccc]/80 rounded-lg pl-8 pr-3 py-1.5 text-xs text-black focus:outline-none focus:border-[#0d3479]"
             />
           </div>
 
-          <div className="flex items-center space-x-1 bg-[#1b2535] p-0.5 rounded-lg border border-gray-700/80">
+          <div className="flex items-center space-x-1 bg-white p-0.5 rounded-lg border border-[#cccccc]/80">
             <button
               onClick={() => setActiveTab('all')}
               className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
-                activeTab === 'all' ? 'bg-emerald-600 text-white shadow' : 'text-gray-400 hover:text-gray-200'
+                activeTab === 'all' ? 'bg-emerald-600 text-black shadow' : 'text-[#666666] hover:text-black'
               }`}
             >
               All ({allKeys.length})
@@ -208,7 +208,7 @@ export const GlobalVariablesModal: React.FC<GlobalVariablesModalProps> = ({
             <button
               onClick={() => setActiveTab('custom')}
               className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
-                activeTab === 'custom' ? 'bg-emerald-600 text-white shadow' : 'text-gray-400 hover:text-gray-200'
+                activeTab === 'custom' ? 'bg-emerald-600 text-black shadow' : 'text-[#666666] hover:text-black'
               }`}
             >
               Custom ({Object.keys(customVars).length})
@@ -216,7 +216,7 @@ export const GlobalVariablesModal: React.FC<GlobalVariablesModalProps> = ({
             <button
               onClick={() => setActiveTab('system')}
               className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
-                activeTab === 'system' ? 'bg-emerald-600 text-white shadow' : 'text-gray-400 hover:text-gray-200'
+                activeTab === 'system' ? 'bg-emerald-600 text-black shadow' : 'text-[#666666] hover:text-black'
               }`}
             >
               System Defaults
@@ -227,10 +227,10 @@ export const GlobalVariablesModal: React.FC<GlobalVariablesModalProps> = ({
         {/* Variables List */}
         <div className="flex-1 overflow-y-auto p-6 space-y-2.5 scrollbar-thin">
           {filteredKeys.length === 0 ? (
-            <div className="text-center py-12 text-gray-400 space-y-2">
-              <Info className="w-8 h-8 mx-auto text-gray-500" />
+            <div className="text-center py-12 text-[#666666] space-y-2">
+              <Info className="w-8 h-8 mx-auto text-[#555555]" />
               <p className="text-sm font-medium">No global variables match your search.</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-[#555555]">
                 Create a custom placeholder using the form above.
               </p>
             </div>
@@ -243,11 +243,11 @@ export const GlobalVariablesModal: React.FC<GlobalVariablesModalProps> = ({
               return (
                 <div
                   key={key}
-                  className="bg-[#182333] border border-gray-700/80 hover:border-gray-600 rounded-lg p-3 flex items-center justify-between space-x-3 transition-colors"
+                  className="bg-white border border-[#cccccc]/80 hover:border-gray-600 rounded-lg p-3 flex items-center justify-between space-x-3 transition-colors"
                 >
                   <div className="flex-1 flex flex-col space-y-1 min-w-0">
                     <div className="flex items-center space-x-2">
-                      <code className="text-xs font-mono font-bold text-emerald-400 bg-emerald-950/70 px-2 py-0.5 rounded border border-emerald-800/60">
+                      <code className="text-xs font-mono font-bold text-[#0d3479] bg-emerald-950/70 px-2 py-0.5 rounded border border-emerald-800/60">
                         {`{{${key}}}`}
                       </code>
                       {isCustom ? (
@@ -255,7 +255,7 @@ export const GlobalVariablesModal: React.FC<GlobalVariablesModalProps> = ({
                           Custom
                         </span>
                       ) : (
-                        <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-gray-800 text-gray-400">
+                        <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-gray-800 text-[#666666]">
                           System Auto
                         </span>
                       )}
@@ -267,11 +267,11 @@ export const GlobalVariablesModal: React.FC<GlobalVariablesModalProps> = ({
                           type="text"
                           value={val}
                           onChange={(e) => handleUpdateValue(key, e.target.value)}
-                          className="w-full bg-[#111927] border border-gray-700 rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-emerald-500"
+                          className="w-full bg-white border border-[#cccccc] rounded px-2.5 py-1 text-xs text-black focus:outline-none focus:border-[#0d3479]"
                         />
                       ) : (
-                        <div className="text-xs text-gray-300 bg-[#111927]/60 border border-gray-800/80 rounded px-2.5 py-1 truncate">
-                          {val || <span className="text-gray-500 italic">Empty</span>}
+                        <div className="text-xs text-gray-300 bg-white/60 border border-[#cccccc]/80 rounded px-2.5 py-1 truncate">
+                          {val || <span className="text-[#555555] italic">Empty</span>}
                         </div>
                       )}
                     </div>
@@ -283,14 +283,14 @@ export const GlobalVariablesModal: React.FC<GlobalVariablesModalProps> = ({
                       onClick={() => handleCopy(key)}
                       className={`px-2.5 py-1.5 rounded text-xs font-medium flex items-center space-x-1 transition-all cursor-pointer ${
                         isCopied
-                          ? 'bg-emerald-600 text-white font-bold'
-                          : 'bg-[#223044] hover:bg-[#2b3d56] text-gray-300 hover:text-white border border-gray-700'
+                          ? 'bg-emerald-600 text-black font-bold'
+                          : 'bg-white hover:bg-white text-gray-300 hover:text-black border border-[#cccccc]'
                       }`}
                       title="Copy placeholder to clipboard"
                     >
                       {isCopied ? (
                         <>
-                          <Check className="w-3.5 h-3.5 text-white" />
+                          <Check className="w-3.5 h-3.5 text-black" />
                           <span>Copied!</span>
                         </>
                       ) : (
@@ -305,7 +305,7 @@ export const GlobalVariablesModal: React.FC<GlobalVariablesModalProps> = ({
                       <button
                         type="button"
                         onClick={() => handleDeleteCustom(key)}
-                        className="p-1.5 rounded text-gray-400 hover:text-red-400 hover:bg-red-950/40 transition-colors cursor-pointer"
+                        className="p-1.5 rounded text-[#666666] hover:text-red-400 hover:bg-red-950/40 transition-colors cursor-pointer"
                         title="Delete custom variable"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -319,16 +319,16 @@ export const GlobalVariablesModal: React.FC<GlobalVariablesModalProps> = ({
         </div>
 
         {/* Footer note */}
-        <div className="px-6 py-3 bg-[#0f1520] border-t border-gray-800 flex items-center justify-between text-xs text-gray-400 shrink-0">
+        <div className="px-6 py-3 bg-white border-t border-[#cccccc] flex items-center justify-between text-xs text-[#666666] shrink-0">
           <div className="flex items-center space-x-1.5">
-            <HelpCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+            <HelpCircle className="w-4 h-4 text-[#0d3479] shrink-0" />
             <span>
-              Tip: Paste <code className="text-emerald-400 font-mono font-bold">{`{{VARIABLE}}`}</code> in any scope item, clause, rate description, or title.
+              Tip: Paste <code className="text-[#0d3479] font-mono font-bold font-bold">{`{{VARIABLE}}`}</code> in any scope item, clause, rate description, or title.
             </span>
           </div>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+            className="px-4 py-1.5 bg-gray-800 hover:bg-gray-700 text-black rounded-lg text-xs font-semibold transition-colors cursor-pointer"
           >
             Done
           </button>

@@ -72,23 +72,12 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
   onLoadTemplate,
   onCreateProjectFromTemplate,
 }) => {
-  const [customTemplates, setCustomTemplates] = useState<CustomTemplateItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem('latex_custom_templates');
-        if (stored) return JSON.parse(stored);
-      } catch (e) {
-        console.error('Failed to load custom templates from localStorage', e);
-      }
-    }
-    return [];
-  });
-  const [templateName, setTemplateName] = useState<string>('');
-  const [templateDesc, setTemplateDesc] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'builtin' | 'custom' | 'save'>('builtin');
+  const [templateName, setTemplateName] = useState('');
+  const [templateDesc, setTemplateDesc] = useState('');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // New Project Wizard State
+  // New Project from Template Wizard state
   const [wizardTemplate, setWizardTemplate] = useState<LatexDocument | null>(null);
   const [wizardProjTitle, setWizardProjTitle] = useState('');
   const [wizardProjCode, setWizardProjCode] = useState('');
@@ -96,29 +85,22 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
   const [wizardLocation, setWizardLocation] = useState('');
   const [wizardCategory, setWizardCategory] = useState('Civil Labour Contract');
 
-  const startWizard = (tmpl: LatexDocument) => {
-    setWizardTemplate(tmpl);
-    setWizardProjTitle(`${tmpl.title} Project`);
-    setWizardProjCode(`GI-PRJ-${new Date().getFullYear()}-${Math.floor(10 + Math.random() * 90)}`);
-    setWizardClientName(tmpl.purchaseOrder?.contractorName || tmpl.quotation?.toRecipient || 'Valued Client');
-    setWizardLocation(tmpl.purchaseOrder?.projectLocation || tmpl.quotation?.toAddress || 'Site Location');
-    setWizardCategory(
-      tmpl.purchaseOrder 
-        ? 'Civil Labour Contract' 
-        : tmpl.quotation 
-        ? 'Commercial Quotation' 
-        : 'Civil & PEB Construction'
-    );
-  };
+  const [customTemplates, setCustomTemplates] = useState<CustomTemplateItem[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const saved = localStorage.getItem('latex_custom_templates');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
 
-  const saveCustomTemplatesToStorage = (items: CustomTemplateItem[]) => {
-    setCustomTemplates(items);
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('latex_custom_templates', JSON.stringify(items));
-      } catch (e) {
-        console.error('Failed to save custom templates to localStorage', e);
-      }
+  const saveCustomTemplatesToStorage = (templates: CustomTemplateItem[]) => {
+    setCustomTemplates(templates);
+    try {
+      localStorage.setItem('latex_custom_templates', JSON.stringify(templates));
+    } catch (e) {
+      console.error('Failed to save custom templates:', e);
     }
   };
 
@@ -129,7 +111,7 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
     const newTemplate: CustomTemplateItem = {
       id: `tmpl_${Date.now()}`,
       name: templateName.trim(),
-      description: templateDesc.trim() || 'Custom saved document template structure.',
+      description: templateDesc.trim() || 'Custom user-saved template layout.',
       createdAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       document: JSON.parse(JSON.stringify(currentDocument)),
     };
@@ -138,9 +120,9 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
     saveCustomTemplatesToStorage(updated);
     setTemplateName('');
     setTemplateDesc('');
-    setActiveTab('custom');
     setSuccessMessage('Template saved successfully!');
     setTimeout(() => setSuccessMessage(null), 3000);
+    setActiveTab('custom');
   };
 
   const handleDeleteTemplate = (id: string) => {
@@ -150,14 +132,24 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
     }
   };
 
-  const handleExportTemplate = (tmpl: CustomTemplateItem) => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(tmpl, null, 2));
+  const handleExportTemplate = (item: CustomTemplateItem) => {
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(item.document, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `${tmpl.name.toLowerCase().replace(/\s+/g, '_')}_template.json`);
+    downloadAnchor.setAttribute('download', `${item.name.toLowerCase().replace(/\s+/g, '_')}_template.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
+  };
+
+  const startWizard = (tmpl: LatexDocument) => {
+    setWizardTemplate(tmpl);
+    const yr = new Date().getFullYear();
+    const rnd = Math.floor(100 + Math.random() * 900);
+    setWizardProjTitle(`${tmpl.title || 'New Project'}`);
+    setWizardProjCode(`GI-PRJ-${yr}-${rnd}`);
+    setWizardClientName('Mohammad Kamil Shaikh');
+    setWizardLocation('Sevasi TP-1, Vadodara, Gujarat');
   };
 
   const handleImportTemplate = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -169,14 +161,19 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
       try {
         const parsed = JSON.parse(event.target?.result as string);
         
-        // Supports both pure LatexDocument files and packaged CustomTemplateItem files
-        const docToValidate = parsed.document ? parsed.document : parsed;
-        const name = parsed.name || docToValidate.title || file.name.replace('.json', '');
-        const description = parsed.description || 'Imported custom template.';
-        
-        const error = validateLatexDocument(docToValidate);
-        if (error) {
-          alert(error);
+        let docToValidate: any = parsed;
+        let name = file.name.replace(/\.json$/i, '');
+        let description = 'Imported JSON template';
+
+        if (parsed.document && typeof parsed.document === 'object') {
+          docToValidate = parsed.document;
+          if (parsed.name) name = parsed.name;
+          if (parsed.description) description = parsed.description;
+        }
+
+        const validationError = validateLatexDocument(docToValidate);
+        if (validationError) {
+          alert(validationError);
           return;
         }
 
@@ -197,44 +194,46 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
       }
     };
     reader.readAsText(file);
-    e.target.value = ''; // Reset file input
+    e.target.value = '';
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="w-full max-w-lg bg-[#0e1724] text-gray-200 h-full flex flex-col shadow-2xl border-l border-gray-800 animate-in slide-in-from-right duration-300">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-xs select-none">
+      <div onClick={onClose} className="fixed inset-0 cursor-pointer" title="Click outside to close" />
+      <div className="relative w-full max-w-lg bg-[#f7f7f2] text-black h-full flex flex-col shadow-2xl border-l border-[#cccccc] z-10">
+        
         {/* Drawer Header */}
-        <div className="px-5 py-4 border-b border-gray-800 flex items-center justify-between bg-[#111927]">
+        <div className="px-5 py-4 border-b border-[#cccccc] flex items-center justify-between bg-[#f0efe6] shrink-0">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded bg-emerald-900/40 border border-emerald-700/60 flex items-center justify-center text-emerald-400">
+            <div className="w-8 h-8 rounded-lg bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479] shadow-xs">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white tracking-wide">Template Manager</h2>
-              <p className="text-[11px] text-gray-400">Save document structures & load templates</p>
+              <h2 className="text-sm font-bold text-black tracking-wide">Template Manager</h2>
+              <p className="text-[11px] text-[#666666]">Save document structures & load templates</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded text-gray-400 hover:text-white hover:bg-gray-800 flex items-center justify-center transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-[#666666] hover:text-black hover:bg-white border border-transparent hover:border-[#cccccc] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-800 bg-[#0b121c] px-4 pt-2 space-x-4">
+        <div className="flex border-b border-[#cccccc] bg-white px-4 pt-2 space-x-4 shrink-0">
           <button
             onClick={() => {
               setActiveTab('builtin');
               setWizardTemplate(null);
             }}
-            className={`pb-2 text-xs font-medium border-b-2 transition-colors cursor-pointer ${
+            className={`pb-2 text-xs font-semibold border-b-2 transition-colors cursor-pointer ${
               activeTab === 'builtin' && !wizardTemplate
-                ? 'border-emerald-500 text-emerald-400 font-semibold'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
+                ? 'border-[#0d3479] text-[#0d3479]'
+                : 'border-transparent text-[#666666] hover:text-black'
             }`}
           >
             Built-in Templates
@@ -244,10 +243,10 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
               setActiveTab('custom');
               setWizardTemplate(null);
             }}
-            className={`pb-2 text-xs font-medium border-b-2 transition-colors cursor-pointer ${
+            className={`pb-2 text-xs font-semibold border-b-2 transition-colors cursor-pointer ${
               activeTab === 'custom' && !wizardTemplate
-                ? 'border-emerald-500 text-emerald-400 font-semibold'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
+                ? 'border-[#0d3479] text-[#0d3479]'
+                : 'border-transparent text-[#666666] hover:text-black'
             }`}
           >
             Custom Saved ({customTemplates.length})
@@ -257,10 +256,10 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
               setActiveTab('save');
               setWizardTemplate(null);
             }}
-            className={`pb-2 text-xs font-medium border-b-2 transition-colors cursor-pointer ${
+            className={`pb-2 text-xs font-semibold border-b-2 transition-colors cursor-pointer ${
               activeTab === 'save'
-                ? 'border-emerald-500 text-emerald-400 font-semibold'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
+                ? 'border-[#0d3479] text-[#0d3479]'
+                : 'border-transparent text-[#666666] hover:text-black'
             }`}
           >
             + Save Current
@@ -269,76 +268,76 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
 
         {/* Success Alert */}
         {successMessage && (
-          <div className="mx-4 mt-3 bg-emerald-950/80 border border-emerald-700 text-emerald-300 px-3 py-2 rounded text-xs flex items-center space-x-2">
-            <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="mx-4 mt-3 bg-[#dfe7f4] border border-[#b9c7de] text-[#0d3479] px-3 py-2 rounded-xl text-xs flex items-center space-x-2 font-bold shadow-xs">
+            <Check className="w-4 h-4 text-[#0d3479] shrink-0" />
             <span>{successMessage}</span>
           </div>
         )}
 
         {/* Drawer Body */}
         {wizardTemplate ? (
-          <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-[#0e1724]">
-            <div className="bg-[#131d2d] border border-emerald-800/40 rounded-lg p-4 space-y-4">
-              <div className="flex items-center space-x-2 text-emerald-400 border-b border-gray-800/80 pb-2">
+          <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-[#f7f7f2]">
+            <div className="bg-white border border-[#cccccc] rounded-xl p-4 space-y-4 shadow-xs">
+              <div className="flex items-center space-x-2 text-[#0d3479] border-b border-[#cccccc] pb-2">
                 <Sparkles className="w-4 h-4" />
                 <h3 className="text-xs font-bold uppercase tracking-wider">New Project Wizard</h3>
               </div>
               
               <div className="space-y-3.5 text-xs">
                 <div className="space-y-1">
-                  <label className="text-gray-300 font-semibold">Project Name / Document Title *</label>
+                  <label className="text-black font-bold">Project Name / Document Title *</label>
                   <input
                     type="text"
                     required
                     value={wizardProjTitle}
                     onChange={(e) => setWizardProjTitle(e.target.value)}
                     placeholder="e.g. Sevasi Commercial Complex Construction"
-                    className="w-full bg-[#0b121c] border border-gray-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-gray-300 font-semibold">Project Code / Reference *</label>
+                  <label className="text-black font-bold">Project Code / Reference *</label>
                   <input
                     type="text"
                     required
                     value={wizardProjCode}
                     onChange={(e) => setWizardProjCode(e.target.value)}
                     placeholder="e.g. GI-PRJ-2026-09"
-                    className="w-full bg-[#0b121c] border border-gray-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-mono font-bold focus:outline-none focus:border-[#0d3479] shadow-xs"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-gray-300 font-semibold">Client / Contractor Name *</label>
+                  <label className="text-black font-bold">Client / Contractor Name *</label>
                   <input
                     type="text"
                     required
                     value={wizardClientName}
                     onChange={(e) => setWizardClientName(e.target.value)}
                     placeholder="e.g. Mohammad Kamil Shaikh"
-                    className="w-full bg-[#0b121c] border border-gray-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-gray-300 font-semibold">Site Location *</label>
+                  <label className="text-black font-bold">Site Location *</label>
                   <input
                     type="text"
                     required
                     value={wizardLocation}
                     onChange={(e) => setWizardLocation(e.target.value)}
                     placeholder="e.g. Sevasi TP-1, Vadodara, Gujarat"
-                    className="w-full bg-[#0b121c] border border-gray-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-gray-300 font-semibold">Project Category</label>
+                  <label className="text-black font-bold">Project Category</label>
                   <select
                     value={wizardCategory}
                     onChange={(e) => setWizardCategory(e.target.value)}
-                    className="w-full bg-[#0b121c] border border-gray-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
                   >
                     <option value="Civil Labour Contract">Civil Labour Contract</option>
                     <option value="PEB & Steel Structure Work Order">PEB & Steel Structure Work Order</option>
@@ -348,11 +347,11 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2 pt-2 border-t border-gray-800/80">
+              <div className="flex items-center space-x-2 pt-2 border-t border-[#cccccc]">
                 <button
                   type="button"
                   onClick={() => setWizardTemplate(null)}
-                  className="flex-1 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white text-xs font-semibold rounded transition-colors cursor-pointer"
+                  className="flex-1 py-2 bg-white hover:bg-slate-100 text-black border border-[#cccccc] text-xs font-bold rounded-lg transition-colors cursor-pointer shadow-xs"
                 >
                   Cancel
                 </button>
@@ -372,7 +371,7 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
                     setWizardTemplate(null);
                     onClose();
                   }}
-                  className="flex-1 py-2 bg-[#15803d] hover:bg-[#16a34a] text-white text-xs font-semibold rounded transition-colors shadow-md cursor-pointer flex items-center justify-center space-x-1"
+                  className="flex-1 py-2 bg-[#002057] hover:bg-[#0d3479] text-white text-xs font-bold rounded-lg transition-colors shadow-md cursor-pointer flex items-center justify-center space-x-1"
                 >
                   <span>Create Project</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -381,21 +380,21 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
             </div>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto p-5 space-y-4">
+          <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-[#f7f7f2]">
             {activeTab === 'builtin' && (
               <div className="space-y-3">
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-[#666666]">
                   Choose from standard Overleaf LaTeX document boilerplates and professional contracts.
                 </p>
 
                 {Object.entries(SAMPLE_TEMPLATES).map(([key, tmpl]) => (
                   <div
                     key={key}
-                    className="bg-[#131d2d] border border-gray-800 rounded-lg p-4 space-y-3 hover:border-emerald-600/50 transition-all shadow-sm group"
+                    className="bg-white border border-[#cccccc] rounded-xl p-4 space-y-3 hover:border-[#0d3479]/50 transition-all shadow-xs group"
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <span className="text-[10px] uppercase font-mono tracking-wider bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-800/60">
+                        <span className="text-[10px] uppercase font-mono font-bold tracking-wider bg-[#dfe7f4] text-[#0d3479] px-2 py-0.5 rounded-full border border-[#b9c7de]">
                           {key === 'quotation'
                             ? '10-Page Commercial Quotation'
                             : key === 'tax_invoice'
@@ -404,10 +403,10 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
                             ? 'Professional Contract'
                             : 'Standard Document'}
                         </span>
-                        <h3 className="text-sm font-bold text-white mt-1.5 group-hover:text-emerald-300 transition-colors">
+                        <h3 className="text-sm font-bold text-black mt-1.5 group-hover:text-[#0d3479] transition-colors">
                           {tmpl.title}
                         </h3>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-[#666666] mt-1 leading-relaxed">
                           {key === 'quotation'
                             ? 'Comprehensive 10-page commercial quotation with technical details, material specs, itemized BOQ, delivery schedule, approved vendor list (25 makes), and 17 commercial terms.'
                             : key === 'tax_invoice'
@@ -419,19 +418,19 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-end space-x-2 pt-2 border-t border-gray-800/60">
+                    <div className="flex items-center justify-end space-x-2 pt-2 border-t border-[#cccccc]">
                       <button
                         onClick={() => {
                           onLoadTemplate(tmpl);
                           onClose();
                         }}
-                        className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded text-xs font-semibold transition-colors cursor-pointer flex items-center space-x-1"
+                        className="px-3 py-1.5 bg-white hover:bg-slate-100 text-black border border-[#cccccc] rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center space-x-1 shadow-xs"
                       >
                         <span>Load into Current</span>
                       </button>
                       <button
                         onClick={() => startWizard(tmpl)}
-                        className="px-3 py-1.5 bg-[#15803d] hover:bg-[#16a34a] text-white rounded text-xs font-semibold transition-colors cursor-pointer flex items-center space-x-1 shadow-xs"
+                        className="px-3 py-1.5 bg-[#002057] hover:bg-[#0d3479] text-white rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center space-x-1 shadow-xs"
                       >
                         <span>New Project</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -445,10 +444,10 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
             {activeTab === 'custom' && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-gray-400 font-medium">
+                  <p className="text-xs text-[#666666] font-medium">
                     Your custom templates.
                   </p>
-                  <label className="px-2.5 py-1.5 bg-gray-800 hover:bg-gray-700 text-emerald-400 hover:text-emerald-300 rounded text-[11px] font-bold transition-colors cursor-pointer flex items-center space-x-1.5 shadow-sm border border-gray-700">
+                  <label className="px-2.5 py-1.5 bg-white hover:bg-slate-100 text-[#0d3479] rounded-lg text-[11px] font-bold transition-colors cursor-pointer flex items-center space-x-1.5 shadow-xs border border-[#cccccc]">
                     <Upload className="w-3.5 h-3.5" />
                     <span>Import JSON</span>
                     <input
@@ -461,12 +460,12 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
                 </div>
 
                 {customTemplates.length === 0 ? (
-                  <div className="text-center py-12 bg-[#121b29] rounded-lg border border-dashed border-gray-800 p-6 space-y-3">
-                    <Bookmark className="w-8 h-8 text-gray-600 mx-auto" />
-                    <p className="text-xs text-gray-400 font-medium">No custom templates saved yet.</p>
+                  <div className="text-center py-12 bg-white rounded-xl border border-dashed border-[#cccccc] p-6 space-y-3">
+                    <Bookmark className="w-8 h-8 text-[#888888] mx-auto" />
+                    <p className="text-xs text-[#666666] font-medium">No custom templates saved yet.</p>
                     <button
                       onClick={() => setActiveTab('save')}
-                      className="px-3 py-1.5 bg-[#15803d] text-white rounded text-xs font-semibold hover:bg-[#16a34a] transition-colors inline-flex items-center space-x-1.5 cursor-pointer"
+                      className="px-3 py-1.5 bg-[#002057] text-white rounded-lg text-xs font-bold hover:bg-[#0d3479] transition-colors inline-flex items-center space-x-1.5 cursor-pointer shadow-xs"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Save Current Structure</span>
@@ -476,50 +475,44 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
                   customTemplates.map((tmpl) => (
                     <div
                       key={tmpl.id}
-                      className="bg-[#131d2d] border border-gray-800 rounded-lg p-4 space-y-3 hover:border-emerald-600/50 transition-all shadow-sm"
+                      className="bg-white border border-[#cccccc] rounded-xl p-4 space-y-3 hover:border-[#0d3479]/50 transition-all shadow-xs"
                     >
                       <div className="flex items-start justify-between">
                         <div>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-[10px] font-mono text-gray-400">{tmpl.createdAt}</span>
-                            <span className="text-[10px] bg-blue-950 text-blue-400 border border-blue-800 px-1.5 py-0.2 rounded font-mono">
-                              Custom Template
-                            </span>
-                          </div>
-                          <h3 className="text-sm font-bold text-white mt-1">{tmpl.name}</h3>
-                          <p className="text-xs text-gray-400 mt-0.5">{tmpl.description}</p>
+                          <h3 className="text-sm font-bold text-black">{tmpl.name}</h3>
+                          <p className="text-xs text-[#666666] mt-0.5">{tmpl.description || 'No description'}</p>
+                          <span className="text-[10px] text-[#888888] block mt-1">Saved: {tmpl.createdAt}</span>
                         </div>
-                        <div className="flex items-center space-x-1">
-                          <button
-                            onClick={() => handleExportTemplate(tmpl)}
-                            className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded transition-colors"
-                            title="Export Template JSON"
-                          >
-                            <Download className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteTemplate(tmpl.id)}
-                            className="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-950/40 rounded transition-colors"
-                            title="Delete Template"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
+                        <button
+                          onClick={() => handleDeleteTemplate(tmpl.id)}
+                          className="text-[#888888] hover:text-red-600 p-1.5 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                          title="Delete template"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
 
-                      <div className="flex items-center justify-end space-x-2 pt-2 border-t border-gray-800/60">
+                      <div className="flex items-center justify-end space-x-2 pt-2 border-t border-[#cccccc]">
+                        <button
+                          onClick={() => handleExportTemplate(tmpl)}
+                          className="px-2.5 py-1.5 bg-white hover:bg-slate-100 text-black border border-[#cccccc] rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center space-x-1 shadow-xs"
+                          title="Export as JSON"
+                        >
+                          <Download className="w-3 h-3" />
+                          <span>Export</span>
+                        </button>
                         <button
                           onClick={() => {
                             onLoadTemplate(tmpl.document);
                             onClose();
                           }}
-                          className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded text-xs font-semibold transition-colors cursor-pointer"
+                          className="px-3 py-1.5 bg-white hover:bg-slate-100 text-black border border-[#cccccc] rounded-lg text-xs font-bold transition-colors cursor-pointer shadow-xs"
                         >
-                          Load into Current
+                          <span>Load Structure</span>
                         </button>
                         <button
                           onClick={() => startWizard(tmpl.document)}
-                          className="px-3 py-1.5 bg-[#15803d] hover:bg-[#16a34a] text-white rounded text-xs font-semibold transition-colors cursor-pointer flex items-center space-x-1 shadow-xs"
+                          className="px-3 py-1.5 bg-[#002057] hover:bg-[#0d3479] text-white rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center space-x-1 shadow-xs"
                         >
                           <span>New Project</span>
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -532,42 +525,42 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
             )}
 
             {activeTab === 'save' && (
-              <form onSubmit={handleSaveCurrentAsTemplate} className="space-y-4 bg-[#131d2d] border border-gray-800 rounded-lg p-4">
-                <div className="flex items-center space-x-2 text-emerald-400">
+              <form onSubmit={handleSaveCurrentAsTemplate} className="space-y-4 bg-white border border-[#cccccc] rounded-xl p-4 shadow-xs">
+                <div className="flex items-center space-x-2 text-[#0d3479]">
                   <Sparkles className="w-4 h-4" />
                   <h3 className="text-xs font-bold uppercase tracking-wider">Save Current Structure as Template</h3>
                 </div>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-[#666666]">
                   This will package all current sections, purchase order items, global variables, and styling settings into a reusable custom template.
                 </p>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-300">Template Name *</label>
+                  <label className="text-xs font-bold text-black">Template Name *</label>
                   <input
                     type="text"
                     required
                     value={templateName}
                     onChange={(e) => setTemplateName(e.target.value)}
                     placeholder="e.g. Standard Construction PO v2"
-                    className="w-full bg-[#0b121c] border border-gray-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-300">Description</label>
+                  <label className="text-xs font-bold text-black">Description</label>
                   <textarea
                     value={templateDesc}
                     onChange={(e) => setTemplateDesc(e.target.value)}
                     placeholder="Describe what this template contains..."
                     rows={3}
-                    className="w-full bg-[#0b121c] border border-gray-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-medium focus:outline-none focus:border-[#0d3479] resize-none shadow-xs"
                   />
                 </div>
 
                 <div className="pt-2">
                   <button
                     type="submit"
-                    className="w-full py-2 bg-[#15803d] hover:bg-[#16a34a] text-white font-semibold rounded text-xs transition-colors shadow-md cursor-pointer flex items-center justify-center space-x-1.5"
+                    className="w-full py-2.5 bg-[#002057] hover:bg-[#0d3479] text-white font-bold rounded-lg text-xs transition-colors shadow-md cursor-pointer flex items-center justify-center space-x-1.5 active:scale-95"
                   >
                     <Bookmark className="w-4 h-4" />
                     <span>Save Custom Template</span>

@@ -320,38 +320,39 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 select-none animate-in fade-in duration-150">
-      <div className="bg-[#0B101E] border border-[#1E293B] rounded-2xl max-w-2xl w-full text-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4 select-none animate-in fade-in duration-150">
+      <div onClick={onClose} className="fixed inset-0 cursor-pointer" />
+      <div className="relative bg-[#f7f7f2] border border-[#cccccc] rounded-2xl max-w-2xl w-full text-black shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-10">
         {/* Header */}
-        <div className="px-6 py-4 bg-[#0F172A] border-b border-[#1E293B] flex items-center justify-between shrink-0">
+        <div className="px-6 py-4 bg-[#f0efe6] border-b border-[#cccccc] flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 rounded-xl">
+            <div className="p-2.5 bg-[#dfe7f4] border border-[#b9c7de] text-[#0d3479] rounded-xl shadow-xs">
               <FolderGit2 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-white">Project & Master Settings</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="font-bold text-base text-black">Project & Master Settings</h3>
+              <p className="text-xs text-[#666666]">
                 Central source of truth for all documents in this project
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+            className="text-[#666666] hover:text-black p-1.5 rounded-lg hover:bg-white border border-transparent hover:border-[#cccccc] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="px-6 pt-3 bg-[#0F172A]/50 border-b border-[#1E293B] flex items-center space-x-2 shrink-0">
+        <div className="px-6 pt-3 bg-white border-b border-[#cccccc] flex items-center space-x-2 shrink-0">
           <button
             type="button"
             onClick={() => setActiveTab('project')}
             className={`px-4 py-2.5 rounded-t-lg text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer border-b-2 ${
               activeTab === 'project'
-                ? 'border-indigo-500 text-indigo-400 bg-[#0B101E]'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                ? 'border-[#0d3479] text-[#0d3479] bg-[#f7f7f2]'
+                : 'border-transparent text-[#666666] hover:text-black hover:bg-slate-50'
             }`}
           >
             <FolderGit2 className="w-4 h-4" />
@@ -363,8 +364,8 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
             onClick={() => setActiveTab('client')}
             className={`px-4 py-2.5 rounded-t-lg text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer border-b-2 ${
               activeTab === 'client'
-                ? 'border-indigo-500 text-indigo-400 bg-[#0B101E]'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                ? 'border-[#0d3479] text-[#0d3479] bg-[#f7f7f2]'
+                : 'border-transparent text-[#666666] hover:text-black hover:bg-slate-50'
             }`}
           >
             <User className="w-4 h-4" />
@@ -376,8 +377,8 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
             onClick={() => setActiveTab('company')}
             className={`px-4 py-2.5 rounded-t-lg text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer border-b-2 ${
               activeTab === 'company'
-                ? 'border-indigo-500 text-indigo-400 bg-[#0B101E]'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                ? 'border-[#0d3479] text-[#0d3479] bg-[#f7f7f2]'
+                : 'border-transparent text-[#666666] hover:text-black hover:bg-slate-50'
             }`}
           >
             <Building2 className="w-4 h-4" />
@@ -386,14 +387,14 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
         </div>
 
         {/* Form Content */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4 text-xs scrollbar-thin">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4 text-xs scrollbar-thin bg-[#f7f7f2]">
           {/* Tab 1: Project Details */}
           {activeTab === 'project' && (
-            <div className="space-y-4">
+            <div className="bg-white border border-[#cccccc] rounded-xl p-5 shadow-xs space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1">
-                    <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider flex items-center space-x-1">
+                    <FileText className="w-3.5 h-3.5 text-[#0d3479]" />
                     <span>Project Name / Title</span>
                   </label>
                   <input
@@ -402,13 +403,13 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     onChange={(e) => setProjectTitle(e.target.value)}
                     required
                     placeholder="e.g. Construction of Round Roof System (Trussless Roof)"
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 font-medium placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-semibold placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1">
-                    <Hash className="w-3.5 h-3.5 text-indigo-400" />
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider flex items-center space-x-1">
+                    <Hash className="w-3.5 h-3.5 text-[#0d3479]" />
                     <span>Project Code / Ref</span>
                   </label>
                   <input
@@ -416,13 +417,13 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     value={projectCode}
                     onChange={(e) => setProjectCode(e.target.value)}
                     placeholder="e.g. GI-PRJ-2026-29"
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 font-mono placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-mono font-bold placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1">
-                    <DollarSign className="w-3.5 h-3.5 text-indigo-400" />
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider flex items-center space-x-1">
+                    <DollarSign className="w-3.5 h-3.5 text-[#0d3479]" />
                     <span>Total Project Budget</span>
                   </label>
                   <input
@@ -430,13 +431,13 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     value={projectBudget}
                     onChange={(e) => setProjectBudget(e.target.value)}
                     placeholder="e.g. ₹15,00,000.00"
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 font-medium placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-semibold placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1">
-                    <MapPin className="w-3.5 h-3.5 text-indigo-400" />
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider flex items-center space-x-1">
+                    <MapPin className="w-3.5 h-3.5 text-[#0d3479]" />
                     <span>Site / Project Location</span>
                   </label>
                   <textarea
@@ -444,7 +445,7 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     value={projectLocation}
                     onChange={(e) => setProjectLocation(e.target.value)}
                     placeholder="e.g. Plot No 123, GIDC Industrial Estate, Savli, Vadodara, Gujarat"
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-medium placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
               </div>
@@ -453,11 +454,11 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
 
           {/* Tab 2: Client / Party Info */}
           {activeTab === 'client' && (
-            <div className="space-y-4">
+            <div className="bg-white border border-[#cccccc] rounded-xl p-5 shadow-xs space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1">
-                    <Building2 className="w-3.5 h-3.5 text-indigo-400" />
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider flex items-center space-x-1">
+                    <Building2 className="w-3.5 h-3.5 text-[#0d3479]" />
                     <span>Client / Contractor Name</span>
                   </label>
                   <input
@@ -465,13 +466,13 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
                     placeholder="e.g. ALEMBIC PHARMACEUTICALS LTD"
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 font-bold placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-bold placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider flex items-center space-x-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#0d3479]" />
                     <span>Client GST Number</span>
                   </label>
                   <input
@@ -480,13 +481,13 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     onChange={(e) => setClientGstNo(formatGstInput(e.target.value))}
                     placeholder="e.g. 24AAAAA1234A1Z5"
                     maxLength={15}
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 font-mono placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-mono font-bold placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1">
-                    <User className="w-3.5 h-3.5 text-indigo-400" />
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider flex items-center space-x-1">
+                    <User className="w-3.5 h-3.5 text-[#0d3479]" />
                     <span>Contact Person / Rep</span>
                   </label>
                   <input
@@ -494,13 +495,13 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     value={contactPerson}
                     onChange={(e) => setContactPerson(e.target.value)}
                     placeholder="e.g. Mr. Rajesh Patel (Project Head)"
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-semibold placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1">
-                    <MapPin className="w-3.5 h-3.5 text-indigo-400" />
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider flex items-center space-x-1">
+                    <MapPin className="w-3.5 h-3.5 text-[#0d3479]" />
                     <span>Client Billing / Site Address</span>
                   </label>
                   <textarea
@@ -508,7 +509,7 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     value={clientAddress}
                     onChange={(e) => setClientAddress(e.target.value)}
                     placeholder="Enter complete client address with pin code..."
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-medium placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
               </div>
@@ -517,10 +518,10 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
 
           {/* Tab 3: Company Profile */}
           {activeTab === 'company' && (
-            <div className="space-y-4">
+            <div className="bg-white border border-[#cccccc] rounded-xl p-5 shadow-xs space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider">
                     Issuer Company Name
                   </label>
                   <input
@@ -528,12 +529,12 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     placeholder="e.g. BLUE GLOBAL"
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 font-bold placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-bold placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider">
                     Company Subtitle / Tagline
                   </label>
                   <input
@@ -541,12 +542,12 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     value={companySubtitle}
                     onChange={(e) => setCompanySubtitle(e.target.value)}
                     placeholder="e.g. ENGINEERING & INFRASTRUCTURE"
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-semibold placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider">
                     Company GST Number
                   </label>
                   <input
@@ -555,12 +556,12 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     onChange={(e) => setCompanyGstNo(formatGstInput(e.target.value))}
                     placeholder="e.g. 24AAAAB1234C1Z1"
                     maxLength={15}
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 font-mono placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-mono font-bold placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider">
                     Company PAN Number
                   </label>
                   <input
@@ -569,13 +570,13 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     onChange={(e) => setCompanyPanNo(formatPanInput(e.target.value))}
                     placeholder="e.g. AAAAB1234C"
                     maxLength={10}
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 font-mono placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-mono font-bold placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1">
-                    <Phone className="w-3.5 h-3.5 text-indigo-400" />
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider flex items-center space-x-1">
+                    <Phone className="w-3.5 h-3.5 text-[#0d3479]" />
                     <span>Official Phone / Contact</span>
                   </label>
                   <input
@@ -583,13 +584,13 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     value={companyPhone}
                     onChange={(e) => setCompanyPhone(sanitizePhoneInput(e.target.value))}
                     placeholder="e.g. +91 98765 43210"
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-semibold placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1">
-                    <Mail className="w-3.5 h-3.5 text-indigo-400" />
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider flex items-center space-x-1">
+                    <Mail className="w-3.5 h-3.5 text-[#0d3479]" />
                     <span>Official Email</span>
                   </label>
                   <input
@@ -597,13 +598,13 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     value={companyEmail}
                     onChange={(e) => setCompanyEmail(e.target.value)}
                     placeholder="e.g. info@blueglobal.in"
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-semibold placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1">
-                    <Globe className="w-3.5 h-3.5 text-indigo-400" />
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider flex items-center space-x-1">
+                    <Globe className="w-3.5 h-3.5 text-[#0d3479]" />
                     <span>Official Website</span>
                   </label>
                   <input
@@ -611,12 +612,12 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     value={companyWebsite}
                     onChange={(e) => setCompanyWebsite(e.target.value)}
                     placeholder="e.g. www.blueglobal.in"
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-semibold placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider">
                     Header Letterhead Address
                   </label>
                   <textarea
@@ -624,12 +625,12 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     value={companyAddressHeader}
                     onChange={(e) => setCompanyAddressHeader(e.target.value)}
                     placeholder="Full company address shown on top letterhead..."
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-medium placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                  <label className="text-[11px] font-bold text-black uppercase tracking-wider">
                     Footer Registered Office Address
                   </label>
                   <input
@@ -637,7 +638,7 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                     value={companyAddressFooter}
                     onChange={(e) => setCompanyAddressFooter(e.target.value)}
                     placeholder="Registered Office single line address for page footer..."
-                    className="w-full bg-[#131B2E] border border-[#23314D] rounded-xl px-3.5 py-2.5 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-white border border-[#cccccc] rounded-lg px-3.5 py-2 text-black font-medium placeholder:text-[#888888] focus:outline-none focus:border-[#0d3479] shadow-xs transition-all"
                   />
                 </div>
               </div>
@@ -645,15 +646,15 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
           )}
 
           {/* Sync Checkbox & Notice */}
-          <div className="pt-3 border-t border-[#1E293B] flex items-center justify-between">
+          <div className="pt-3 border-t border-[#cccccc] flex items-center justify-between">
             <label className="flex items-center space-x-2.5 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={syncToAllDocs}
                 onChange={(e) => setSyncToAllDocs(e.target.checked)}
-                className="w-4 h-4 rounded border-slate-600 text-indigo-600 focus:ring-indigo-500 bg-[#131B2E]"
+                className="w-4 h-4 rounded border-[#cccccc] text-[#0d3479] focus:ring-[#0d3479] bg-white cursor-pointer"
               />
-              <span className="text-xs text-slate-300 font-medium">
+              <span className="text-xs text-black font-bold">
                 Auto-sync updates to all existing documents in this project
               </span>
             </label>
@@ -664,13 +665,13 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+              className="px-4 py-2 bg-white hover:bg-slate-100 text-black border border-[#cccccc] rounded-lg text-xs font-bold transition-colors cursor-pointer shadow-xs"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-indigo-500/20 flex items-center space-x-1.5 cursor-pointer active:scale-95"
+              className="px-5 py-2.5 bg-[#002057] hover:bg-[#0d3479] text-white rounded-lg text-xs font-bold transition-all shadow-md flex items-center space-x-1.5 cursor-pointer active:scale-95"
             >
               {saveSuccess ? (
                 <>
