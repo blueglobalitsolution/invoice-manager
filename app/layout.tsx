@@ -19,14 +19,17 @@ export const metadata: Metadata = {
 };
 
 import { TextFormatShortcutsProvider } from '@/components/TextFormatShortcutsProvider';
+import { ToastProvider } from '@/components/ui/Toast';
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang="en">
       <body suppressHydrationWarning>
-        <TextFormatShortcutsProvider>
-          {children}
-        </TextFormatShortcutsProvider>
+        <ToastProvider>
+          <TextFormatShortcutsProvider>
+            {children}
+          </TextFormatShortcutsProvider>
+        </ToastProvider>
       </body>
     </html>
   );

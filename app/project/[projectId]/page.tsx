@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ProjectDetailView } from '@/components/ProjectDetailView';
 import { Loader } from '@/components/ui/loader';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { toast } from '@/components/ui/Toast';
 import { ProjectItem, ProjectDocType, ProjectDocStatus, ProjectStatus } from '@/types/project';
 import { LABOUR_PO_TEMPLATE, SAMPLE_TEMPLATES } from '@/lib/templates';
 import { createProjectDocument, syncProjectMasterToDocuments } from '@/lib/project-doc-templates';
@@ -16,6 +18,20 @@ export default function ProjectDetailPage() {
   const [currentUser, setCurrentUser] = useState<{ name: string; email: string } | null>(null);
   const [project, setProject] = useState<ProjectItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    confirmText?: string;
+    cancelText?: string;
+    variant?: 'danger' | 'warning' | 'info';
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
 
   // Auth check
   useEffect(() => {
@@ -135,6 +151,8 @@ export default function ProjectDetailPage() {
       documents: updatedDocs,
     });
 
+    toast.success(`Document "${docItem.title}" created successfully.`);
+
     // Save update via API
     fetch(`/api/projects/${projectId}`, {
       method: 'PUT',
@@ -149,23 +167,37 @@ export default function ProjectDetailPage() {
 
   const handleDeleteDocument = (docId: string) => {
     if (!project) return;
-    if (!confirm('Are you sure you want to delete this document sheet?')) return;
+    const docToDelete = (project.documents || []).find((d) => d.id === docId);
 
-    const updatedDocs = (project.documents || []).filter((d) => d.id !== docId);
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Document',
+      message: `Are you sure you want to delete "${docToDelete?.title || 'this document sheet'}"? This action cannot be undone.`,
+      confirmText: 'Delete Document',
+      variant: 'danger',
+      onConfirm: () => {
+        const updatedDocs = (project.documents || []).filter((d) => d.id !== docId);
 
-    setProject({
-      ...project,
-      documents: updatedDocs,
+        setProject({
+          ...project,
+          documents: updatedDocs,
+        });
+
+        toast.success(`Document "${docToDelete?.title || ''}" deleted successfully.`);
+
+        fetch(`/api/projects/${projectId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            documents: updatedDocs,
+            lastModified: 'Just now by You',
+          }),
+        }).catch((err) => {
+          console.error('Failed to delete document:', err);
+          toast.error('Failed to delete document.');
+        });
+      },
     });
-
-    fetch(`/api/projects/${projectId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        documents: updatedDocs,
-        lastModified: 'Just now by You',
-      }),
-    }).catch((err) => console.error('Failed to delete document:', err));
   };
 
   const handleDuplicateDocument = (docId: string) => {
@@ -188,6 +220,8 @@ export default function ProjectDetailPage() {
       ...project,
       documents: updatedDocs,
     });
+
+    toast.success(`Document "${target.title}" duplicated successfully.`);
 
     fetch(`/api/projects/${projectId}`, {
       method: 'PUT',
@@ -341,38 +375,62 @@ export default function ProjectDetailPage() {
     if (!project) return;
     const isCurrentlyArchived = Boolean(project.isArchived || project.status === 'archived');
     const actionText = isCurrentlyArchived ? 'unarchive' : 'archive';
-    if (!confirm(`Are you sure you want to ${actionText} this project?`)) return;
 
-    const nextIsArchived = !isCurrentlyArchived;
-    const nextStatus: ProjectStatus = nextIsArchived ? 'archived' : 'active';
+    setConfirmState({
+      isOpen: true,
+      title: isCurrentlyArchived ? 'Unarchive Project' : 'Archive Project',
+      message: `Are you sure you want to ${actionText} "${project.title}"?`,
+      confirmText: isCurrentlyArchived ? 'Unarchive' : 'Archive',
+      variant: 'info',
+      onConfirm: () => {
+        const nextIsArchived = !isCurrentlyArchived;
+        const nextStatus: ProjectStatus = nextIsArchived ? 'archived' : 'active';
 
-    fetch(`/api/projects/${projectId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        status: nextStatus,
-        isArchived: nextIsArchived,
-        lastModified: 'Just now by You',
-      }),
-    })
-      .then(() => {
-        router.push('/dashboard');
-      })
-      .catch((err) => console.error(`Failed to ${actionText} project:`, err));
+        fetch(`/api/projects/${projectId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: nextStatus,
+            isArchived: nextIsArchived,
+            lastModified: 'Just now by You',
+          }),
+        })
+          .then(() => {
+            toast.success(`Project "${project.title}" ${actionText}d successfully.`);
+            router.push('/dashboard');
+          })
+          .catch((err) => {
+            console.error(`Failed to ${actionText} project:`, err);
+            toast.error(`Failed to ${actionText} project.`);
+          });
+      },
+    });
   };
 
   const handleDeleteProject = () => {
     if (!project) return;
-    if (!confirm('Are you sure you want to delete this entire project?')) return;
 
-    fetch(`/api/projects/${projectId}`, {
-      method: 'DELETE',
-    })
-      .then((res) => res.json())
-      .then(() => {
-        router.push('/dashboard');
-      })
-      .catch((err) => console.error('Failed to delete project:', err));
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Project Dossier',
+      message: `Are you sure you want to permanently delete "${project.title}" and all its documents? This action cannot be undone.`,
+      confirmText: 'Delete Project',
+      variant: 'danger',
+      onConfirm: () => {
+        fetch(`/api/projects/${projectId}`, {
+          method: 'DELETE',
+        })
+          .then((res) => res.json())
+          .then(() => {
+            toast.success(`Project "${project.title}" deleted successfully.`);
+            router.push('/dashboard');
+          })
+          .catch((err) => {
+            console.error('Failed to delete project:', err);
+            toast.error('Failed to delete project.');
+          });
+      },
+    });
   };
 
   if (loading || !project) {
@@ -384,26 +442,38 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <ProjectDetailView
-      project={project}
-      currentUser={currentUser}
-      onLogout={() => {
-        localStorage.removeItem('latex_user');
-        router.push('/login');
-      }}
-      onBack={() => router.push('/dashboard')}
-      onOpenDocument={handleOpenDocument}
-      onCreateDocument={handleCreateDocument}
-      onDeleteDocument={handleDeleteDocument}
-      onDuplicateDocument={handleDuplicateDocument}
-      onRenameDocument={handleRenameDocument}
-      onUpdateDocumentStatus={handleUpdateDocumentStatus}
-      onUpdateProjectStatus={handleUpdateProjectStatus}
-      onDeleteProject={handleDeleteProject}
-      onArchiveProject={handleArchiveProject}
-      onUpdateCompanyProfile={handleUpdateCompanyProfile}
-      onUpdateProject={handleUpdateProject}
-      onSaveProjectSettings={handleSaveProjectSettings}
-    />
+    <>
+      <ProjectDetailView
+        project={project}
+        currentUser={currentUser}
+        onLogout={() => {
+          localStorage.removeItem('latex_user');
+          router.push('/login');
+        }}
+        onBack={() => router.push('/dashboard')}
+        onOpenDocument={handleOpenDocument}
+        onCreateDocument={handleCreateDocument}
+        onDeleteDocument={handleDeleteDocument}
+        onDuplicateDocument={handleDuplicateDocument}
+        onRenameDocument={handleRenameDocument}
+        onUpdateDocumentStatus={handleUpdateDocumentStatus}
+        onUpdateProjectStatus={handleUpdateProjectStatus}
+        onDeleteProject={handleDeleteProject}
+        onArchiveProject={handleArchiveProject}
+        onUpdateCompanyProfile={handleUpdateCompanyProfile}
+        onUpdateProject={handleUpdateProject}
+        onSaveProjectSettings={handleSaveProjectSettings}
+      />
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        onClose={() => setConfirmState((prev) => ({ ...prev, isOpen: false }))}
+        title={confirmState.title}
+        message={confirmState.message}
+        confirmText={confirmState.confirmText}
+        cancelText={confirmState.cancelText}
+        variant={confirmState.variant}
+        onConfirm={confirmState.onConfirm}
+      />
+    </>
   );
 }

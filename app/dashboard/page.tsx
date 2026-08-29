@@ -8,12 +8,28 @@ import { LatexDocument } from '@/types/document';
 import { LABOUR_PO_TEMPLATE } from '@/lib/templates';
 import { createProjectDocument } from '@/lib/project-doc-templates';
 import { Loader } from '@/components/ui/loader';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { toast } from '@/components/ui/Toast';
 
 export default function DashboardPage() {
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<{ name: string; email: string } | null>(null);
   const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    confirmText?: string;
+    cancelText?: string;
+    variant?: 'danger' | 'warning' | 'info';
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
 
   // Authentication check
   useEffect(() => {
@@ -78,7 +94,7 @@ export default function DashboardPage() {
     if (!currentUser) return;
 
     const newProjId = `proj_${Date.now()}`;
-    const initialDocuments = (initialDocTypes && initialDocTypes.length > 0 ? initialDocTypes : ['work_order']).map((docType) => {
+    const initialDocuments = (initialDocTypes || []).map((docType) => {
       const docItem = createProjectDocument(docType as any, {
         title,
         clientName,
@@ -114,7 +130,7 @@ export default function DashboardPage() {
       status: 'active',
       owner: currentUser.name,
       lastModified: 'Just now',
-      tags: [category, ...initialDocTypes],
+      tags: [category, ...(initialDocTypes || [])],
       isArchived: false,
       documents: initialDocuments,
       document: defaultDoc,
@@ -130,23 +146,42 @@ export default function DashboardPage() {
         return res.json();
       })
       .then(() => {
-        // Redirect directly to the editor workspace of this new project!
-        router.push(`/editor/${newProjId}`);
+        toast.success(`Project "${title}" created successfully.`);
+        if (initialDocuments.length > 0) {
+          router.push(`/editor/${newProjId}?docId=${initialDocuments[0].id}`);
+        } else {
+          router.push(`/project/${newProjId}`);
+        }
       })
-      .catch((err) => console.error('Create project error:', err));
+      .catch((err) => {
+        console.error('Create project error:', err);
+        toast.error('Failed to create project.');
+      });
   };
 
   const handleDeleteProject = (projectId: string) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
-
-    fetch(`/api/projects/${projectId}`, {
-      method: 'DELETE',
-    })
-      .then((res) => res.json())
-      .then(() => {
-        setProjects((prev) => prev.filter((p) => p.id !== projectId));
-      })
-      .catch((err) => console.error('Delete project error:', err));
+    const p = projects.find((x) => x.id === projectId);
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Project Dossier',
+      message: `Are you sure you want to permanently delete "${p?.title || 'this project'}"? All associated document files will be removed.`,
+      confirmText: 'Delete Project',
+      variant: 'danger',
+      onConfirm: () => {
+        fetch(`/api/projects/${projectId}`, {
+          method: 'DELETE',
+        })
+          .then((res) => res.json())
+          .then(() => {
+            setProjects((prev) => prev.filter((item) => item.id !== projectId));
+            toast.success(`Project "${p?.title || ''}" deleted successfully.`);
+          })
+          .catch((err) => {
+            console.error('Delete project error:', err);
+            toast.error('Failed to delete project.');
+          });
+      },
+    });
   };
 
   const handleDuplicateProject = (projectId: string) => {
@@ -180,36 +215,53 @@ export default function DashboardPage() {
       .then((res) => res.json())
       .then(() => {
         setProjects((prev) => [duplicated as any, ...prev]);
+        toast.success(`Project "${orig.title}" duplicated successfully.`);
       })
-      .catch((err) => console.error('Duplicate project error:', err));
+      .catch((err) => {
+        console.error('Duplicate project error:', err);
+        toast.error('Failed to duplicate project.');
+      });
   };
 
   const handleToggleArchiveProject = (projectId: string, currentIsArchived: boolean) => {
     const nextIsArchived = !currentIsArchived;
     const nextStatus = nextIsArchived ? 'archived' : 'active';
     const actionText = nextIsArchived ? 'archive' : 'unarchive';
-    if (!confirm(`Are you sure you want to ${actionText} this project?`)) return;
+    const p = projects.find((x) => x.id === projectId);
 
-    fetch(`/api/projects/${projectId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        status: nextStatus,
-        isArchived: nextIsArchived,
-        lastModified: 'Just now',
-      }),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        setProjects((prev) =>
-          prev.map((p) =>
-            p.id === projectId
-              ? { ...p, status: nextStatus, isArchived: nextIsArchived }
-              : p
-          )
-        );
-      })
-      .catch((err) => console.error('Archive project error:', err));
+    setConfirmState({
+      isOpen: true,
+      title: nextIsArchived ? 'Archive Project' : 'Unarchive Project',
+      message: `Are you sure you want to ${actionText} "${p?.title || 'this project'}"?`,
+      confirmText: nextIsArchived ? 'Archive' : 'Unarchive',
+      variant: 'info',
+      onConfirm: () => {
+        fetch(`/api/projects/${projectId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: nextStatus,
+            isArchived: nextIsArchived,
+            lastModified: 'Just now',
+          }),
+        })
+          .then((res) => res.json())
+          .then(() => {
+            setProjects((prev) =>
+              prev.map((item) =>
+                item.id === projectId
+                  ? { ...item, status: nextStatus, isArchived: nextIsArchived }
+                  : item
+              )
+            );
+            toast.success(`Project "${p?.title || ''}" ${nextIsArchived ? 'archived' : 'unarchived'} successfully.`);
+          })
+          .catch((err) => {
+            console.error('Archive project error:', err);
+            toast.error(`Failed to ${actionText} project.`);
+          });
+      },
+    });
   };
 
   const handleCreateProjectFromTemplate = (templateDoc: LatexDocument, projectName: string, meta?: any) => {
@@ -277,21 +329,33 @@ export default function DashboardPage() {
   }
 
   return (
-    <ProjectsDashboard
-      projects={projects}
-      onSelectProject={(projId) => router.push(`/project/${projId}`)}
-      onOpenProjectDetail={(projId) => router.push(`/project/${projId}`)}
-      onCreateProject={handleCreateProject}
-      onDeleteProject={handleDeleteProject}
-      onDuplicateProject={handleDuplicateProject}
-      currentDocument={LABOUR_PO_TEMPLATE}
-      onLoadTemplate={() => {}}
-      onCreateProjectFromTemplate={handleCreateProjectFromTemplate}
-      currentUser={currentUser}
-      onOpenAuth={() => {}}
-      onLogout={handleLogout}
-      onOpenTemplateBuilder={() => router.push('/template-builder')}
-      onArchiveProject={handleToggleArchiveProject}
-    />
+    <>
+      <ProjectsDashboard
+        projects={projects}
+        onSelectProject={(projId) => router.push(`/project/${projId}`)}
+        onOpenProjectDetail={(projId) => router.push(`/project/${projId}`)}
+        onCreateProject={handleCreateProject}
+        onDeleteProject={handleDeleteProject}
+        onDuplicateProject={handleDuplicateProject}
+        currentDocument={LABOUR_PO_TEMPLATE}
+        onLoadTemplate={() => {}}
+        onCreateProjectFromTemplate={handleCreateProjectFromTemplate}
+        currentUser={currentUser}
+        onOpenAuth={() => {}}
+        onLogout={handleLogout}
+        onOpenTemplateBuilder={() => router.push('/template-builder')}
+        onArchiveProject={handleToggleArchiveProject}
+      />
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        onClose={() => setConfirmState((prev) => ({ ...prev, isOpen: false }))}
+        title={confirmState.title}
+        message={confirmState.message}
+        confirmText={confirmState.confirmText}
+        cancelText={confirmState.cancelText}
+        variant={confirmState.variant}
+        onConfirm={confirmState.onConfirm}
+      />
+    </>
   );
 }

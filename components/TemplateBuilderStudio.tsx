@@ -27,6 +27,7 @@ import { LABOUR_PO_TEMPLATE, SAMPLE_TEMPLATES } from '@/lib/templates';
 import { PREDEFINED_SECTION_TYPES, createSectionFromPreset } from '@/lib/section-presets';
 import { DocumentPreview } from '@/components/DocumentPreview';
 import { SectionLibraryManager } from '@/components/SectionLibraryManager';
+import { toast } from '@/components/ui/Toast';
 
 interface TemplateBuilderStudioProps {
   onBack: () => void;
@@ -208,11 +209,11 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
 
   const handleSaveToLibrary = () => {
     if (!templateName.trim()) {
-      alert('Please enter a template name');
+      toast.warning('Please enter a template name');
       return;
     }
     onSaveTemplate(templateName.trim(), templateDesc.trim(), templateDoc);
-    showToast(`Template "${templateName}" saved to library!`);
+    toast.success(`Template "${templateName}" saved to library!`);
   };
 
   const handleCreateProject = () => {
@@ -233,7 +234,7 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-    showToast('Template JSON exported!');
+    toast.success('Template JSON exported!');
   };
 
   const handleImportJson = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -249,13 +250,13 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
           if (parsed.name) setTemplateName(parsed.name);
           if (parsed.category) setTemplateCategory(parsed.category);
           if (parsed.description) setTemplateDesc(parsed.description);
-          showToast('Template imported successfully!');
+          toast.success('Template imported successfully!');
         } else if (parsed.id && parsed.settings) {
           setTemplateDoc(parsed);
-          showToast('Template document imported!');
+          toast.success('Template document imported!');
         }
       } catch {
-        alert('Invalid template JSON file.');
+        toast.error('Invalid template JSON file.');
       }
     };
     reader.readAsText(file);

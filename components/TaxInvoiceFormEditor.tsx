@@ -24,6 +24,7 @@ import {
   sanitizePhoneInput,
   sanitizeNumericInput,
 } from '@/lib/validation';
+import { toast } from '@/components/ui/Toast';
 
 interface TaxInvoiceFormEditorProps {
   document: LatexDocument;
@@ -138,7 +139,7 @@ export const TaxInvoiceFormEditor: React.FC<TaxInvoiceFormEditorProps> = ({
 
   const handleDeleteItem = (index: number) => {
     if (inv.items.length <= 1) {
-      alert('Invoice must have at least 1 item.');
+      toast.warning('Invoice must have at least 1 item.');
       return;
     }
     const updated = inv.items.filter((_, i) => i !== index);

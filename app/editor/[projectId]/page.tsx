@@ -16,6 +16,8 @@ import { CreateDocumentModal } from '@/components/CreateDocumentModal';
 import { VersionHistoryPanel } from '@/components/VersionHistoryPanel';
 import { KeyboardShortcutsModal } from '@/components/KeyboardShortcutsModal';
 import { Loader } from '@/components/ui/loader';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { toast } from '@/components/ui/Toast';
 import { LatexDocument, DocumentSettings, CustomSectionItem } from '@/types/document';
 import { ProjectItem, ProjectDocumentItem, ProjectDocStatus, ProjectDocType } from '@/types/project';
 import { LABOUR_PO_TEMPLATE, SAMPLE_TEMPLATES } from '@/lib/templates';
@@ -63,6 +65,20 @@ export default function EditorPage() {
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
   const [saveToast, setSaveToast] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    confirmText?: string;
+    cancelText?: string;
+    variant?: 'danger' | 'warning' | 'info';
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
 
   // Resize split panel states
   const [editorWidth, setEditorWidth] = useState<number>(45); // percentage
@@ -331,73 +347,91 @@ export default function EditorPage() {
       const po = docState.purchaseOrder;
       const currentGroups = getDocumentOutlineGroups(po);
       if (currentGroups.length <= 1) {
-        alert('Document must have at least one page.');
+        toast.warning('Document must have at least one page.');
         return;
       }
-      if (!confirm(`Are you sure you want to delete Page ${pageNum}? All custom sections on this page will be removed.`)) return;
 
-      const deleted = Array.from(new Set([...(po.deletedPages || []), pageNum]));
-      const nextCustomSections = (po.customSections || []).filter((s) => s.pageNumber !== pageNum);
-      const builtinSectionsOnPage = BUILTIN_SECTIONS.filter((b) => getSectionPageNumber(b.id, po) === pageNum).map((b) => b.id);
-      const hidden = Array.from(new Set([...(po.hiddenSections || []), ...builtinSectionsOnPage]));
-      const nextCustomPages = (po.customPages || []).filter((p) => p.pageNum !== pageNum);
+      setConfirmState({
+        isOpen: true,
+        title: `Delete Page ${pageNum}`,
+        message: `Are you sure you want to delete Page ${pageNum}? All custom sections on this page will be removed.`,
+        confirmText: 'Delete Page',
+        variant: 'danger',
+        onConfirm: () => {
+          const deleted = Array.from(new Set([...(po.deletedPages || []), pageNum]));
+          const nextCustomSections = (po.customSections || []).filter((s) => s.pageNumber !== pageNum);
+          const builtinSectionsOnPage = BUILTIN_SECTIONS.filter((b) => getSectionPageNumber(b.id, po) === pageNum).map((b) => b.id);
+          const hidden = Array.from(new Set([...(po.hiddenSections || []), ...builtinSectionsOnPage]));
+          const nextCustomPages = (po.customPages || []).filter((p) => p.pageNum !== pageNum);
 
-      // If activeSection was on this page, reset active section to a remaining section
-      const activeIsOnPage =
-        (po.customSections || []).some((s) => s.id === activeSectionId && s.pageNumber === pageNum) ||
-        builtinSectionsOnPage.includes(activeSectionId);
+          // If activeSection was on this page, reset active section to a remaining section
+          const activeIsOnPage =
+            (po.customSections || []).some((s) => s.id === activeSectionId && s.pageNumber === pageNum) ||
+            builtinSectionsOnPage.includes(activeSectionId);
 
-      if (activeIsOnPage) {
-        const remainingGroup = currentGroups.find((g) => g.pageNum !== pageNum);
-        if (remainingGroup && remainingGroup.sections.length > 0) {
-          setActiveSectionId(remainingGroup.sections[0].id);
-        }
-      }
+          if (activeIsOnPage) {
+            const remainingGroup = currentGroups.find((g) => g.pageNum !== pageNum);
+            if (remainingGroup && remainingGroup.sections.length > 0) {
+              setActiveSectionId(remainingGroup.sections[0].id);
+            }
+          }
 
-      setDocState({
-        ...docState,
-        purchaseOrder: {
-          ...po,
-          deletedPages: deleted,
-          customSections: nextCustomSections,
-          hiddenSections: hidden,
-          customPages: nextCustomPages,
+          setDocState({
+            ...docState,
+            purchaseOrder: {
+              ...po,
+              deletedPages: deleted,
+              customSections: nextCustomSections,
+              hiddenSections: hidden,
+              customPages: nextCustomPages,
+            },
+          });
+          toast.success(`Page ${pageNum} removed successfully.`);
         },
       });
     } else if (docState.quotation) {
       const q = docState.quotation;
       const currentGroups = getQuotationOutlineGroups(q);
       if (currentGroups.length <= 1) {
-        alert('Document must have at least one page.');
+        toast.warning('Document must have at least one page.');
         return;
       }
-      if (!confirm(`Are you sure you want to delete Page ${pageNum}? All custom sections on this page will be removed.`)) return;
 
-      const deleted = Array.from(new Set([...(q.deletedPages || []), pageNum]));
-      const nextCustomSections = (q.customSections || []).filter((s) => s.pageNumber !== pageNum);
-      const builtinSectionsOnPage = QUOTATION_BUILTIN_SECTIONS.filter((b) => getQuotationSectionPageNumber(b.id, q) === pageNum).map((b) => b.id);
-      const hidden = Array.from(new Set([...(q.hiddenSections || []), ...builtinSectionsOnPage]));
-      const nextCustomPages = (q.customPages || []).filter((p) => p.pageNum !== pageNum);
+      setConfirmState({
+        isOpen: true,
+        title: `Delete Page ${pageNum}`,
+        message: `Are you sure you want to delete Page ${pageNum}? All custom sections on this page will be removed.`,
+        confirmText: 'Delete Page',
+        variant: 'danger',
+        onConfirm: () => {
+          const deleted = Array.from(new Set([...(q.deletedPages || []), pageNum]));
+          const nextCustomSections = (q.customSections || []).filter((s) => s.pageNumber !== pageNum);
+          const builtinSectionsOnPage = QUOTATION_BUILTIN_SECTIONS.filter((b) => getQuotationSectionPageNumber(b.id, q) === pageNum).map((b) => b.id);
+          const hidden = Array.from(new Set([...(q.hiddenSections || []), ...builtinSectionsOnPage]));
+          const nextCustomPages = (q.customPages || []).filter((p) => p.pageNum !== pageNum);
 
-      const activeIsOnPage =
-        (q.customSections || []).some((s) => s.id === activeSectionId && s.pageNumber === pageNum) ||
-        builtinSectionsOnPage.includes(activeSectionId);
+          const activeIsOnPage =
+            (q.customSections || []).some((s) => s.id === activeSectionId && s.pageNumber === pageNum) ||
+            builtinSectionsOnPage.includes(activeSectionId);
 
-      if (activeIsOnPage) {
-        const remainingGroup = currentGroups.find((g) => g.pageNum !== pageNum);
-        if (remainingGroup && remainingGroup.sections.length > 0) {
-          setActiveSectionId(remainingGroup.sections[0].id);
-        }
-      }
+          if (activeIsOnPage) {
+            const remainingGroup = currentGroups.find((g) => g.pageNum !== pageNum);
+            if (remainingGroup && remainingGroup.sections.length > 0) {
+              setActiveSectionId(remainingGroup.sections[0].id);
+            }
+          }
 
-      setDocState({
-        ...docState,
-        quotation: {
-          ...q,
-          deletedPages: deleted,
-          customSections: nextCustomSections,
-          hiddenSections: hidden,
-          customPages: nextCustomPages,
+          setDocState({
+            ...docState,
+            quotation: {
+              ...q,
+              deletedPages: deleted,
+              customSections: nextCustomSections,
+              hiddenSections: hidden,
+              customPages: nextCustomPages,
+            },
+          });
+          toast.success(`Page ${pageNum} removed successfully.`);
         },
       });
     }
@@ -896,6 +930,18 @@ export default function EditorPage() {
           }}
         />
       )}
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        onClose={() => setConfirmState((prev) => ({ ...prev, isOpen: false }))}
+        title={confirmState.title}
+        message={confirmState.message}
+        confirmText={confirmState.confirmText}
+        cancelText={confirmState.cancelText}
+        variant={confirmState.variant}
+        onConfirm={confirmState.onConfirm}
+      />
     </div>
   );
 }

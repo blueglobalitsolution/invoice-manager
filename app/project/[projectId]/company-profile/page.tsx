@@ -7,6 +7,7 @@ import { CompanyProfileEditor } from '@/components/CompanyProfileEditor';
 import { CompanyProfilePreview } from '@/components/CompanyProfilePreview';
 import { syncProjectMasterToDocuments } from '@/lib/project-doc-templates';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
+import { toast } from '@/components/ui/Toast';
 
 export default function CompanyProfilePage() {
   const { projectId } = useParams() as { projectId: string };
@@ -138,11 +139,12 @@ export default function CompanyProfilePage() {
         body: JSON.stringify(updatedProject),
       });
       if (!res.ok) throw new Error('Failed to save');
+      toast.success('Company Profile saved and synced across all documents!');
       // Redirect back to project detail view
       router.push(`/project/${projectId}`);
     } catch (err) {
       console.error(err);
-      alert('Failed to save profile');
+      toast.error('Failed to save company profile.');
     } finally {
       setSaving(false);
     }

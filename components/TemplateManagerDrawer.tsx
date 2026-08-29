@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { LatexDocument } from '@/types/document';
 import { SAMPLE_TEMPLATES } from '@/lib/templates';
+import { toast } from '@/components/ui/Toast';
 
 interface CustomTemplateItem {
   id: string;
@@ -126,10 +127,10 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
   };
 
   const handleDeleteTemplate = (id: string) => {
-    if (confirm('Are you sure you want to delete this custom template?')) {
-      const updated = customTemplates.filter((t) => t.id !== id);
-      saveCustomTemplatesToStorage(updated);
-    }
+    const target = customTemplates.find((t) => t.id === id);
+    const updated = customTemplates.filter((t) => t.id !== id);
+    saveCustomTemplatesToStorage(updated);
+    toast.success(`Template "${target?.name || ''}" deleted.`);
   };
 
   const handleExportTemplate = (item: CustomTemplateItem) => {
@@ -140,6 +141,7 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
+    toast.success('Template JSON exported.');
   };
 
   const startWizard = (tmpl: LatexDocument) => {
@@ -173,7 +175,7 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
 
         const validationError = validateLatexDocument(docToValidate);
         if (validationError) {
-          alert(validationError);
+          toast.error(validationError);
           return;
         }
 
@@ -187,10 +189,9 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
 
         const updated = [newTemplate, ...customTemplates];
         saveCustomTemplatesToStorage(updated);
-        setSuccessMessage('Template imported successfully!');
-        setTimeout(() => setSuccessMessage(null), 3000);
+        toast.success('Template imported successfully!');
       } catch (err) {
-        alert('Failed to parse JSON file. Please ensure it is a valid JSON template.');
+        toast.error('Failed to parse JSON file. Please ensure it is a valid JSON template.');
       }
     };
     reader.readAsText(file);
@@ -359,7 +360,7 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
                   type="button"
                   onClick={() => {
                     if (!wizardProjTitle.trim() || !wizardProjCode.trim() || !wizardClientName.trim() || !wizardLocation.trim()) {
-                      alert('Please fill in all required fields.');
+                      toast.warning('Please fill in all required fields.');
                       return;
                     }
                     onCreateProjectFromTemplate(wizardTemplate, wizardProjTitle.trim(), {
