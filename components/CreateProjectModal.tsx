@@ -11,6 +11,7 @@ import {
   FileSpreadsheet,
   FileCheck,
   Receipt,
+  FileText,
   User,
   Hash,
   Sparkles,
@@ -57,6 +58,12 @@ const INITIAL_DOC_OPTIONS: { type: ProjectDocType; label: string; desc: string; 
     label: 'Labour Contract Work Order',
     desc: '3-page civil labour PO with milestones & terms',
     icon: FileCheck,
+  },
+  {
+    type: 'purchase_order',
+    label: 'Fabrication Labour PO',
+    desc: '3-page fabrication PO with per-kg rates & measurement clause',
+    icon: FileText,
   },
   {
     type: 'invoice',
@@ -327,7 +334,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {INITIAL_DOC_OPTIONS.map((doc) => {
                 const Icon = doc.icon;
                 const isSelected = selectedDocTypes.includes(doc.type);

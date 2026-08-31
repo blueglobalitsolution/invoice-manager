@@ -23,6 +23,7 @@ import {
   Clock,
   Layout,
   FileCheck,
+  Copy,
 } from 'lucide-react';
 import { LatexDocument, CustomSectionItem, SectionContentType } from '@/types/document';
 import { getAvailableSectionTypes, createSectionFromPreset } from '@/lib/section-presets';
@@ -47,6 +48,7 @@ interface FileTreeSidebarProps {
   onAddSectionItem?: (section: CustomSectionItem) => void;
   onDeletePage?: (pageNumber: number, pageId?: string) => void;
   onDeleteSection?: (sectionId: string) => void;
+  onDuplicateSection?: (sectionId: string) => void;
   onReorderSections?: (sourceId: string, targetId: string, targetPageNum: number) => void;
   onMoveSectionToPage?: (sectionId: string, targetPageNum: number) => void;
   onMoveSectionUp?: (sectionId: string) => void;
@@ -65,6 +67,7 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
   onAddSectionItem,
   onDeletePage,
   onDeleteSection,
+  onDuplicateSection,
   onReorderSections,
   onMoveSectionToPage,
   onMoveSectionUp,
@@ -415,6 +418,19 @@ export const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
                                   title="Move Down"
                                 >
                                   <ChevronDown className="w-3 h-3" />
+                                </button>
+                              )}
+                              {onDuplicateSection && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDuplicateSection(sec.id);
+                                  }}
+                                  className="p-1 hover:bg-[#dfe7f4] rounded text-[#666666] hover:text-[#0d3479] transition-colors"
+                                  title={`Duplicate ${sec.label}`}
+                                >
+                                  <Copy className="w-3 h-3" />
                                 </button>
                               )}
                               {onDeleteSection && sec.isCustom && (

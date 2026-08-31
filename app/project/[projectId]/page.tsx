@@ -49,10 +49,15 @@ export default function ProjectDetailPage() {
 
     fetch(`/api/projects/${projectId}`)
       .then((res) => {
-        if (!res.ok) throw new Error('Project not found');
+        if (!res.ok) {
+          toast.error('Project not found. Redirecting to dashboard...');
+          router.push('/dashboard');
+          return null;
+        }
         return res.json();
       })
       .then((data) => {
+        if (!data) return;
         setProject(data);
         setLoading(false);
       })

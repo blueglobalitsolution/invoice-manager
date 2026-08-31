@@ -15,10 +15,11 @@ import { TexCodeModal } from '@/components/TexCodeModal';
 import { CreateDocumentModal } from '@/components/CreateDocumentModal';
 import { VersionHistoryPanel } from '@/components/VersionHistoryPanel';
 import { KeyboardShortcutsModal } from '@/components/KeyboardShortcutsModal';
+import { WatermarkModal } from '@/components/WatermarkModal';
 import { Loader } from '@/components/ui/loader';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { toast } from '@/components/ui/Toast';
-import { LatexDocument, DocumentSettings, CustomSectionItem } from '@/types/document';
+import { LatexDocument, DocumentSettings, CustomSectionItem, WatermarkConfig } from '@/types/document';
 import { ProjectItem, ProjectDocumentItem, ProjectDocStatus, ProjectDocType } from '@/types/project';
 import { LABOUR_PO_TEMPLATE, SAMPLE_TEMPLATES } from '@/lib/templates';
 import {
@@ -50,8 +51,7 @@ export default function EditorPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Layout UI States
-  const [railTab, setRailTab] = useState<'filetree' | 'header_footer' | 'variables' | 'search' | 'code' | 'media' | 'chat' | 'ai' | 'settings'>('filetree');
+  const [railTab, setRailTab] = useState<'filetree' | 'variables' | 'search' | 'code' | 'media' | 'chat' | 'ai' | 'settings'>('filetree');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isGlobalVarsOpen, setIsGlobalVarsOpen] = useState(false);
   const [isCreateDocModalOpen, setIsCreateDocModalOpen] = useState(false);
@@ -63,6 +63,7 @@ export default function EditorPage() {
   const [hoveredSectionId, setHoveredSectionId] = useState<string | null>(null);
   const [isVersionHistoryOpen, setIsVersionHistoryOpen] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+  const [isWatermarkModalOpen, setIsWatermarkModalOpen] = useState(false);
   const [saveToast, setSaveToast] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [confirmState, setConfirmState] = useState<{
@@ -132,19 +133,26 @@ export default function EditorPage() {
 
     fetch(`/api/projects/${projectId}`)
       .then((res) => {
-        if (!res.ok) throw new Error('Project not found');
+        if (!res.ok) {
+          setError('Project not found or was deleted. Redirecting to dashboard...');
+          setLoading(false);
+          toast.error('Project not found. Redirecting to dashboard...');
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 1200);
+          return null;
+        }
         return res.json();
       })
       .then((data) => {
+        if (!data) return;
         setProject(data);
         setLoading(false);
       })
       .catch((err) => {
         console.error('Fetch project error:', err);
-        setError('Project not found. Redirecting to dashboard...');
-        setTimeout(() => {
-          router.push('/dashboard');
-        }, 1500);
+        setError('Unable to load project.');
+        setLoading(false);
       });
   }, [projectId, currentUser, router]);
 
@@ -155,6 +163,90 @@ export default function EditorPage() {
     docState = found?.document || project?.document || LABOUR_PO_TEMPLATE;
   } else {
     docState = project?.document || LABOUR_PO_TEMPLATE;
+  }
+
+  // Backfill clauses and clear rateItems for civil labour work orders
+  if (docState.purchaseOrder?.showAwardLetter || docState.purchaseOrder?.contractType?.toLowerCase().includes('civil')) {
+    const po = docState.purchaseOrder;
+    const needsClauseBackfill = !po.contractValueClause || po.contractValueClause.length === 0;
+    const needsQualityBackfill = !po.qualityClause || po.qualityClause.length === 0;
+    const needsMaterialBackfill = !po.materialClause || po.materialClause.length === 0;
+    const needsSafetyBackfill = !po.safetyClause || po.safetyClause.length === 0;
+    const needsLabourBackfill = !po.labourLawsItems || po.labourLawsItems.length === 0;
+    const needsPaymentBackfill = !po.paymentMilestones || po.paymentMilestones.length === 0;
+    const needsTimeScheduleBackfill = !po.timeScheduleClause || po.timeScheduleClause.length === 0 || !po.timeScheduleClause.some(t => t.includes('Rupees Two Thousand Only'));
+    const needsPage3Backfill = !po.page3Terms || po.page3Terms.length === 0 || !po.page3Terms.some(t => t.includes('neat and clean condition'));
+    const needsHousekeepingBackfill = !po.housekeepingClause || po.housekeepingClause.length === 0;
+    const needsWarrantyBackfill = !po.warrantyClause || po.warrantyClause.length === 0;
+    const needsVariationBackfill = !po.variationClause || po.variationClause.length === 0;
+    const needsTerminationBackfill = !po.terminationClause || po.terminationClause.length === 0;
+    const needsForceMajeureBackfill = !po.forceMajeureClause || po.forceMajeureClause.length === 0;
+    const needsJurisdictionBackfill = !po.jurisdictionClause || po.jurisdictionClause.length === 0;
+    const needsAcceptanceBackfill = !po.acceptanceClause;
+    const hasRateItems = po.rateItems && po.rateItems.length > 0;
+    if (needsClauseBackfill || needsQualityBackfill || needsMaterialBackfill || needsSafetyBackfill || needsLabourBackfill || needsPaymentBackfill || needsTimeScheduleBackfill || needsHousekeepingBackfill || needsWarrantyBackfill || needsVariationBackfill || needsTerminationBackfill || needsForceMajeureBackfill || needsJurisdictionBackfill || needsPage3Backfill || needsAcceptanceBackfill || hasRateItems) {
+      docState = {
+        ...docState,
+        purchaseOrder: {
+          ...po,
+          contractValueClause: needsClauseBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.contractValueClause || [])
+            : po.contractValueClause,
+          qualityClause: needsQualityBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.qualityClause || [])
+            : po.qualityClause,
+          materialClause: needsMaterialBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.materialClause || [])
+            : po.materialClause,
+          safetyClause: needsSafetyBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.safetyClause || [])
+            : po.safetyClause,
+          labourLawsIntro: needsLabourBackfill
+            ? LABOUR_PO_TEMPLATE.purchaseOrder!.labourLawsIntro
+            : po.labourLawsIntro,
+          labourLawsItems: needsLabourBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.labourLawsItems || [])
+            : po.labourLawsItems,
+          labourLawsDisclaimer: needsLabourBackfill
+            ? LABOUR_PO_TEMPLATE.purchaseOrder!.labourLawsDisclaimer
+            : po.labourLawsDisclaimer,
+          paymentMilestones: needsPaymentBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.paymentMilestones || [])
+            : po.paymentMilestones,
+          paymentDeductionTerms: needsPaymentBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.paymentDeductionTerms || [])
+            : po.paymentDeductionTerms,
+          timeScheduleClause: needsTimeScheduleBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.timeScheduleClause || [])
+            : po.timeScheduleClause,
+          housekeepingClause: needsHousekeepingBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.housekeepingClause || [])
+            : po.housekeepingClause,
+          warrantyClause: needsWarrantyBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.warrantyClause || [])
+            : po.warrantyClause,
+          variationClause: needsVariationBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.variationClause || [])
+            : po.variationClause,
+          terminationClause: needsTerminationBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.terminationClause || [])
+            : po.terminationClause,
+          forceMajeureClause: needsForceMajeureBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.forceMajeureClause || [])
+            : po.forceMajeureClause,
+          jurisdictionClause: needsJurisdictionBackfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.jurisdictionClause || [])
+            : po.jurisdictionClause,
+          page3Terms: needsPage3Backfill
+            ? (LABOUR_PO_TEMPLATE.purchaseOrder!.page3Terms || [])
+            : po.page3Terms,
+          acceptanceClause: needsAcceptanceBackfill
+            ? LABOUR_PO_TEMPLATE.purchaseOrder!.acceptanceClause
+            : po.acceptanceClause,
+          rateItems: [],
+        },
+      };
+    }
   }
 
   // Save changes to SQLite database (Debounced)
@@ -497,6 +589,204 @@ export default function EditorPage() {
     }
   };
 
+  const handleDuplicateSection = (sectionId: string) => {
+    if (docState.purchaseOrder) {
+      const po = docState.purchaseOrder;
+      const currentGroups = getDocumentOutlineGroups(po);
+      let targetPageNum = 1;
+      let originalLabel = 'Section';
+
+      for (const group of currentGroups) {
+        const found = group.sections.find((s) => s.id === sectionId);
+        if (found) {
+          targetPageNum = group.pageNum;
+          originalLabel = found.label;
+          break;
+        }
+      }
+
+      const newId = `cs-${Date.now()}`;
+      let newCustomSection: CustomSectionItem;
+
+      // 1. Check if sectionId is already a custom section
+      const existingCustom = (po.customSections || []).find((s) => s.id === sectionId);
+      if (existingCustom) {
+        newCustomSection = {
+          ...JSON.parse(JSON.stringify(existingCustom)),
+          id: newId,
+          title: `${existingCustom.title} (Copy)`,
+          pageNumber: targetPageNum,
+        };
+      } else {
+        // 2. Builtin section cloning
+        let contentType: CustomSectionItem['contentType'] = 'paragraphs';
+        let paragraphs: string[] | undefined = undefined;
+        let bullets: string[] | undefined = undefined;
+        let tableHeaders: string[] | undefined = undefined;
+        let tableRows: string[][] | undefined = undefined;
+
+        if (sectionId === 'scope') {
+          contentType = 'bullet_list';
+          bullets = [...(po.scopeOfWork || [])];
+        } else if (sectionId === 'company_scope') {
+          contentType = 'bullet_list';
+          bullets = [...(po.companyScope || [])];
+        } else if (sectionId === 'contractor_scope' || sectionId === 'scope_contractor') {
+          contentType = 'bullet_list';
+          bullets = [...(po.contractorScope || po.scopeOfContractor || [])];
+        } else if (sectionId === 'labour_laws') {
+          contentType = 'bullet_list';
+          bullets = [...(po.labourLawsItems || [])];
+        } else if (sectionId === 'payment_clause' || sectionId === 'payment_terms') {
+          contentType = 'bullet_list';
+          bullets = [...(po.paymentMilestones || po.paymentTerms || [])];
+        } else if (sectionId === 'contract_value') {
+          contentType = 'paragraphs';
+          paragraphs = [...(po.contractValueClause || [])];
+        } else if (sectionId === 'award_letter') {
+          contentType = 'paragraphs';
+          paragraphs = [po.awardSubject || '', po.awardLetterBody || ''].filter(Boolean);
+        } else if (sectionId === 'quality_clause') {
+          contentType = 'paragraphs';
+          paragraphs = [...(po.qualityClause || [])];
+        } else if (sectionId === 'material_clause') {
+          contentType = 'paragraphs';
+          paragraphs = [...(po.materialClause || [])];
+        } else if (sectionId === 'safety_clause') {
+          contentType = 'paragraphs';
+          paragraphs = [...(po.safetyClause || [])];
+        } else if (sectionId === 'time_schedule') {
+          contentType = 'paragraphs';
+          paragraphs = [...(po.timeScheduleClause || [])];
+        } else if (sectionId === 'housekeeping_clause') {
+          contentType = 'paragraphs';
+          paragraphs = [...(po.housekeepingClause || [])];
+        } else if (sectionId === 'warranty_clause') {
+          contentType = 'paragraphs';
+          paragraphs = [...(po.warrantyClause || [])];
+        } else if (sectionId === 'variation_clause') {
+          contentType = 'paragraphs';
+          paragraphs = [...(po.variationClause || [])];
+        } else if (sectionId === 'termination_clause') {
+          contentType = 'paragraphs';
+          paragraphs = [...(po.terminationClause || [])];
+        } else if (sectionId === 'force_majeure_clause') {
+          contentType = 'paragraphs';
+          paragraphs = [...(po.forceMajeureClause || [])];
+        } else if (sectionId === 'jurisdiction_clause') {
+          contentType = 'paragraphs';
+          paragraphs = [...(po.jurisdictionClause || [])];
+        } else if (sectionId === 'acceptance_clause') {
+          contentType = 'paragraphs';
+          paragraphs = [po.acceptanceClause || 'I/We have read, understood and accepted all the above terms and conditions of this Work Order.'];
+        } else if (sectionId === 'rates') {
+          contentType = 'table';
+          tableHeaders = ['Item', 'Description', 'Qty', 'Unit', 'Rate (₹)', 'Amount (₹)'];
+          tableRows = (po.rateItems || []).map((r, idx) => [
+            String(idx + 1),
+            r.description || '',
+            String(r.qty || 1),
+            r.unit || '',
+            String(r.rate || 0),
+            String(r.total || 0),
+          ]);
+        } else {
+          contentType = 'paragraphs';
+          paragraphs = ['Duplicated section content'];
+        }
+
+        newCustomSection = {
+          id: newId,
+          title: `${originalLabel} (Copy)`,
+          pageNumber: targetPageNum,
+          contentType,
+          paragraphs,
+          bullets,
+          tableHeaders,
+          tableRows,
+        };
+      }
+
+      // Insert new section in sectionOrder right after sectionId if order exists
+      const currentOrder = currentGroups.flatMap((g) => g.sections.map((s) => s.id));
+      const secIdx = currentOrder.indexOf(sectionId);
+      const nextOrder = secIdx !== -1
+        ? [...currentOrder.slice(0, secIdx + 1), newId, ...currentOrder.slice(secIdx + 1)]
+        : [...currentOrder, newId];
+
+      setDocState({
+        ...docState,
+        purchaseOrder: {
+          ...po,
+          customSections: [...(po.customSections || []), newCustomSection],
+          sectionOrder: nextOrder,
+          sectionPageMap: {
+            ...(po.sectionPageMap || {}),
+            [newId]: targetPageNum,
+          },
+        },
+      });
+      setActiveSectionId(newId);
+      toast.success(`Duplicated "${originalLabel}" successfully!`);
+    } else if (docState.quotation) {
+      const q = docState.quotation;
+      const currentGroups = getQuotationOutlineGroups(q);
+      let targetPageNum = 1;
+      let originalLabel = 'Section';
+
+      for (const group of currentGroups) {
+        const found = group.sections.find((s) => s.id === sectionId);
+        if (found) {
+          targetPageNum = group.pageNum;
+          originalLabel = found.label;
+          break;
+        }
+      }
+
+      const newId = `cs-${Date.now()}`;
+      const existingCustom = (q.customSections || []).find((s) => s.id === sectionId);
+      let newCustomSection: CustomSectionItem;
+
+      if (existingCustom) {
+        newCustomSection = {
+          ...JSON.parse(JSON.stringify(existingCustom)),
+          id: newId,
+          title: `${existingCustom.title} (Copy)`,
+          pageNumber: targetPageNum,
+        };
+      } else {
+        newCustomSection = {
+          id: newId,
+          title: `${originalLabel} (Copy)`,
+          pageNumber: targetPageNum,
+          contentType: 'paragraphs',
+          paragraphs: ['Duplicated quotation section content'],
+        };
+      }
+
+      const currentOrder = currentGroups.flatMap((g) => g.sections.map((s) => s.id));
+      const secIdx = currentOrder.indexOf(sectionId);
+      const nextOrder = secIdx !== -1
+        ? [...currentOrder.slice(0, secIdx + 1), newId, ...currentOrder.slice(secIdx + 1)]
+        : [...currentOrder, newId];
+
+      setDocState({
+        ...docState,
+        quotation: {
+          ...q,
+          customSections: [...(q.customSections || []), newCustomSection],
+          sectionOrder: nextOrder,
+          sectionPageMap: {
+            ...(q.sectionPageMap || {}),
+            [newId]: targetPageNum,
+          },
+        },
+      });
+      setActiveSectionId(newId);
+      toast.success(`Duplicated "${originalLabel}" successfully!`);
+    }
+  };
+
   const handleRenameTitle = (newTitle: string) => {
     const trimmed = newTitle.trim();
     if (!trimmed) return;
@@ -694,17 +984,11 @@ export default function EditorPage() {
       <main className="flex flex-1 overflow-hidden relative print:overflow-visible">
         <div className="print:hidden h-full flex shrink-0">
           <EditorRail
-            activeTab={activeSectionId === 'header_footer' ? 'header_footer' : railTab}
+            activeTab={railTab}
             setActiveTab={(tab) => {
               setRailTab(tab);
-              if (tab === 'header_footer') {
-                setActiveSectionId('header_footer');
-              } else if (tab === 'variables') {
+              if (tab === 'variables') {
                 setIsGlobalVarsOpen(true);
-              } else if (tab === 'filetree') {
-                if (activeSectionId === 'header_footer') {
-                  setActiveSectionId('info');
-                }
               }
               if (tab === 'settings') setIsSettingsOpen(true);
             }}
@@ -712,6 +996,7 @@ export default function EditorPage() {
             onOpenGlobalVariables={() => setIsGlobalVarsOpen(true)}
             onOpenLatexCode={() => setIsLatexCodeModalOpen(true)}
             onOpenAddSection={() => setIsAddSectionModalOpen(true)}
+            onOpenWatermark={() => setIsWatermarkModalOpen(true)}
             isInvoice={isInvoice}
             onGoBackToDashboard={() => router.push(`/project/${projectId}`)}
           />
@@ -731,6 +1016,7 @@ export default function EditorPage() {
                 onAddSectionItem={handleAddSectionItem}
                 onDeletePage={handleDeletePage}
                 onDeleteSection={handleDeleteSection}
+                onDuplicateSection={handleDuplicateSection}
                 onReorderSections={handleReorderSections}
                 onMoveSectionToPage={handleMoveSectionToPage}
                 onMoveSectionUp={handleMoveSectionUp}
@@ -930,6 +1216,24 @@ export default function EditorPage() {
           }}
         />
       )}
+
+      {/* Watermark & Media Modal */}
+      <WatermarkModal
+        isOpen={isWatermarkModalOpen}
+        onClose={() => setIsWatermarkModalOpen(false)}
+        config={docState.settings?.watermark}
+        onSave={(updatedWatermark) => {
+          const updatedDoc: LatexDocument = {
+            ...docState,
+            settings: {
+              ...(docState.settings || ({} as any)),
+              watermark: updatedWatermark,
+            },
+          };
+          setDocState(updatedDoc);
+          toast.success('Watermark settings applied successfully.');
+        }}
+      />
 
       {/* Confirm Modal */}
       <ConfirmModal

@@ -401,7 +401,9 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
                             : key === 'tax_invoice'
                             ? 'GST & Tax Invoice'
                             : key === 'labour_po'
-                            ? 'Professional Contract'
+                            ? 'Civil Labour Contract'
+                            : key === 'fabrication_po'
+                            ? 'Fabrication Purchase Order'
                             : 'Standard Document'}
                         </span>
                         <h3 className="text-sm font-bold text-black mt-1.5 group-hover:text-[#0d3479] transition-colors">
@@ -413,7 +415,9 @@ export const TemplateManagerDrawer: React.FC<TemplateManagerDrawerProps> = ({
                             : key === 'tax_invoice'
                             ? 'Official GST Tax Invoice template with client particulars, HSN breakdown, SGST/CGST tax calculations, bank details, and signatory box.'
                             : key === 'labour_po'
-                            ? 'Complete Labour Contract Purchase Order with Rate Tables, Signatures, and Annexure pages.'
+                            ? 'Complete Civil Labour Contract Purchase Order with Rate Tables, Signatures, and Annexure pages.'
+                            : key === 'fabrication_po'
+                            ? 'Structural Fabrication & Erection Labour Purchase Order with per-kg rate table, scope of contractor, measurement clauses, and dual signatures.'
                             : 'Clean starter document with standard outline and title block.'}
                         </p>
                       </div>

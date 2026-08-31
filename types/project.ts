@@ -18,7 +18,7 @@ export interface CompanyProfile {
 export const DEFAULT_COMPANY_PROFILE: CompanyProfile = {
   companyName: 'GLOBAL',
   companySubtitle: 'INDUSTRIES',
-  companyAddressHeader: 'SO7B / 2nd Floor / Phase 2, Indiabulls, Jetalpur Road, Vadodara',
+  companyAddressHeader: 'Regd. Off. : SO7B / 2nd floor, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara, Gujarat - 391243',
   companyAddressFooter: 'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243',
   companyGstNo: '24CLNPS9550H1ZI',
   companyPanNo: 'CLNPS9550H',
@@ -31,7 +31,6 @@ export const DEFAULT_COMPANY_PROFILE: CompanyProfile = {
     '• Roofing Solution',
     '• Engineering Project & Designing',
     '• "Z" & "C" Purlins',
-    '• UPVC Roofing Sheet',
   ],
   rightServices: [
     '• Infra Materials',

@@ -5,6 +5,7 @@ import { LatexDocument, TaxInvoiceData } from '@/types/document';
 import { CompanyProfile } from '@/types/project';
 import { applyVariables } from '@/lib/variables';
 import { FormattedText } from '@/lib/format-text';
+import { WatermarkOverlay } from './WatermarkOverlay';
 
 interface TaxInvoicePreviewProps {
   doc: LatexDocument;
@@ -72,9 +73,12 @@ export const TaxInvoicePreview: React.FC<TaxInvoicePreviewProps> = ({
         width: '794px',
         minHeight: '1123px',
       }}
-      className="latex-paper print-area bg-white text-black shadow-2xl relative flex flex-col justify-between p-[0.6in] pt-[0.4in] pb-[0.4in] box-border text-[13px] leading-[1.15]"
+      className="latex-paper print-area bg-white text-black shadow-2xl relative overflow-hidden flex flex-col justify-between p-[0.6in] pt-[0.4in] pb-[0.4in] box-border text-[13px] leading-[1.15]"
     >
-      <div className="flex-1 flex flex-col">
+      {/* Background Center Watermark */}
+      <WatermarkOverlay config={doc.settings?.watermark} />
+
+      <div className="flex-1 flex flex-col relative z-1">
         {/* ================= HEADER (STATIC / UNSELECTABLE) ================= */}
         <div id="preview-sec-header" className="p-1.5 select-none">
           <div className="flex items-center justify-between">

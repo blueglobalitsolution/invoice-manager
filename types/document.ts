@@ -68,6 +68,16 @@ export type ColumnMode = 'onecolumn' | 'twocolumn';
 export type FontFamily = 'times' | 'helvetica' | 'latin-modern' | 'computer-modern';
 export type MarginSize = 'compact' | 'normal' | 'wide';
 
+export interface WatermarkConfig {
+  enabled: boolean;
+  type?: 'default_logo' | 'custom_image' | 'text';
+  imageUrl?: string;
+  text?: string;
+  opacity?: number; // 0.05 to 0.40, default 0.14
+  scale?: number; // 30 to 100 (% of page width), default 58
+  rotation?: number; // degrees, default 0
+}
+
 export interface DocumentSettings {
   paperSize: PaperSize;
   fontSize: FontSize;
@@ -77,6 +87,7 @@ export interface DocumentSettings {
   showPageNumbers: boolean;
   showDate: boolean;
   accentColor: string;
+  watermark?: WatermarkConfig;
 }
 
 export interface PORateItem {
@@ -141,21 +152,63 @@ export interface PurchaseOrderData {
   projectLocation: string;
   poNumber: string;
   poDate: string;
+  contractType?: string;
   
   // Specific to PO Info Table (left column)
   tableCompanyName?: string;
   tableCompanySubtitle?: string;
   tableCompanyAddress?: string[];
   
+  // Award Cover / Salutation Section (Work Order)
+  showAwardLetter?: boolean;
+  awardToPrefix?: string;
+  awardRecipient?: string;
+  awardDesignation?: string;
+  awardSubject?: string;
+  awardGreeting?: string;
+  awardLetterBody?: string;
+
+  // Clause 1. Contract Value
+  contractValueClause?: string[];
+
+  // Clause 2. Scope of Work
+  scopeIntro?: string;
   scopeOfWork: string[];
   rateItems: PORateItem[];
   amountInWords: string;
   
+  // Clause 3 & 4. Company & Contractor Scopes
+  companyScopeIntro?: string;
+  companyScope?: string[];
+  contractorScopeIntro?: string;
+  contractorScope?: string[];
   scopeOfContractor: string[];
-  paymentTerms: string[];
+
+  // Clause 5, 6, 7. Quality, Material & Safety
+  qualityClause?: string[];
+  materialClause?: string[];
+  safetyClause?: string[];
   measurementClause: string[];
+
+  // Clause 8 & 9. Labour Laws & Payment Terms
+  labourLawsIntro?: string;
+  labourLawsItems?: string[];
+  labourLawsDisclaimer?: string;
+  paymentMilestones?: string[];
+  paymentDeductionTerms?: string[];
+  paymentTerms: string[];
+
+  // Clause 10 - 16. Terms, Schedule & General Clauses
+  timeScheduleClause?: string[];
+  housekeepingClause?: string[];
+  warrantyClause?: string[];
+  variationClause?: string[];
+  terminationClause?: string[];
+  forceMajeureClause?: string[];
+  jurisdictionClause?: string[];
   termsAndConditions: string[];
   page3Terms: string[];
+  acceptanceClause?: string;
   
   signatoryCompany: string;
   signatoryContractor: string;

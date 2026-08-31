@@ -1,6 +1,6 @@
 import { LatexDocument, PurchaseOrderData, TaxInvoiceData } from '@/types/document';
 import { ProjectDocType, ProjectDocumentItem } from '@/types/project';
-import { LABOUR_PO_TEMPLATE, TAX_INVOICE_TEMPLATE, QUOTATION_TEMPLATE } from './templates';
+import { LABOUR_PO_TEMPLATE, FABRICATION_PO_TEMPLATE, TAX_INVOICE_TEMPLATE, QUOTATION_TEMPLATE } from './templates';
 
 export interface DocTemplateDefinition {
   type: ProjectDocType;
@@ -31,7 +31,15 @@ export const PROJECT_DOC_TEMPLATES: DocTemplateDefinition[] = [
     defaultPrefix: 'GI/WORK',
     defaultAmount: '₹4,70,000.00',
   },
-
+  {
+    type: 'purchase_order',
+    name: 'Fabrication Labour Purchase Order',
+    badge: 'Labour PO',
+    description: '3-page Structural Fabrication & Erection Labour PO with per-kg rate, measurement clause, and terms.',
+    iconName: 'FileText',
+    defaultPrefix: 'GI/PO',
+    defaultAmount: '₹3,50,000.00',
+  },
   {
     type: 'invoice',
     name: 'Tax Invoice & RA Billing Summary',
@@ -117,15 +125,18 @@ export function createProjectDocument(
 
     case 'work_order': {
       if (!docNumber) docNumber = `GI/CIVIL/${year}/${randomSuffix}`;
-      if (!docTitle) docTitle = `Civil Labour Contract Work Order - ${projectName}`;
+      if (!docTitle) docTitle = `CIVIL LABOUR CONTRACT WORK ORDER`;
       if (!docAmount || docAmount === '₹0.00') docAmount = '₹4,70,000.00';
 
       const poData = JSON.parse(JSON.stringify(LABOUR_PO_TEMPLATE.purchaseOrder!));
-      poData.contractorName = documentFields?.CONTRACTOR_NAME || client;
+      const recipientName = documentFields?.CONTRACTOR_NAME || 'Mohammad Kamil Shaikh';
+      poData.contractorName = recipientName;
+      poData.awardRecipient = `M/s. ${recipientName}`;
       poData.projectName = projectName;
       poData.projectLocation = location;
       poData.poNumber = docNumber;
       poData.poDate = dateStr;
+      poData.contractType = 'Civil Labour Contract (Lumpsum/Uchak)';
 
       initialLatexDoc = {
         ...JSON.parse(JSON.stringify(LABOUR_PO_TEMPLATE)),
@@ -144,81 +155,25 @@ export function createProjectDocument(
 
     case 'purchase_order': {
       if (!docNumber) docNumber = `GI/PO/${year}/${randomSuffix}`;
-      if (!docTitle) docTitle = `Material Purchase Order - ${projectName}`;
-      if (!docAmount || docAmount === '₹0.00') docAmount = '₹14,20,000.00';
+      if (!docTitle) docTitle = `Labour Contract Purchase Order - ${projectName}`;
+      if (!docAmount || docAmount === '₹0.00') docAmount = '₹3,50,000.00';
 
       const poData: PurchaseOrderData = {
-        ...JSON.parse(JSON.stringify(LABOUR_PO_TEMPLATE.purchaseOrder!)),
-        contractorName: client,
-        projectName: projectName,
-        projectLocation: location,
+        ...JSON.parse(JSON.stringify(FABRICATION_PO_TEMPLATE.purchaseOrder!)),
+        contractorName: documentFields?.CONTRACTOR_NAME || 'RAJESHBHAI GIRI',
+        projectName: projectName || 'TADPOLE',
+        projectLocation: location || 'ALEMBIC LTD GORWA',
         poNumber: docNumber,
         poDate: dateStr,
-        scopeOfWork: [
-          'Supply of IS 2062 Grade E250 Steel Beams & Columns',
-          'Supply of High Tensile Grade 8.8 Structural Bolts, Nuts & Washers',
-          'Supply of Self-Drilling Screws with EPDM Washers (Class 3)',
-          'Supply of 50mm PUF Sandwich Panels (Density 40 ± 2 kg/m³)',
-          'Supply of Color Coated Flashing, Gutters & Downspouts',
-        ],
-        rateItems: [
-          {
-            id: 'mat_1',
-            description: 'Pre-Engineered Building Structural Steel Frames (Columns, Rafters, Bracings) with factory red oxide primer.',
-            unit: 'MT',
-            qty: '18.0 MT',
-            rate: '₹68,500 / MT',
-            total: '1233000.00',
-          },
-          {
-            id: 'mat_2',
-            description: 'Roof & Wall PUF Insulation Panels (50mm thick, 0.45mm pre-painted top/bottom Galvalume sheet).',
-            unit: 'Sq. Mtr',
-            qty: '420 Sq.M',
-            rate: '₹1,150 / Sq.M',
-            total: '483000.00',
-          },
-          {
-            id: 'mat_3',
-            description: 'Galvanized Cold-Rolled Z Purlins (Z200 x 65 x 20 x 2.0mm).',
-            unit: 'MT',
-            qty: '3.5 MT',
-            rate: '₹76,000 / MT',
-            total: '266000.00',
-          },
-        ],
-        amountInWords: 'Rupees Nineteen Lakh Eighty-Two Thousand Only',
-        scopeOfContractor: [
-          '1. Quality Standard: All materials must be accompanied by Manufacturer Test Certificates (MTC) for chemical and physical properties.',
-          '2. Inspection: Inspection will be conducted at vendor works prior to dispatch by Global Industries QA representative.',
-          '3. Delivery Location: Site unloading bay at ' + location + '.',
-        ],
-        paymentTerms: [
-          '1. 20% mobilization advance against submission of Bank Guarantee / Proforma.',
-          '2. 70% against dispatch documents and proof of LR (Lorry Receipt).',
-          '3. 10% after physical verification and quality clearance at site.',
-        ],
-        termsAndConditions: [
-          '1. Delivery Date: Delivery must be completed within 21 days from purchase order acceptance.',
-          '2. Liquidated Damages: 1% per week of delay subject to a maximum of 10% of PO value.',
-          '3. Rejections: Any material not conforming to specifications shall be replaced at vendor cost within 5 working days.',
-        ],
-        page3Terms: [
-          '4. Taxes: GST @ 18% applicable extra. E-Way bill must accompany transport vehicle.',
-        ],
       };
 
       initialLatexDoc = {
-        ...JSON.parse(JSON.stringify(LABOUR_PO_TEMPLATE)),
+        ...JSON.parse(JSON.stringify(FABRICATION_PO_TEMPLATE)),
         id: docId,
         title: docTitle,
         subtitle: docNumber,
         date: dateStr,
         purchaseOrder: poData,
-        settings: {
-          ...LABOUR_PO_TEMPLATE.settings,
-          accentColor: '#334155', // Charcoal Slate
-        },
       };
       break;
     }
@@ -415,7 +370,12 @@ export function syncProjectMasterToDocuments(project: import('@/types/project').
 
     // 1. Sync Purchase Order / Work Order
     if (doc.purchaseOrder) {
-      if (clientName) doc.purchaseOrder.contractorName = clientName;
+      if (clientName) {
+        doc.purchaseOrder.contractorName = clientName;
+        if (!doc.purchaseOrder.awardRecipient || doc.purchaseOrder.awardRecipient.startsWith('M/s.')) {
+          doc.purchaseOrder.awardRecipient = `M/s. ${clientName}`;
+        }
+      }
       if (projectName) doc.purchaseOrder.projectName = projectName;
       if (location) doc.purchaseOrder.projectLocation = location;
 
@@ -442,6 +402,59 @@ export function syncProjectMasterToDocuments(project: import('@/types/project').
         }
         if (cp.leftServices && cp.leftServices.length > 0) doc.purchaseOrder.leftServices = cp.leftServices;
         if (cp.rightServices && cp.rightServices.length > 0) doc.purchaseOrder.rightServices = cp.rightServices;
+      }
+
+      // Backfill contractValueClause, qualityClause, materialClause, safetyClause, labourLaws, paymentMilestones and clear rateItems for civil labour work orders
+      if (doc.purchaseOrder.showAwardLetter || doc.purchaseOrder.contractType?.toLowerCase().includes('civil')) {
+        if (!doc.purchaseOrder.contractValueClause || doc.purchaseOrder.contractValueClause.length === 0) {
+          doc.purchaseOrder.contractValueClause = LABOUR_PO_TEMPLATE.purchaseOrder!.contractValueClause || [];
+        }
+        if (!doc.purchaseOrder.qualityClause || doc.purchaseOrder.qualityClause.length === 0) {
+          doc.purchaseOrder.qualityClause = LABOUR_PO_TEMPLATE.purchaseOrder!.qualityClause || [];
+        }
+        if (!doc.purchaseOrder.materialClause || doc.purchaseOrder.materialClause.length === 0) {
+          doc.purchaseOrder.materialClause = LABOUR_PO_TEMPLATE.purchaseOrder!.materialClause || [];
+        }
+        if (!doc.purchaseOrder.safetyClause || doc.purchaseOrder.safetyClause.length === 0) {
+          doc.purchaseOrder.safetyClause = LABOUR_PO_TEMPLATE.purchaseOrder!.safetyClause || [];
+        }
+        if (!doc.purchaseOrder.labourLawsItems || doc.purchaseOrder.labourLawsItems.length === 0) {
+          doc.purchaseOrder.labourLawsItems = LABOUR_PO_TEMPLATE.purchaseOrder!.labourLawsItems || [];
+          doc.purchaseOrder.labourLawsIntro = LABOUR_PO_TEMPLATE.purchaseOrder!.labourLawsIntro;
+          doc.purchaseOrder.labourLawsDisclaimer = LABOUR_PO_TEMPLATE.purchaseOrder!.labourLawsDisclaimer;
+        }
+        if (!doc.purchaseOrder.paymentMilestones || doc.purchaseOrder.paymentMilestones.length === 0) {
+          doc.purchaseOrder.paymentMilestones = LABOUR_PO_TEMPLATE.purchaseOrder!.paymentMilestones || [];
+          doc.purchaseOrder.paymentDeductionTerms = LABOUR_PO_TEMPLATE.purchaseOrder!.paymentDeductionTerms || [];
+        }
+        if (!doc.purchaseOrder.timeScheduleClause || doc.purchaseOrder.timeScheduleClause.length === 0 || !doc.purchaseOrder.timeScheduleClause.some(t => t.includes('Rupees Two Thousand Only'))) {
+          doc.purchaseOrder.timeScheduleClause = LABOUR_PO_TEMPLATE.purchaseOrder!.timeScheduleClause || [];
+        }
+        if (!doc.purchaseOrder.housekeepingClause || doc.purchaseOrder.housekeepingClause.length === 0) {
+          doc.purchaseOrder.housekeepingClause = LABOUR_PO_TEMPLATE.purchaseOrder!.housekeepingClause || [];
+        }
+        if (!doc.purchaseOrder.warrantyClause || doc.purchaseOrder.warrantyClause.length === 0) {
+          doc.purchaseOrder.warrantyClause = LABOUR_PO_TEMPLATE.purchaseOrder!.warrantyClause || [];
+        }
+        if (!doc.purchaseOrder.variationClause || doc.purchaseOrder.variationClause.length === 0) {
+          doc.purchaseOrder.variationClause = LABOUR_PO_TEMPLATE.purchaseOrder!.variationClause || [];
+        }
+        if (!doc.purchaseOrder.terminationClause || doc.purchaseOrder.terminationClause.length === 0) {
+          doc.purchaseOrder.terminationClause = LABOUR_PO_TEMPLATE.purchaseOrder!.terminationClause || [];
+        }
+        if (!doc.purchaseOrder.forceMajeureClause || doc.purchaseOrder.forceMajeureClause.length === 0) {
+          doc.purchaseOrder.forceMajeureClause = LABOUR_PO_TEMPLATE.purchaseOrder!.forceMajeureClause || [];
+        }
+        if (!doc.purchaseOrder.jurisdictionClause || doc.purchaseOrder.jurisdictionClause.length === 0) {
+          doc.purchaseOrder.jurisdictionClause = LABOUR_PO_TEMPLATE.purchaseOrder!.jurisdictionClause || [];
+        }
+        if (!doc.purchaseOrder.page3Terms || doc.purchaseOrder.page3Terms.length === 0 || !doc.purchaseOrder.page3Terms.some(t => t.includes('neat and clean condition'))) {
+          doc.purchaseOrder.page3Terms = LABOUR_PO_TEMPLATE.purchaseOrder!.page3Terms || [];
+        }
+        if (!doc.purchaseOrder.acceptanceClause) {
+          doc.purchaseOrder.acceptanceClause = LABOUR_PO_TEMPLATE.purchaseOrder!.acceptanceClause;
+        }
+        doc.purchaseOrder.rateItems = [];
       }
     }
 

@@ -82,6 +82,12 @@ export const CreateDocumentModal: React.FC<CreateDocumentModalProps> = ({
       setDocNumber(poNo);
       setTitle(`Civil Labour Contract Work Order - ${project.title}`);
       setAgreedAmount('₹ 4,70,000.00');
+    } else if (type === 'purchase_order') {
+      const poNo = `GI/PO/${year}/${rnd}`;
+      setDocNumber(poNo);
+      setTitle(`Fabrication Labour Purchase Order - ${project.title}`);
+      setAgreedAmount('₹ 3,50,000.00');
+      setContractorName('RAJESHBHAI GIRI');
     } else {
       setDocNumber(`GI/DOC/${year}/${rnd}`);
       setTitle(`${tmpl?.name || 'Document'} - ${project.title}`);
@@ -191,7 +197,7 @@ export const CreateDocumentModal: React.FC<CreateDocumentModalProps> = ({
               <label className="block text-xs font-bold uppercase tracking-wider text-[#0d3479] mb-2.5">
                 1. Choose Document Type
               </label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {PROJECT_DOC_TEMPLATES.map((tmpl) => {
                   const isSelected = selectedType === tmpl.type;
                   return (

@@ -13,6 +13,10 @@ import {
   Layers,
   Palette,
   FileText,
+  FileSpreadsheet,
+  Receipt,
+  FileCheck,
+  FilePlus,
   Building2,
   CheckCircle2,
   Sliders,
@@ -348,96 +352,176 @@ export const TemplateBuilderStudio: React.FC<TemplateBuilderStudioProps> = ({
           </div>
         </header>
 
-        {/* Blueprint Selector Panel */}
-        <div className="flex-1 overflow-y-auto p-8 flex flex-col items-center justify-center max-w-4xl mx-auto space-y-6">
-          <div className="text-center space-y-2 max-w-xl">
-            <div className="w-12 h-12 rounded-[14px] bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479] mx-auto shadow-xs">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-black tracking-tight">Choose a Template Blueprint to Customize</h1>
-            <p className="text-sm text-[#666666] leading-relaxed">
-              Select one of the standard business layouts below to edit, or customize reusable section categories in the preset manager.
-            </p>
-          </div>
-
-          {/* Featured Section & Preset Library Card */}
-          <div
-            onClick={() => setViewMode('library')}
-            className="w-full glass-card border border-[#0d3479]/30 hover:border-[#0d3479] rounded-[20px] p-5 shadow-sm cursor-pointer transition-all hover:scale-[1.005] flex items-center justify-between group"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 rounded-[14px] bg-[#dfe7f4] border border-[#b9c7de] flex items-center justify-center text-[#0d3479] shrink-0 shadow-xs">
-                <Layers className="w-6 h-6" />
+        {/* Blueprint Selector Panel - Full Width with Proper Page Centering */}
+        <div className="flex-1 overflow-y-auto bg-[#f8fafc] text-black">
+          <div className="max-w-6xl mx-auto px-6 py-10 space-y-8">
+            
+            {/* Header Hero Section */}
+            <div className="text-center space-y-3 max-w-2xl mx-auto">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 bg-[#dfe7f4] border border-[#b9c7de] rounded-full text-xs font-bold text-[#0d3479] shadow-xs">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Template Blueprint Studio</span>
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center space-x-2">
-                  <h3 className="text-base font-bold text-black group-hover:text-[#0d3479] transition-colors">
-                    Section & Preset Library
-                  </h3>
-                  <span className="text-[10px] uppercase font-mono tracking-wider bg-[#dfe7f4] text-[#0d3479] px-2.5 py-0.5 rounded-[4px] border border-[#b9c7de]">
-                    Template Presets
-                  </span>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-black tracking-tight leading-tight">
+                Choose a Template Blueprint
+              </h1>
+              <p className="text-sm text-[#555555] leading-relaxed">
+                Select a standard business layout below to customize its sections, variables, and clauses, or create a new blueprint from a blank canvas.
+              </p>
+            </div>
+
+            {/* Featured Section & Preset Library Card */}
+            <div
+              onClick={() => setViewMode('library')}
+              className="w-full bg-gradient-to-r from-white via-[#f4f7fb] to-white border border-[#b9c7de] hover:border-[#0d3479] rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 rounded-xl bg-[#002057] flex items-center justify-center text-white shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                  <Layers className="w-6 h-6 text-white" />
                 </div>
-                <p className="text-xs text-[#666666] max-w-xl leading-relaxed">
-                  Customize pre-filled section contents, tables, clauses, and specifications across document templates.
-                </p>
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2.5">
+                    <h3 className="text-base font-bold text-black group-hover:text-[#0d3479] transition-colors">
+                      Section & Preset Library
+                    </h3>
+                    <span className="text-[10px] uppercase font-mono font-bold tracking-wider bg-[#dfe7f4] text-[#0d3479] px-2.5 py-0.5 rounded-full border border-[#b9c7de]">
+                      Reusable Components
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#555555] max-w-2xl leading-relaxed">
+                    Manage reusable section categories, standard boilerplate clauses, BOQ item sets, and technical specifications used across document templates.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2 text-xs font-bold text-white bg-[#002057] group-hover:bg-[#0d3479] px-4 py-2.5 rounded-xl shrink-0 transition-all shadow-xs self-end sm:self-center">
+                <span>Open Preset Library</span>
+                <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
 
-            <div className="flex items-center space-x-1.5 text-xs font-bold text-[#0d3479] bg-white border border-[#b9c7de] px-3.5 py-2 rounded-[8px] shrink-0 group-hover:bg-[#0d3479] group-hover:text-white transition-all shadow-xs">
-              <span>Open Preset Library</span>
-              <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
+            {/* Template Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+              {Object.entries(SAMPLE_TEMPLATES).map(([key, tmpl]) => {
+                const meta =
+                  key === 'quotation'
+                    ? {
+                        title: 'Commercial Quotation',
+                        badge: 'Quotation Layout',
+                        badgeColor: 'bg-blue-50 text-[#0d3479] border-blue-200',
+                        iconBg: 'bg-[#dfe7f4] text-[#0d3479]',
+                        icon: FileSpreadsheet,
+                        pageCount: '10 Pages',
+                        description: '10-page commercial quotation with technical details, material specs, pricing BOQ, vendor listing table, and 17 commercial terms.',
+                        highlights: ['Itemized BOQ Rate Matrix', '25-Make Approved Vendor List', '17 Commercial Terms & Conditions', 'Technical Specification Tables'],
+                      }
+                    : key === 'tax_invoice'
+                    ? {
+                        title: 'GST Tax Invoice',
+                        badge: 'Invoice Layout',
+                        badgeColor: 'bg-rose-50 text-rose-800 border-rose-200',
+                        iconBg: 'bg-rose-100 text-rose-700',
+                        icon: Receipt,
+                        pageCount: '1 Page',
+                        description: 'Official GST tax invoice template with item descriptions, HSN breakdown, SGST/CGST calculations, EPF options, and statutory bank columns.',
+                        highlights: ['HSN & Tax Calculation Breakdown', 'Automatic Amount in Words', 'Company Bank & Statutory Details', 'Dual Signatory & Authorization Box'],
+                      }
+                    : key === 'labour_po'
+                    ? {
+                        title: 'Civil Labour Work Order',
+                        badge: 'Civil PO Layout',
+                        badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+                        iconBg: 'bg-emerald-100 text-emerald-700',
+                        icon: FileCheck,
+                        pageCount: '3 Pages',
+                        description: 'Civil Labour Contract Work Order with 16 scope of work items, lumpsum rate table, safety regulations, and milestone payment terms.',
+                        highlights: ['16-Item Civil Scope of Work', 'Lumpsum (Uchak) Rate Table', 'Quality, Materials & PPE Clauses', '6-Stage Milestone Payment Schedule'],
+                      }
+                    : key === 'fabrication_po'
+                    ? {
+                        title: 'Fabrication Purchase Order',
+                        badge: 'Fabrication PO Layout',
+                        badgeColor: 'bg-indigo-50 text-indigo-800 border-indigo-200',
+                        iconBg: 'bg-indigo-100 text-indigo-700',
+                        icon: FileText,
+                        pageCount: '3 Pages',
+                        description: 'Structural Fabrication & Erection Labour PO with per-kg rate table, scope of contractor, measurement verification, and clauses.',
+                        highlights: ['Per-KG Structural Labour Rates', 'Erection & Fabrication Obligations', 'Weight Measurement Verification', 'Tadpole Site Location Support'],
+                      }
+                    : {
+                        title: 'Blank Document Blueprint',
+                        badge: 'Blank Canvas',
+                        badgeColor: 'bg-slate-100 text-slate-800 border-slate-200',
+                        iconBg: 'bg-slate-100 text-slate-700',
+                        icon: FilePlus,
+                        pageCount: 'Custom Pages',
+                        description: 'Create a completely customized document blueprint from scratch with custom page structures, modular sections, and styling.',
+                        highlights: ['Start with Clean Slate', 'Add Custom Multi-Page Sections', 'Configure Variables & Watermarks', 'Custom Typography & Layout'],
+                      };
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full pt-2">
-            {Object.entries(SAMPLE_TEMPLATES).map(([key, tmpl]) => {
-              const normalTitle = 
-                key === 'tax_invoice' 
-                  ? 'Invoice' 
-                  : key === 'quotation' 
-                  ? 'Quotation' 
-                  : key === 'labour_po' 
-                  ? 'Work Order' 
-                  : 'Blank Template';
+                const Icon = meta.icon;
 
-              return (
-                <button
-                  key={key}
-                  onClick={() => {
-                    setTemplateDoc(JSON.parse(JSON.stringify(tmpl)));
-                    setTemplateName(`Customized ${normalTitle}`);
-                    setTemplateDesc(`Custom template based on the standard ${normalTitle} layout.`);
-                    setIsSelectingBase(false);
-                  }}
-                  className="surface-card border border-[#cccccc] hover:border-[#0d3479] rounded-[16px] p-5 text-left hover:bg-white/95 transition-all shadow-xs hover:shadow-md group/card cursor-pointer flex flex-col justify-between h-44"
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[9.5px] uppercase font-mono tracking-wider bg-[#dfe7f4] text-[#0d3479] px-2 py-0.5 rounded-[4px] border border-[#b9c7de]">
-                        {key === 'quotation' ? 'Quotation Layout' : key === 'tax_invoice' ? 'Invoice Layout' : key === 'labour_po' ? 'Labour PO Layout' : 'Blank Layout'}
-                      </span>
+                return (
+                  <div
+                    key={key}
+                    onClick={() => {
+                      setTemplateDoc(JSON.parse(JSON.stringify(tmpl)));
+                      setTemplateName(`Customized ${meta.title}`);
+                      setTemplateDesc(`Custom template based on the standard ${meta.title} layout.`);
+                      setIsSelectingBase(false);
+                    }}
+                    className="bg-white border border-[#cccccc] hover:border-[#0d3479] rounded-2xl p-5.5 text-left hover:bg-white transition-all shadow-xs hover:shadow-lg group/card cursor-pointer flex flex-col justify-between h-full relative"
+                  >
+                    <div className="space-y-4">
+                      {/* Card Header: Icon + Badge + Page Count */}
+                      <div className="flex items-center justify-between">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-xs ${meta.iconBg}`}>
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded-full border ${meta.badgeColor}`}>
+                            {meta.badge}
+                          </span>
+                          <span className="text-[10px] font-semibold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full border border-gray-200">
+                            {meta.pageCount}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Title & Description */}
+                      <div>
+                        <h3 className="text-base font-bold text-black group-hover/card:text-[#0d3479] transition-colors">
+                          {meta.title}
+                        </h3>
+                        <p className="text-xs text-[#666666] mt-1.5 line-clamp-3 leading-relaxed">
+                          {meta.description}
+                        </p>
+                      </div>
+
+                      {/* Highlight Badges / Features */}
+                      <div className="space-y-1.5 pt-2 border-t border-gray-100">
+                        {meta.highlights.map((feat, idx) => (
+                          <div key={idx} className="flex items-center space-x-2 text-[11px] text-[#444444]">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#0d3479] shrink-0" />
+                            <span className="truncate">{feat}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <h3 className="text-base font-bold text-black mt-2 group-hover/card:text-[#0d3479] transition-colors">
-                      {normalTitle}
-                    </h3>
-                    <p className="text-xs text-[#666666] mt-1 line-clamp-2 leading-relaxed">
-                      {key === 'quotation' 
-                        ? '10-page commercial quotation with specifications, pricing BOQ, vendor listing table, and standard terms.'
-                        : key === 'tax_invoice'
-                        ? 'GST-compliant tax invoice template with item descriptions, HSN rates, EPF options, and statutory columns.'
-                        : key === 'labour_po'
-                        ? 'Labour PO Work Order with scope description, rate items, and completion criteria.'
-                        : 'Create a customized document blueprint from scratch.'}
-                    </p>
+
+                    {/* Action Button */}
+                    <div className="pt-4 mt-4 border-t border-gray-100 flex items-center justify-between">
+                      <span className="text-xs text-[#0d3479] font-bold group-hover/card:underline">
+                        Start Customizing
+                      </span>
+                      <div className="w-7 h-7 rounded-lg bg-[#dfe7f4] text-[#0d3479] group-hover/card:bg-[#0d3479] group-hover/card:text-white flex items-center justify-center transition-all shadow-xs">
+                        <ArrowRight className="w-3.5 h-3.5 group-hover/card:translate-x-0.5 transition-transform" />
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center text-xs text-[#0d3479] font-bold group-hover/card:translate-x-1.5 transition-transform mt-2">
-                    <span>Start Customizing</span>
-                    <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                  </div>
-                </button>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

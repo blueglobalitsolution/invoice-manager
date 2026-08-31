@@ -288,6 +288,8 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
         return <FileSpreadsheet className="w-4 h-4 text-[#0d3479]" />;
       case 'work_order':
         return <FileCheck className="w-4 h-4 text-emerald-700" />;
+      case 'purchase_order':
+        return <FileText className="w-4 h-4 text-indigo-700" />;
       case 'invoice':
         return <Receipt className="w-4 h-4 text-rose-700" />;
       default:
@@ -301,6 +303,8 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
         return 'bg-[#dfe7f4] text-[#0d3479] border-[#b9c7de]';
       case 'work_order':
         return 'bg-emerald-50 text-emerald-800 border-emerald-200';
+      case 'purchase_order':
+        return 'bg-indigo-50 text-indigo-800 border-indigo-200';
       case 'invoice':
         return 'bg-rose-50 text-rose-800 border-rose-200';
       default:
@@ -329,6 +333,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
   const docCountByType = {
     quotation: documents.filter((d) => d.docType === 'quotation').length,
     work_order: documents.filter((d) => d.docType === 'work_order').length,
+    purchase_order: documents.filter((d) => d.docType === 'purchase_order').length,
     invoice: documents.filter((d) => d.docType === 'invoice').length,
     custom: documents.filter((d) => d.docType === 'custom').length,
   };
@@ -581,7 +586,18 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                 }`}
               >
                 <FileCheck className="w-3.5 h-3.5" />
-                <span>Labour POs ({docCountByType.work_order})</span>
+                <span>Civil POs ({docCountByType.work_order})</span>
+              </button>
+              <button
+                onClick={() => setTypeFilter('purchase_order')}
+                className={`px-3.5 py-1.5 rounded-[12px] font-semibold transition-all whitespace-nowrap cursor-pointer flex items-center space-x-1.5 ${
+                  typeFilter === 'purchase_order'
+                    ? 'bg-[#0d3479] text-white shadow'
+                    : 'surface-card text-[#666666] hover:text-black border border-[#cccccc]'
+                }`}
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Fabrication POs ({docCountByType.purchase_order})</span>
               </button>
               <button
                 onClick={() => setTypeFilter('invoice')}

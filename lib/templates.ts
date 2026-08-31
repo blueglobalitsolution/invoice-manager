@@ -35,9 +35,7 @@ export const LABOUR_PO_TEMPLATE: LatexDocument = {
     companyName: 'GLOBAL',
     companySubtitle: 'INDUSTRIES',
     companyAddress: [
-      'SO7B / 2nd Floor / Phase 2',
-      'Indiabulls, Jetalpur Road',
-      'Vadodara',
+      'Regd. Off. : SO7B / 2nd floor, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara, Gujarat - 391243',
     ],
     gstNo: '24CLNPS9550H1ZI',
     companyPhone: '+91 97254 45370',
@@ -49,7 +47,6 @@ export const LABOUR_PO_TEMPLATE: LatexDocument = {
       '• Roofing Solution',
       '• Engineering Project & Designing',
       '• "Z" & "C" Purlins',
-      '• UPVC Roofing Sheet',
     ],
     rightServices: [
       '• Infra Materials',
@@ -60,8 +57,37 @@ export const LABOUR_PO_TEMPLATE: LatexDocument = {
     contractorName: 'Mohammad Kamil Shaikh',
     projectName: 'Civil Construction Work',
     projectLocation: 'Sevasi TP-1, Vadodara, Gujarat',
+    contractType: 'Civil Labour Contract (Lumpsum/Uchak)',
     poNumber: 'GI/CIVIL/2026/101',
     poDate: '05/08/2026',
+
+    // Specific to PO Info Table (left column)
+    tableCompanyName: 'GLOBAL INDUSTRIES',
+    tableCompanySubtitle: '',
+    tableCompanyAddress: [
+      'SO7B / 2nd Floor / Phase 2',
+      'Indiabulls, Jetalpur Road, Vadodara',
+    ],
+
+    // Award Cover / Salutation Section
+    showAwardLetter: true,
+    awardToPrefix: 'To,',
+    awardRecipient: 'M/s. Mohammad Kamil Shaikh',
+    awardDesignation: 'Labour Contractor',
+    awardSubject: 'Award of Civil Labour Contract',
+    awardGreeting: 'Dear Sir,',
+    awardLetterBody:
+      'We are pleased to award you the Civil Labour Contract for the above-mentioned project on the following terms and conditions.',
+
+    // Clause 1. Contract Value
+    contractValueClause: [
+      'The total contract value is ₹4,70,000/- (Rupees Four Lakh Seventy Thousand Only) on a Lumpsum (Uchak) Labour Contract Basis.',
+      'The contract value includes complete labour charges, supervision, skilled and unskilled manpower, tools & tackles, centering/shuttering materials, scaffolding, machinery, equipment, transportation, curing, safety equipment and all incidental expenses required for successful completion of the work.',
+      'No extra payment shall be made unless specifically approved in writing by Global Industries.',
+    ],
+
+    // Clause 2. Scope of Work
+    scopeIntro: 'The contractor shall execute complete civil labour work, including but not limited to:',
     scopeOfWork: [
       'Site cleaning and layout assistance',
       'Excavation and backfilling',
@@ -80,23 +106,84 @@ export const LABOUR_PO_TEMPLATE: LatexDocument = {
       'Miscellaneous Civil Works',
       'Final Site Cleaning and Handing Over',
     ],
-    rateItems: [
-      {
-        id: 'rate_1',
-        description:
-          'Complete Civil Labour Contract (Lumpsum/Uchak) including supervision, skilled and unskilled manpower, tools & tackles, centering/shuttering materials, scaffolding, machinery, equipment, transportation, curing, and safety equipment.',
-        unit: 'Lumpsum',
-        qty: '1 Job',
-        rate: '4,70,000/-',
-        total: '470000.00',
-      },
-    ],
+
+    rateItems: [],
     amountInWords: 'Rupees Four Lakh Seventy Thousand Only',
+
+    // Clause 3 & 4. Company & Contractor Scopes
+    companyScopeIntro: 'Global Industries shall supply only the following construction materials:',
+    companyScope: [
+      'Cement',
+      'Steel',
+      'Sand',
+      'Aggregate',
+      'Bricks/Blocks',
+      'RMC/Concrete (where applicable)',
+      'Water',
+      'Any other approved construction material as per site requirement',
+    ],
+    contractorScopeIntro: 'The contractor shall arrange at his own cost:',
+    contractorScope: [
+      'Skilled, Semi-Skilled & Unskilled Manpower, Masons, Carpenters, Bar Benders, Helpers & Site Supervisor',
+      'Centering & Shuttering Materials, Scaffolding, Props & Span Pipes',
+      'Tools & Tackles, Concrete Vibrator, Cutting Machine, Welding Machine & Equipment',
+      'Transportation, Curing arrangement & Safety Equipment / PPE for all workers',
+      'Accommodation, Drinking Water & Food for contractor\'s workforce',
+      'Regular Site Cleaning, Housekeeping & Disposal of Debris',
+    ],
     scopeOfContractor: [
       '1. Contract Value: The total contract value is ₹4,70,000/- (Rupees Four Lakh Seventy Thousand Only) on a Lumpsum (Uchak) Labour Contract Basis. The contract value includes complete labour charges, supervision, skilled and unskilled manpower, tools & tackles, centering/shuttering materials, scaffolding, machinery, equipment, transportation, curing, safety equipment and all incidental expenses required for successful completion of the work. No extra payment shall be made unless specifically approved in writing by Global Industries.',
       '2. Scope of Work: The contractor shall execute complete civil labour work, including site cleaning, excavation, PCC, RCC Footing, Pedestal, Column, Beam, Reinforcement, Centering, Concrete Pouring, Masonry, Plaster, Flooring, and Finishing strictly as per approved drawings, specifications and Site Engineer instructions.',
       '3. Company Scope: Global Industries shall supply only construction materials including Cement, Steel, Sand, Aggregate, Bricks/Blocks, RMC/Concrete, and Water.',
       '4. Contractor Scope: The contractor shall arrange at his own cost Skilled, Semi-Skilled & Unskilled Labour, Masons, Carpenters, Bar Benders, Site Supervisor, Centering/Shuttering Material, Scaffolding, Tools & Tackles, Concrete Vibrator, Cutting Machine, PPE, Accommodation, Transportation, Food & Water, Housekeeping, and Electricity.',
+    ],
+
+    // Clause 5, 6, 7. Quality, Material & Safety
+    qualityClause: [
+      'The contractor shall execute all works strictly as per approved drawings, specifications and Site Engineer instructions.',
+      'Any defective, rejected or poor-quality work shall be dismantled and re-executed by the contractor at his own cost without any additional payment.',
+    ],
+    materialClause: [
+      'All materials supplied by Global Industries shall remain the sole property of the Company. The contractor shall ensure proper handling, storage and usage. Any loss, theft, damage or excessive wastage due to negligence shall be recovered from the contractor\'s bills.',
+    ],
+    safetyClause: [
+      'The contractor shall strictly comply with all applicable safety rules and regulations. All workers shall wear proper PPE while working. The contractor shall be solely responsible for any accident, injury, death or property damage arising due to negligence or violation of safety norms.',
+    ],
+    measurementClause: [
+      '5. Quality: The contractor shall execute all works strictly as per approved drawings, specifications and Site Engineer instructions. Any defective, rejected or poor-quality work shall be dismantled and re-executed by the contractor at his own cost without any additional payment.',
+      '6. Material Responsibility: All materials supplied by Global Industries shall remain the sole property of the Company. The contractor shall ensure proper handling, storage and usage of such materials. Any loss, theft, damage or excessive wastage due to negligence shall be recovered from the contractor\'s bills.',
+      '7. Safety: The contractor shall strictly comply with all applicable safety rules and regulations. All workers shall wear proper PPE while working. The contractor shall be solely responsible for any accident, injury, death or property damage arising due to negligence or violation of safety norms.',
+    ],
+
+    // Clause 8 & 9. Labour Laws & Payment Terms
+    labourLawsIntro: 'The contractor shall comply with all applicable labour laws and statutory requirements, including:',
+    labourLawsItems: [
+      'Minimum Wages Act / applicable minimum wage requirements',
+      'Labour License',
+      'PF',
+      'ESIC',
+      'Workmen Compensation Insurance',
+      'Building & Other Construction Workers Act',
+      'Any other applicable statutory requirement',
+    ],
+    labourLawsDisclaimer:
+      'All labour-related statutory liabilities, compliances and labour disputes shall be the sole responsibility of the Labour Contractor. Global Industries shall not be responsible for the same.',
+
+    paymentMilestones: [
+      'Total Contract Value: ₹4,70,000/- (Rupees Four Lakh Seventy Thousand Only).',
+      'Footing Work Completion: ₹50,000/-',
+      'RCC Beam Work: ₹20,000/-',
+      'Plinth Completion: ₹50,000/-',
+      'Masonry & RCC Work Completion: ₹1,00,000/-',
+      'Plaster Work Completion: ₹80,000/-',
+      'Floor Concrete Work Completion: ₹1,20,000/-',
+      'After Final Completion: ₹50,000/-',
+    ],
+    paymentDeductionTerms: [
+      'All payments shall be released after verification and certification of the respective stage by the Site Engineer.',
+      'Applicable TDS shall be deducted as per Government Rules.',
+      'GST shall be paid only against submission of a valid GST Invoice, if applicable.',
+      'Any recovery towards defective work, material damage, excess wastage, delay or any other dues shall be deducted from the contractor\'s bills.',
     ],
     paymentTerms: [
       'Footing Work Completion: ₹50,000/-',
@@ -108,24 +195,42 @@ export const LABOUR_PO_TEMPLATE: LatexDocument = {
       'After Final Completion: ₹50,000/-',
       'All payments shall be released after verification and certification of the respective stage by the Site Engineer. Applicable TDS shall be deducted as per Government Rules.',
     ],
-    measurementClause: [
-      '5. Quality: The contractor shall execute all works strictly as per approved drawings, specifications and Site Engineer instructions. Any defective, rejected or poor-quality work shall be dismantled and re-executed by the contractor at his own cost without any additional payment.',
-      '6. Material Responsibility: All materials supplied by Global Industries shall remain the sole property of the Company. The contractor shall ensure proper handling, storage and usage. Any loss, theft, damage or excessive wastage due to negligence shall be recovered from the contractor\'s bills.',
-      '7. Safety: The contractor shall strictly comply with all applicable safety rules and regulations. All workers shall wear proper PPE while working. The contractor shall be solely responsible for any accident, injury, death or property damage arising due to negligence or violation of safety norms.',
+
+    // Clause 10 - 16. Terms & General Clauses (Individual Clauses)
+    timeScheduleClause: [
+      'The entire civil construction work shall be completed within 60 (Sixty) days from the date of commencement of work at site. In case of unexcused delay, a penalty of ₹2,000/- (Rupees Two Thousand Only) per day shall be applicable after expiry of the stipulated period.',
+    ],
+    housekeepingClause: [
+      'The contractor shall maintain the work area in neat and clean condition throughout the execution period and remove debris regularly.',
+    ],
+    warrantyClause: [
+      'The contractor shall rectify any workmanship defects observed during execution or within 6 months from completion of the work without claiming any additional payment.',
+    ],
+    variationClause: [
+      'Any additional or extra work beyond the scope of this Work Order shall be carried out only after obtaining prior written approval from Global Industries.',
+      'No verbal instructions shall be considered for extra payment.',
+    ],
+    terminationClause: [
+      'Global Industries reserves the right to terminate this Work Order without prior notice in case of:\n• Poor workmanship\n• Delay in execution\n• Safety violations\n• Labour shortage\n• Non-compliance with statutory requirements\n• Breach of any terms and conditions',
+    ],
+    forceMajeureClause: [
+      'Neither party shall be held responsible for delay caused due to natural calamities, Government restrictions, war, flood, earthquake or any event beyond reasonable control.',
+    ],
+    jurisdictionClause: [
+      'Any dispute arising out of this Work Order shall be subject to the exclusive jurisdiction of the competent courts at Vadodara, Gujarat only.',
     ],
     termsAndConditions: [
-      '8. Labour Laws: The contractor shall comply with all applicable labour laws including Minimum Wages Act, Labour License, PF, ESIC, Workmen Compensation Insurance, and BOCW Act. All labour disputes shall be the sole responsibility of the contractor.',
-      '9. Measurement & Payment: Payments are released upon stage certification by the Site Engineer. GST paid only against valid GST invoice. Recoveries for defective work/wastage apply.',
-      '10. Time Schedule: Completion within 60 (Sixty) days from commencement. Penalty of ₹2,000/- per day for delay.',
+      '10. Time Schedule: The entire civil construction work shall be completed within 60 (Sixty) days from the date of commencement of work at site. In case of unexcused delay, a penalty of ₹2,000/- (Rupees Two Thousand Only) per day shall be applicable after expiry of the stipulated period.',
     ],
     page3Terms: [
-      '11. Housekeeping: Maintain work area clean throughout execution and remove debris regularly.',
-      '12. Warranty / Defect Liability: Rectify workmanship defects observed during execution or within 6 months from completion without additional payment.',
-      '13. Variation / Extra Work: Extra work requires prior written approval from Global Industries. Verbal instructions not considered.',
-      '14. Termination: Global Industries reserves the right to terminate without prior notice in case of poor workmanship, delay, safety violations, labour shortage, or breach of terms.',
-      '15. Force Majeure: Neither party responsible for delay caused due to natural calamities, Government restrictions, war, flood, earthquake.',
-      '16. Jurisdiction: Subject to exclusive jurisdiction of competent courts at Vadodara, Gujarat only.',
+      '11. Housekeeping: The contractor shall maintain the work area in neat and clean condition throughout the execution period and remove debris regularly.',
+      '12. Warranty / Defect Liability: The contractor shall rectify any workmanship defects observed during execution or within 6 months from completion of the work without claiming any additional payment.',
+      '13. Variation / Extra Work: Any additional or extra work beyond the scope of this Work Order shall be carried out only after obtaining prior written approval from Global Industries.\nNo verbal instructions shall be considered for extra payment.',
+      '14. Termination: Global Industries reserves the right to terminate this Work Order without prior notice in case of:\n• Poor workmanship\n• Delay in execution\n• Safety violations\n• Labour shortage\n• Non-compliance with statutory requirements\n• Breach of any terms and conditions',
+      '15. Force Majeure: Neither party shall be held responsible for delay caused due to natural calamities, Government restrictions, war, flood, earthquake or any event beyond reasonable control.',
+      '16. Jurisdiction: Any dispute arising out of this Work Order shall be subject to the exclusive jurisdiction of the competent courts at Vadodara, Gujarat only.',
     ],
+    acceptanceClause: 'I/We have read, understood and accepted all the above terms and conditions of this Work Order.',
     signatoryCompany: 'For GLOBAL INDUSTRIES\nAuthorized Signatory',
     signatoryContractor: 'Accepted By Contractor\nName & Signature',
   },
@@ -136,6 +241,124 @@ export const LABOUR_PO_TEMPLATE: LatexDocument = {
   references: [],
 };
 
+export const FABRICATION_PO_TEMPLATE: LatexDocument = {
+  id: 'fabrication_labour_po',
+  title: 'LABOUR CONTRACT PURCHASE ORDER',
+  subtitle: 'GI/PO/2026/10012',
+  authors: [
+    {
+      id: 'auth_fab1',
+      name: 'GLOBAL INDUSTRIES',
+      affiliation: 'Vadodara, Gujarat',
+      email: 'info@globalindustries.co',
+    },
+    {
+      id: 'auth_fab2',
+      name: 'RAJESHBHAI GIRI',
+      affiliation: 'Fabrication Contractor',
+      email: 'contact@contractor.in',
+    },
+  ],
+  date: '17/07/2026',
+  abstract: '',
+  keywords: ['Structural Fabrication', 'Erection', 'Labour Contract', 'Purchase Order', 'Global Industries'],
+  settings: {
+    paperSize: 'a4paper',
+    fontSize: '10pt',
+    columns: 'onecolumn',
+    fontFamily: 'helvetica',
+    margins: 'compact',
+    showPageNumbers: false,
+    showDate: false,
+    accentColor: '#505050',
+    watermark: {
+      enabled: true,
+      type: 'default_logo',
+      opacity: 0.14,
+      scale: 58,
+      rotation: 0,
+    },
+  },
+  purchaseOrder: {
+    companyName: 'GLOBAL',
+    companySubtitle: 'INDUSTRIES',
+    companyAddress: [
+      'Regd. Off. : SO7B / 2nd floor, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara, Gujarat - 391243',
+    ],
+    gstNo: '24CLNPS9550H1ZI',
+    companyPhone: '+91 97254 45370',
+    companyAddressFooter: 'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243',
+    companyEmail: 'info@globalindustries.co',
+    companyWebsite: 'www.globalindustries.co',
+    leftServices: [
+      '• Pre Engineering Building',
+      '• Roofing Solution',
+      '• Engineering Project & Designing',
+      '• "Z" & "C" Purlins',
+    ],
+    rightServices: [
+      '• Infra Materials',
+      '• Puf Panels & Insulation Roofing',
+      '• Skylight Sheets',
+      '• Air Ventilators',
+    ],
+    contractorName: 'RAJESHBHAI GIRI',
+    projectName: 'TADPOLE',
+    projectLocation: 'ALEMBIC LTD GORWA',
+    poNumber: 'GI/PO/2026/10012',
+    poDate: '17/07/2026',
+    tableCompanyName: 'GLOBAL INDUSTRIES',
+    tableCompanySubtitle: '',
+    scopeOfWork: [
+      'Structural Fabrication & Erection',
+      'Welding, Gas Cutting & Grinding',
+      'All labour required to complete the project as per drawings and site instructions.',
+    ],
+    rateItems: [
+      {
+        id: 'fab_1',
+        description: 'Fabrication, erection, alignment, welding, gas cutting, grinding, surface preparation, and application of two coats of Red Oxide Primer, including all associated labour.',
+        unit: 'Per kgs.',
+        qty: '25000 kgs',
+        rate: '14/-',
+        total: '350000.00',
+      },
+    ],
+    amountInWords: 'Three lakh Fifty Thousand Only.',
+    scopeOfContractor: [
+      'The contractor shall be responsible for carrying out the complete fabrication, erection, alignment, welding, gas cutting, grinding, surface preparation, and application of two coats of Red Oxide Primer, including all associated labour.',
+      'The contractor shall arrange and provide all tools, tackles, welding machines, gas cutting sets, grinders, power tools, scaffolding, lifting equipment, consumables, safety equipment (PPE), transportation of labour, and any other accessories required for the successful execution of the work at no additional cost.',
+      'The Company shall provide only the structural steel/material required for the work. All other labour; tools, tackles, equipment, consumables, and execution-related arrangements shall be entirely under the contractor\'s scope and responsibility.',
+    ],
+    paymentTerms: [
+      'Running bill as per measurement.',
+      'Payment within 7-15 days after bill approval.',
+      'TDS applicable as per Government rules.',
+    ],
+    measurementClause: [
+      'This Purchase Order is being issued for an estimated quantity of **25,000 Kgs** for administrative and work planning purposes only.',
+      'The contractor shall be paid **strictly on the basis of the actual executed and measured weight (in Kgs)** at the agreed **labour rate per Kg**. The estimated quantity mentioned in this Purchase Order does not guarantee the final work quantity.',
+      'If the actual executed quantity is more or less than **25,000 Kgs**, the payment shall be made **only for the actual measured quantity**, as certified by the Company\'s Site Engineer/Authorized Representative.',
+      'No claim shall be entertained regarding any variation in the estimated quantity.',
+    ],
+    termsAndConditions: [
+      'Contractor shall arrange all skilled and unskilled labour.',
+      'Contractor shall provide all safety PPE.',
+      'Quality and workmanship shall be maintained.',
+      'Any rework due to poor workmanship shall be at contractor\'s cost.',
+      'Labour law compliance shall be contractor\'s responsibility.',
+      'Company reserves the right to terminate the order in case of poor performance.',
+    ],
+    page3Terms: [],
+    signatoryCompany: 'For GLOBAL INDUSTRIES\nAuthorized Signatory',
+    signatoryContractor: 'Accepted By Contractor\nName & Signature',
+  },
+  sections: [],
+  equations: [],
+  figures: [],
+  tables: [],
+  references: [],
+};
 
 export const BLANK_TEMPLATE: LatexDocument = {
   id: 'blank',
@@ -329,7 +552,6 @@ export const QUOTATION_TEMPLATE: LatexDocument = {
       '• Roofing Solution',
       '• Engineering Project & Designing',
       '• "Z" & "C" Purlins',
-      '• UPVC Roofing Sheet',
     ],
     rightServices: [
       '• Infra Materials',
@@ -602,6 +824,7 @@ export const SAMPLE_TEMPLATES: Record<string, LatexDocument> = {
   quotation: QUOTATION_TEMPLATE,
   tax_invoice: TAX_INVOICE_TEMPLATE,
   labour_po: LABOUR_PO_TEMPLATE,
+  fabrication_po: FABRICATION_PO_TEMPLATE,
   blank: BLANK_TEMPLATE,
 };
 

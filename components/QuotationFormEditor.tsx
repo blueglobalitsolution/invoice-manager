@@ -99,12 +99,6 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
     string,
     { title: string; subtitle: string; page: string | number; icon: React.ElementType }
   > = {
-    header_footer: {
-      title: 'Letterhead & Brand Header',
-      subtitle: 'Company branding, subtitle, GST number and letterhead',
-      page: 'Global',
-      icon: LayoutTemplate,
-    },
     q_cover_info: {
       title: 'Client & Offer Reference',
       subtitle: 'Recipient / Client details, Ref No, Date & Subject (Page 1)',
@@ -265,14 +259,7 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
 
   const customSection = q.customSections?.find((s) => s.id === activeSectionId);
 
-  const isGlobalHeader =
-    activeSectionId === 'header_footer' ||
-    activeSectionId === 'letterhead' ||
-    activeSectionId === 'footer';
-
-  const currentSectionPage = isGlobalHeader
-    ? 'Global'
-    : customSection
+  const currentSectionPage = customSection
     ? customSection.pageNumber
     : getQuotationSectionPageNumber(activeSectionId, q);
 
@@ -315,198 +302,8 @@ export const QuotationFormEditor: React.FC<QuotationFormEditorProps> = ({
         </div>
       </div>
 
-
-
       {/* Main Section Content Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs select-text">
-        {/* =========================================================================
-            HEADER & FOOTER (GLOBAL)
-            ========================================================================= */}
-        {isGlobalHeader && (
-          <div className="space-y-4">
-            <div className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
-              <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide flex items-center space-x-1.5">
-                <Building className="w-3.5 h-3.5" />
-                <span>Letterhead & Company Branding</span>
-              </h3>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-[11px] font-semibold text-black">Company Name</label>
-                  <input
-                    type="text"
-                    value={q.companyName}
-                    onChange={(e) => updateQuotation({ companyName: e.target.value })}
-                    className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-black">Subtitle</label>
-                  <input
-                    type="text"
-                    value={q.companySubtitle}
-                    onChange={(e) => updateQuotation({ companySubtitle: e.target.value })}
-                    className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-black">Company GST No.</label>
-                <input
-                  type="text"
-                  value={q.companyGstNo}
-                  onChange={(e) => updateQuotation({ companyGstNo: e.target.value })}
-                  className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none font-mono"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-black">Header Address</label>
-                <input
-                  type="text"
-                  value={q.companyAddressHeader || ''}
-                  onChange={(e) => updateQuotation({ companyAddressHeader: e.target.value })}
-                  className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
-                  placeholder="Regd. Off. : SO7B / 2nd floor..."
-                />
-              </div>
-
-              {/* 2-Column Services / Offerings */}
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#cccccc]/80">
-                {/* Left Services */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-black text-[10px] uppercase">
-                      Left Services ({(q.leftServices || []).length})
-                    </span>
-                    <button
-                      onClick={() =>
-                        updateQuotation({ leftServices: [...(q.leftServices || []), '• NEW SERVICE'] })
-                      }
-                      className="p-1 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded-md transition-colors cursor-pointer shadow-xs"
-                      title="Add Left Service"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
-                  </div>
-                  {(q.leftServices || []).map((svc, idx) => (
-                    <div key={idx} className="flex items-center space-x-1">
-                      <input
-                        type="text"
-                        value={svc}
-                        onChange={(e) => {
-                          const updated = [...(q.leftServices || [])];
-                          updated[idx] = e.target.value;
-                          updateQuotation({ leftServices: updated });
-                        }}
-                        className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-[10.5px] text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
-                      />
-                      {(q.leftServices || []).length > 1 && (
-                        <button
-                          onClick={() =>
-                            updateQuotation({
-                              leftServices: (q.leftServices || []).filter((_, i) => i !== idx),
-                            })
-                          }
-                          className="p-1 text-[#888888] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
-                        >
-                          <Trash2 className="w-2.5 h-2.5" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Right Services */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-black text-[10px] uppercase">
-                      Right Services ({(q.rightServices || []).length})
-                    </span>
-                    <button
-                      onClick={() =>
-                        updateQuotation({ rightServices: [...(q.rightServices || []), '• NEW SERVICE'] })
-                      }
-                      className="p-1 bg-[#0d3479] hover:bg-[#123f8f] text-white rounded-md transition-colors cursor-pointer shadow-xs"
-                      title="Add Right Service"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
-                  </div>
-                  {(q.rightServices || []).map((svc, idx) => (
-                    <div key={idx} className="flex items-center space-x-1">
-                      <input
-                        type="text"
-                        value={svc}
-                        onChange={(e) => {
-                          const updated = [...(q.rightServices || [])];
-                          updated[idx] = e.target.value;
-                          updateQuotation({ rightServices: updated });
-                        }}
-                        className="w-full bg-white border border-[#cccccc] rounded-lg px-3 py-2 text-xs text-black font-semibold focus:outline-none focus:border-[#0d3479] shadow-xs text-[10.5px] text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
-                      />
-                      {(q.rightServices || []).length > 1 && (
-                        <button
-                          onClick={() =>
-                            updateQuotation({
-                              rightServices: (q.rightServices || []).filter((_, i) => i !== idx),
-                            })
-                          }
-                          className="p-1 text-[#888888] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
-                        >
-                          <Trash2 className="w-2.5 h-2.5" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-3.5 rounded-2xl border border-[#cccccc] space-y-3">
-              <h3 className="font-bold text-xs text-[#0d3479] uppercase tracking-wide flex items-center space-x-1.5">
-                <MapPin className="w-3.5 h-3.5" />
-                <span>Footer Details</span>
-              </h3>
-              <div>
-                <label className="block text-[11px] font-semibold text-black">Address (Footer)</label>
-                <textarea
-                  value={q.companyAddressFooter || ''}
-                  onChange={(e) => updateQuotation({ companyAddressFooter: e.target.value })}
-                  className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
-                  rows={2}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-[11px] font-semibold text-black">Phone</label>
-                  <input
-                    type="text"
-                    value={q.companyPhone || ''}
-                    onChange={(e) => updateQuotation({ companyPhone: e.target.value })}
-                    className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-black">Email</label>
-                  <input
-                    type="text"
-                    value={q.companyEmail || ''}
-                    onChange={(e) => updateQuotation({ companyEmail: e.target.value })}
-                    className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-black">Website</label>
-                <input
-                  type="text"
-                  value={q.companyWebsite || ''}
-                  onChange={(e) => updateQuotation({ companyWebsite: e.target.value })}
-                  className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#cccccc] rounded-xl text-xs text-black focus:border-[#0d3479] focus:ring-1 focus:ring-[#0d3479]/20 focus:outline-none"
-                />
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* =========================================================================
             COVER & CLIENT DETAILS (PAGE 1)

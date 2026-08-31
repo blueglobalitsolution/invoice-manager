@@ -18,6 +18,7 @@ import {
   OutlineGroup,
   OutlineSectionItem,
 } from '@/lib/document-sections';
+import { WatermarkOverlay } from './WatermarkOverlay';
 
 interface QuotationPreviewProps {
   doc: LatexDocument;
@@ -45,22 +46,43 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
   companyProfile,
 }) => {
   const pProfile = companyProfile || ({} as Partial<CompanyProfile>);
-  const companyName = applyVariables(pProfile.companyName || q.companyName || 'GLOBAL', globalVars);
-  const companySubtitle = applyVariables(pProfile.companySubtitle || q.companySubtitle || 'INDUSTRIES', globalVars);
-  const leftServices: string[] = pProfile.leftServices || q.leftServices || [];
-  const rightServices: string[] = pProfile.rightServices || q.rightServices || [];
-  const companyAddressHeader = applyVariables(
-    pProfile.companyAddressHeader || q.companyAddressHeader || 'Regd. Off. : SO7B / 2nd floor / Phase 2, Indiabulls, Jetalpur road, Vadodara',
-    globalVars
-  );
+  
+  const rawCompanyName = pProfile.companyName || q.companyName || 'GLOBAL';
+  const rawCompanySubtitle = pProfile.companySubtitle !== undefined ? pProfile.companySubtitle : (q.companySubtitle || 'INDUSTRIES');
+
+  const companyName = applyVariables(rawCompanyName, globalVars);
+  const companySubtitle = applyVariables(rawCompanySubtitle, globalVars);
+  const leftServices: string[] =
+    pProfile.leftServices && pProfile.leftServices.length > 0
+      ? pProfile.leftServices
+      : (q.leftServices && q.leftServices.length > 0 ? q.leftServices : [
+          '• Pre Engineering Building',
+          '• Roofing Solution',
+          '• Engineering Project & Designing',
+          '• "Z" & "C" Purlins',
+        ]);
+  const rightServices: string[] =
+    pProfile.rightServices && pProfile.rightServices.length > 0
+      ? pProfile.rightServices
+      : (q.rightServices && q.rightServices.length > 0 ? q.rightServices : [
+          '• Infra Materials',
+          '• Puf Panels & Insulation Roofing',
+          '• Skylight Sheets',
+          '• Air Ventilators',
+        ]);
+
+  const rawHeaderAddr = pProfile.companyAddressHeader || q.companyAddressHeader || 'Regd. Off. : SO7B / 2nd floor, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara, Gujarat - 391243';
+
+  const companyAddressHeader = applyVariables(rawHeaderAddr, globalVars);
   const companyAddressFooter = applyVariables(
-    pProfile.companyAddressFooter || q.companyAddressFooter || 'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243',
+    pProfile.companyAddressFooter ||
+      'Block No. 1068/99, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara - 391243',
     globalVars
   );
-  const companyPhone = applyVariables(pProfile.companyPhone || q.companyPhone || '+91 97254 45370', globalVars);
-  const companyEmail = applyVariables(pProfile.companyEmail || q.companyEmail || 'info@globalindustries.co', globalVars);
-  const companyWebsite = applyVariables(pProfile.companyWebsite || q.companyWebsite || 'www.globalindustries.co', globalVars);
-  const companyGstNo = applyVariables(pProfile.companyGstNo || q.companyGstNo || '24CLNPS9550H1ZI', globalVars);
+  const companyPhone = applyVariables(pProfile.companyPhone || '+91 97254 45370', globalVars);
+  const companyEmail = applyVariables(pProfile.companyEmail || 'info@globalindustries.co', globalVars);
+  const companyWebsite = applyVariables(pProfile.companyWebsite || 'www.globalindustries.co', globalVars);
+  const companyGstNo = applyVariables(pProfile.companyGstNo || '24CLNPS9550H1ZI', globalVars);
 
   const isHeaderActive = activeSectionId === 'header_footer';
   const isHeaderHovered = hoveredSectionId === 'header_footer' && !isHeaderActive;
@@ -113,27 +135,21 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
   };
 
   // Dynamic layout partitioner logic (heuristic-based Word/LaTeX style auto-pagination)
-  const paddingHeight = 80;
-  const headerHeight = 110;
-  const footerHeight = 45;
-  const maxPageHeight = 1123;
-
   const partitionGroupSections = (group: OutlineGroup) => {
     const subPages: { sections: React.ReactNode[] }[] = [];
     let currentPageSections: React.ReactNode[] = [];
     let currentHeight = 0;
 
     const commitPage = () => {
-      subPages.push({ sections: currentPageSections });
-      currentPageSections = [];
-      currentHeight = 0;
+      if (currentPageSections.length > 0) {
+        subPages.push({ sections: currentPageSections });
+        currentPageSections = [];
+        currentHeight = 0;
+      }
     };
 
-    const getAvailableHeight = () => {
-      return maxPageHeight - paddingHeight - headerHeight - footerHeight; // 888px available budget
-    };
-
-    const budget = getAvailableHeight();
+    // Safe Content Budget: 770px gives safe buffer before footer across standard A4 pages
+    const budget = 770;
 
     group.sections.forEach((sec) => {
       let estimatedHeight = 35; // default minimum
@@ -190,8 +206,16 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
         currentPageSections.push(renderSectionItem(sec));
         currentHeight += estimatedHeight;
       } else {
-        // Handle Splittable elements to partition them row-by-row or item-by-item
-        if (
+        // If current page already has content and section cannot fit, SHIFT the whole section to next page!
+        if (currentHeight > 0) {
+          commitPage();
+        }
+
+        // On fresh page, if whole section fits, place it completely!
+        if (currentHeight + estimatedHeight <= budget) {
+          currentPageSections.push(renderSectionItem(sec));
+          currentHeight = estimatedHeight;
+        } else if (
           sec.id === 'q_boq_items' ||
           sec.id === 'q_mat_specs' ||
           sec.id === 'q_tech_details' ||
@@ -669,48 +693,35 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
 
   // Standard Header Macro
   const renderHeader = (pageNumber: number) => (
-    <div
-      id="preview-sec-header_footer"
-      onClick={() => onSelectSection?.('header_footer')}
-      onMouseEnter={() => onHoverSection?.('header_footer')}
-      onMouseLeave={() => onHoverSection?.(null)}
-      className={`mb-2 p-1 rounded relative cursor-pointer transition-all duration-200 select-none ${
-        isHeaderActive
-          ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
-          : isHeaderHovered
-          ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
-          : 'hover:ring-1 hover:ring-[#0d3479]/30'
-      }`}
-      title="Header & Footer (Click to edit)"
-    >
-      {isHeaderHovered && !isHeaderActive && (
-        <span className="absolute top-1 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
-          Header & Footer
-        </span>
-      )}
-      <div className="flex items-center justify-between pb-1">
-        <div className="w-[35%] pr-3">
-          <div className="text-2xl font-black tracking-wider text-black leading-tight">
-            {companyName}
+    <div className="mb-2 p-1 select-none">
+      <div className="flex items-center justify-between">
+        {/* Left Brand */}
+        <div className="w-[35%] pr-2">
+          <div className="text-[26px] font-black tracking-tight leading-none text-black">
+            <FormattedText text={companyName} globalVars={globalVars} />
           </div>
-          <div className="text-lg font-bold tracking-widest text-black leading-tight">
-            {companySubtitle}
+          <div className="text-[17px] font-extrabold tracking-wider leading-tight text-black mt-0.5">
+            <FormattedText text={companySubtitle} globalVars={globalVars} />
           </div>
         </div>
-        <div className="w-[1px] bg-black self-stretch mx-2" />
-        <div className="w-[60%] pl-2 text-[10px] leading-tight text-gray-900">
-          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+
+        {/* Vertical Divider */}
+        <div className="w-[0.8pt] bg-black self-stretch mx-2" />
+
+        {/* Right Services List */}
+        <div className="w-[60%] pl-2 text-[10px] leading-[1.3] text-black">
+          <div className="grid grid-cols-2 gap-x-3">
             <div>
               {leftServices.map((svc, i) => (
                 <div key={i} className="truncate">
-                  {svc}
+                  <FormattedText text={svc} globalVars={globalVars} />
                 </div>
               ))}
             </div>
             <div>
               {rightServices.map((svc, i) => (
                 <div key={i} className="truncate">
-                  {svc}
+                  <FormattedText text={svc} globalVars={globalVars} />
                 </div>
               ))}
             </div>
@@ -718,42 +729,19 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center space-x-1.5 my-1">
-        <div className="flex-1 h-[2px] bg-black" />
-        <div className="w-1.5 h-1.5 rotate-45 border border-black" />
-        <div className="flex-1 h-[2px] bg-black" />
-      </div>
-
-      <div className="flex justify-between items-center text-[10px] font-bold text-gray-900">
+      {/* Divider and GST */}
+      <div className="h-[0.8pt] bg-black w-full my-1.5" />
+      <div className="flex justify-between items-center text-[10px] font-bold text-black tracking-wide">
         <div><FormattedText text={companyAddressHeader} globalVars={globalVars} /></div>
-        <div>GST NO: {applyVariables(companyGstNo, globalVars)}</div>
+        <div>GST NO. : <FormattedText text={companyGstNo} globalVars={globalVars} /></div>
       </div>
-
-      <div className="h-[1px] bg-black my-1" />
     </div>
   );
 
   // Standard Footer Macro
   const renderFooter = (pageIndex: number, totalPages: number) => (
-    <div
-      onClick={() => onSelectSection?.('header_footer')}
-      onMouseEnter={() => onHoverSection?.('header_footer')}
-      onMouseLeave={() => onHoverSection?.(null)}
-      className={`pt-2 mt-auto select-none rounded p-1 transition-all duration-200 cursor-pointer relative ${
-        isHeaderActive
-          ? 'ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 shadow-xs'
-          : isHeaderHovered
-          ? 'ring-2 ring-[#0d3479]/60 bg-[#dfe7f4]/20 shadow-xs'
-          : 'hover:ring-1 hover:ring-[#0d3479]/30'
-      }`}
-      title="Header & Footer (Click to edit)"
-    >
-      {isHeaderHovered && !isHeaderActive && (
-        <span className="absolute -top-6 right-1 text-[9px] bg-[#0d3479] text-white font-mono px-1.5 py-0.5 rounded shadow-xs opacity-90 pointer-events-none">
-          Header & Footer
-        </span>
-      )}
-      <div className="h-[1.5px] bg-black mb-1" />
+    <div className="pt-2 mt-auto select-none p-1">
+      <div className="h-[0.8pt] bg-black mb-1" />
       <div className="flex justify-between items-center text-[9px] leading-tight text-black">
         <div className="flex-1 text-center font-semibold">
           Phone: {applyVariables(companyPhone, globalVars)} &bull;{' '}
@@ -1459,10 +1447,13 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
           key={`q_page_${page.groupId}`}
           id={`preview-sec-${page.groupId}`}
           style={pageStyle}
-          className="latex-paper bg-white text-black p-10 shadow-2xl relative flex flex-col justify-between text-[11.5px] leading-normal"
+          className="latex-paper bg-white text-black p-10 shadow-2xl relative overflow-hidden flex flex-col justify-between text-[11.5px] leading-normal"
         >
+          {/* Background Center Watermark */}
+          <WatermarkOverlay config={doc.settings?.watermark} />
+
           {/* Header & Page Sections */}
-          <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1 flex flex-col min-h-0 relative z-1">
             <div className="shrink-0">
               {renderHeader(page.pageNum)}
             </div>
@@ -1479,7 +1470,7 @@ export const QuotationPreview: React.FC<QuotationPreviewProps> = ({
           </div>
 
           {/* Constant Standard Footer with Page Number */}
-          <div className="shrink-0">
+          <div className="shrink-0 relative z-1">
             {renderFooter(pageIdx, paginatedPages.length)}
           </div>
         </div>

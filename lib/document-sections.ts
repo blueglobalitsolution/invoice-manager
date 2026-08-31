@@ -12,6 +12,7 @@ import {
   ListOrdered,
   ShieldAlert,
   FileText,
+  Clock,
 } from 'lucide-react';
 import {
   PurchaseOrderData,
@@ -37,11 +38,25 @@ export const BUILTIN_SECTIONS: BuiltinSectionDef[] = [
     description: 'PO Number, Date, Contractor, Project details',
   },
   {
+    id: 'award_letter',
+    label: 'Award Letter & Salutation',
+    icon: FileText,
+    defaultPage: 1,
+    description: 'Recipient (To,), Subject, Greeting & Award Intro',
+  },
+  {
+    id: 'contract_value',
+    label: '1. Contract Value',
+    icon: DollarSign,
+    defaultPage: 1,
+    description: 'Total contract value, inclusions & extra payment disclaimer',
+  },
+  {
     id: 'scope',
-    label: 'Scope of Work',
+    label: '2. Scope of Work',
     icon: Briefcase,
     defaultPage: 1,
-    description: 'Itemized list of execution duties & responsibilities',
+    description: 'Itemized list of civil execution duties & responsibilities',
   },
   {
     id: 'rates',
@@ -51,39 +66,130 @@ export const BUILTIN_SECTIONS: BuiltinSectionDef[] = [
     description: 'Line items, description, unit, qty, rate, and amount in words',
   },
   {
-    id: 'scope_contractor',
-    label: 'Scope of Contractor',
-    icon: Layers,
+    id: 'company_scope',
+    label: '3. Company Scope',
+    icon: Building,
     defaultPage: 2,
-    description: 'Contractor site & resource obligations',
+    description: 'Construction materials supplied by Company',
   },
   {
-    id: 'payment_terms',
-    label: 'Payment Terms & Milestones',
-    icon: DollarSign,
+    id: 'contractor_scope',
+    label: '4. Contractor Scope',
+    icon: Layers,
     defaultPage: 2,
-    description: 'Stage-wise milestone payments and billing breakdown',
+    description: 'Skilled manpower, equipment, shuttering & contractor obligations',
+  },
+  {
+    id: 'quality_clause',
+    label: '5. Quality',
+    icon: CheckCircle2,
+    defaultPage: 2,
+    description: 'Workmanship standards, drawing compliance & defect dismantling',
+  },
+  {
+    id: 'material_clause',
+    label: '6. Material Responsibility',
+    icon: Building,
+    defaultPage: 2,
+    description: 'Company property, storage, wastage and recovery terms',
+  },
+  {
+    id: 'safety_clause',
+    label: '7. Safety',
+    icon: ShieldAlert,
+    defaultPage: 2,
+    description: 'Safety rules, PPE compliance and accident liability',
   },
   {
     id: 'measurement',
-    label: 'Quality, Materials & Safety (Clauses 5–7)',
+    label: 'Measurement & Payment Clause',
     icon: ShieldAlert,
     defaultPage: 2,
     description: 'Quality standards, company material responsibility, and PPE safety rules',
   },
   {
-    id: 'terms',
-    label: 'Commercial & Labour Terms (Clauses 8–10)',
+    id: 'labour_laws',
+    label: '8. Labour Laws',
     icon: FileCheck,
-    defaultPage: 2,
-    description: 'Labour compliance, measurement verification, and 60-day completion schedule',
+    defaultPage: 3,
+    description: 'Statutory compliances (Minimum wages, PF, ESIC, insurance) & liabilities',
+  },
+  {
+    id: 'payment_clause',
+    label: '9. Measurement & Payment',
+    icon: DollarSign,
+    defaultPage: 3,
+    description: 'Stage-wise milestone payments, verification & statutory deductions',
+  },
+  {
+    id: 'terms',
+    label: 'Terms & Conditions',
+    icon: FileCheck,
+    defaultPage: 3,
+    description: 'Commercial & labour terms',
+  },
+  {
+    id: 'time_schedule',
+    label: '10. Time Schedule',
+    icon: Clock,
+    defaultPage: 3,
+    description: 'Completion timeline (60 days) and per-day delay penalty',
+  },
+  {
+    id: 'housekeeping_clause',
+    label: '11. Housekeeping',
+    icon: CheckCircle2,
+    defaultPage: 3,
+    description: 'Work area cleanliness and debris removal obligations',
+  },
+  {
+    id: 'warranty_clause',
+    label: '12. Warranty / Defect Liability',
+    icon: ShieldAlert,
+    defaultPage: 3,
+    description: '6-Month defect rectification without additional charges',
+  },
+  {
+    id: 'variation_clause',
+    label: '13. Variation / Extra Work',
+    icon: FileText,
+    defaultPage: 3,
+    description: 'Prior written approval rules and no verbal claims',
+  },
+  {
+    id: 'termination_clause',
+    label: '14. Termination',
+    icon: ShieldAlert,
+    defaultPage: 3,
+    description: 'Termination grounds (workmanship, delay, safety, shortage)',
+  },
+  {
+    id: 'force_majeure_clause',
+    label: '15. Force Majeure',
+    icon: BookmarkCheck,
+    defaultPage: 3,
+    description: 'Natural calamities, government rules & uncontrollable events',
+  },
+  {
+    id: 'jurisdiction_clause',
+    label: '16. Jurisdiction',
+    icon: Building,
+    defaultPage: 3,
+    description: 'Exclusive jurisdiction of competent courts in Vadodara, Gujarat',
+  },
+  {
+    id: 'acceptance_clause',
+    label: 'Acceptance',
+    icon: FileCheck,
+    defaultPage: 3,
+    description: 'Contractor acceptance declaration of all terms and conditions',
   },
   {
     id: 'page3_terms',
-    label: 'General Terms & Execution (Clauses 11–16)',
-    icon: CheckCircle2,
+    label: 'General Terms (Clauses 11–16)',
+    icon: FileText,
     defaultPage: 3,
-    description: 'Housekeeping, defect liability warranty, termination, and jurisdiction',
+    description: 'Housekeeping, warranty, variations, termination & jurisdiction',
   },
   {
     id: 'signatures',
@@ -295,13 +401,55 @@ export function getDocumentOutlineGroups(po: PurchaseOrderData): OutlineGroup[] 
   // Build items list
   const allSections: OutlineSectionItem[] = [];
 
-  // Add builtin sections (if not hidden/deleted)
+  // Add builtin sections (if not hidden/deleted and has content)
   BUILTIN_SECTIONS.forEach((b) => {
     if (hiddenSections.has(b.id)) return;
+
+    const isCivilContract = !!(po.showAwardLetter || (po.contractValueClause && po.contractValueClause.length > 0) || po.contractType?.toLowerCase().includes('civil'));
+
+    // Do not include empty clause sections
+    if (b.id === 'page3_terms' && (!po.page3Terms || po.page3Terms.length === 0)) return;
+    if (b.id === 'terms' && (!po.termsAndConditions || po.termsAndConditions.length === 0)) return;
+    if (b.id === 'company_scope' && (!po.companyScope || po.companyScope.length === 0)) return;
+    if (b.id === 'contractor_scope' && (!po.contractorScope || po.contractorScope.length === 0) && (!po.scopeOfContractor || po.scopeOfContractor.length === 0)) return;
+    
+    // For Civil Contracts, measurement is split into 5. Quality, 6. Material Responsibility, 7. Safety
+    if (b.id === 'measurement' && (isCivilContract || !po.measurementClause || po.measurementClause.length === 0)) return;
+    if (b.id === 'quality_clause' && (!isCivilContract || (!po.qualityClause && !po.measurementClause))) return;
+    if (b.id === 'material_clause' && (!isCivilContract || (!po.materialClause && !po.measurementClause))) return;
+    if (b.id === 'safety_clause' && (!isCivilContract || (!po.safetyClause && !po.measurementClause))) return;
+
+    // For Civil Contracts, terms is split into individual clauses 8 to 16 and acceptance
+    if (b.id === 'terms' && isCivilContract) return;
+    if (b.id === 'page3_terms' && isCivilContract) return;
+    if (b.id === 'labour_laws' && !isCivilContract) return;
+    if (b.id === 'payment_clause' && !isCivilContract) return;
+    if (b.id === 'time_schedule' && !isCivilContract) return;
+    if (b.id === 'housekeeping_clause' && !isCivilContract) return;
+    if (b.id === 'warranty_clause' && !isCivilContract) return;
+    if (b.id === 'variation_clause' && !isCivilContract) return;
+    if (b.id === 'termination_clause' && !isCivilContract) return;
+    if (b.id === 'force_majeure_clause' && !isCivilContract) return;
+    if (b.id === 'jurisdiction_clause' && !isCivilContract) return;
+    if (b.id === 'acceptance_clause' && !isCivilContract) return;
+    if (b.id === 'signatures' && isCivilContract) return;
+
+    // Hide Rates & Pricing Table for civil labour contracts (pricing is in Clause 1. Contract Value)
+    if (b.id === 'rates' && (isCivilContract || !po.rateItems || po.rateItems.length === 0)) return;
+
+    let sectionLabel = b.label;
+    if (b.id === 'measurement') {
+      const isFabrication = po.measurementClause?.some(c => c.toLowerCase().includes('25,000') || c.toLowerCase().includes('weight (in kgs)')) || po.tableCompanyName?.includes('GLOBAL INDUSTRIES');
+      if (isFabrication) sectionLabel = 'Measurement & Payment Clause';
+    } else if (b.id === 'terms') {
+      const isFabrication = po.measurementClause?.some(c => c.toLowerCase().includes('25,000')) || po.tableCompanyName?.includes('GLOBAL INDUSTRIES');
+      if (isFabrication) sectionLabel = 'Terms & Conditions';
+    }
+
     const pageNum = getSectionPageNumber(b.id, po);
     allSections.push({
       id: b.id,
-      label: b.label,
+      label: sectionLabel,
       icon: b.icon,
       isCustom: false,
       pageNumber: pageNum,
@@ -507,12 +655,9 @@ export function moveQuotationSectionToPage(
     currentMap[sourceSecId] = targetPageNum;
   }
 
-  // Update section order array
-  let order = q.sectionOrder ? [...q.sectionOrder] : [];
-  if (order.length === 0) {
-    const allGroups = getQuotationOutlineGroups(q);
-    order = allGroups.flatMap((g) => g.sections.map((s) => s.id));
-  }
+  // Always use the live outline groups to get all active section IDs
+  const allGroups = getQuotationOutlineGroups(q);
+  let order = allGroups.flatMap((g) => g.sections.map((s) => s.id));
 
   order = order.filter((id) => id !== sourceSecId);
 
@@ -562,13 +707,9 @@ export function moveSectionToPage(
     currentMap[sourceSecId] = targetPageNum;
   }
 
-  // Update section order array
-  let order = po.sectionOrder ? [...po.sectionOrder] : [];
-  if (order.length === 0) {
-    // initialize full current order
-    const allGroups = getDocumentOutlineGroups(po);
-    order = allGroups.flatMap((g) => g.sections.map((s) => s.id));
-  }
+  // Always use the live outline groups to get all active section IDs
+  const allGroups = getDocumentOutlineGroups(po);
+  let order = allGroups.flatMap((g) => g.sections.map((s) => s.id));
 
   // Remove source
   order = order.filter((id) => id !== sourceSecId);

@@ -5,6 +5,7 @@ import { CompanyProfile } from '@/types/project';
 import { ZoomIn, ZoomOut } from 'lucide-react';
 import { FormattedText } from '@/lib/format-text';
 import { ShortcutsDropdown } from './ShortcutsDropdown';
+import { WatermarkOverlay } from './WatermarkOverlay';
 
 interface CompanyProfilePreviewProps {
   profile: CompanyProfile;
@@ -18,38 +19,53 @@ export const CompanyProfilePreview: React.FC<CompanyProfilePreviewProps> = ({ pr
   const companyName = profile.companyName || 'GLOBAL';
   const companySubtitle = profile.companySubtitle || 'INDUSTRIES';
 
-  const maxServices = Math.max(profile.leftServices.length, profile.rightServices.length);
-  const servicesRows = [];
-  for (let i = 0; i < maxServices; i++) {
-    servicesRows.push({
-      left: profile.leftServices[i] || '',
-      right: profile.rightServices[i] || '',
-    });
-  }
+  const leftServices =
+    profile.leftServices && profile.leftServices.length > 0
+      ? profile.leftServices
+      : [
+          '• Pre Engineering Building',
+          '• Roofing Solution',
+          '• Engineering Project & Designing',
+          '• "Z" & "C" Purlins',
+        ];
+  const rightServices =
+    profile.rightServices && profile.rightServices.length > 0
+      ? profile.rightServices
+      : [
+          '• Infra Materials',
+          '• Puf Panels & Insulation Roofing',
+          '• Skylight Sheets',
+          '• Air Ventilators',
+        ];
 
   const renderHeader = () => (
     <div className="flex flex-col relative z-20">
-      <div className="flex items-center justify-between pb-1">
-        <div className="w-[35%] pr-3">
-          <div className="text-2xl font-black tracking-wider text-black leading-tight">
+      <div className="flex items-center justify-between">
+        {/* Left Brand */}
+        <div className="w-[35%] pr-2">
+          <div className="text-[26px] font-black tracking-tight leading-none text-black">
             <FormattedText text={companyName} />
           </div>
-          <div className="text-lg font-bold tracking-widest text-black leading-tight">
+          <div className="text-[17px] font-extrabold tracking-wider leading-tight text-black mt-0.5">
             <FormattedText text={companySubtitle} />
           </div>
         </div>
-        <div className="w-[1px] bg-black self-stretch mx-2" />
-        <div className="w-[60%] pl-2 text-[10px] leading-tight text-gray-900">
-          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+
+        {/* Vertical Divider */}
+        <div className="w-[0.8pt] bg-black self-stretch mx-2" />
+
+        {/* Right Services List */}
+        <div className="w-[60%] pl-2 text-[10px] leading-[1.3] text-black">
+          <div className="grid grid-cols-2 gap-x-3">
             <div>
-              {profile.leftServices.map((svc, i) => (
+              {leftServices.map((svc, i) => (
                 <div key={i} className="truncate">
                   <FormattedText text={svc} />
                 </div>
               ))}
             </div>
             <div>
-              {profile.rightServices.map((svc, i) => (
+              {rightServices.map((svc, i) => (
                 <div key={i} className="truncate">
                   <FormattedText text={svc} />
                 </div>
@@ -59,18 +75,12 @@ export const CompanyProfilePreview: React.FC<CompanyProfilePreviewProps> = ({ pr
         </div>
       </div>
       
-      <div className="flex items-center space-x-1.5 my-1">
-        <div className="flex-1 h-[2px] bg-black" />
-        <div className="w-1.5 h-1.5 rotate-45 border border-black" />
-        <div className="flex-1 h-[2px] bg-black" />
+      {/* Divider and GST */}
+      <div className="h-[0.8pt] bg-black w-full my-1.5" />
+      <div className="flex justify-between items-center text-[10px] font-bold text-black tracking-wide">
+        <div><FormattedText text={profile.companyAddressHeader || 'Regd. Off. : SO7B / 2nd floor, Ratnakar Business Hub, Por GIDC, Ramangamdi Road, Vadodara, Gujarat - 391243'} /></div>
+        <div>GST NO. : <FormattedText text={profile.companyGstNo || '24CLNPS9550H1ZI'} /></div>
       </div>
-      
-      <div className="flex justify-between items-center text-[10px] font-bold text-gray-900">
-        <div><FormattedText text={profile.companyAddressHeader || 'Regd. Off. : SO7B / 2nd floor...'} /></div>
-        <div>GST NO: <FormattedText text={profile.companyGstNo || '24AA...'} /></div>
-      </div>
-      
-      <div className="h-[1px] bg-black my-1" />
       
       <div className="absolute inset-0 rounded-lg ring-2 ring-[#0d3479] bg-[#dfe7f4]/35 pointer-events-none z-30" style={{ left: '-8px', right: '-8px', top: '-8px', bottom: '-8px' }}>
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#002057] text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold shadow-sm">HEADER</div>
@@ -84,7 +94,7 @@ export const CompanyProfilePreview: React.FC<CompanyProfilePreviewProps> = ({ pr
         <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#002057] text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold shadow-sm">FOOTER</div>
       </div>
       
-      <div className="h-[1.5px] bg-black mb-1" />
+      <div className="h-[0.8pt] bg-black mb-1" />
       <div className="flex justify-between items-center text-[9px] leading-tight text-black">
         <div className="flex-1 text-center font-semibold">
           Phone: <FormattedText text={profile.companyPhone || '+91 9000000000'} /> &bull;{' '}
@@ -158,20 +168,23 @@ export const CompanyProfilePreview: React.FC<CompanyProfilePreviewProps> = ({ pr
               width: '794px',
               minHeight: '1123px',
             }}
-            className={`latex-paper print-area bg-white text-gray-900 p-12 md:p-16 shadow-2xl relative flex flex-col justify-between ${fontSizeClass}`}
+            className={`latex-paper print-area bg-white text-gray-900 p-12 md:p-16 shadow-2xl relative overflow-hidden flex flex-col justify-between ${fontSizeClass}`}
           >
+            {/* Background Center Watermark */}
+            <WatermarkOverlay />
+
             {/* Header Block */}
-            {renderHeader()}
+            <div className="relative z-1">{renderHeader()}</div>
 
             {/* Placeholder Middle */}
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex items-center justify-center relative z-1">
               <div className="text-gray-300 font-mono text-2xl rotate-[-25deg] uppercase tracking-widest border-[4px] border-gray-200 px-8 py-4 rounded-xl opacity-60 select-none">
                 BODY PREVIEW
               </div>
             </div>
 
             {/* Footer Block */}
-            {renderFooter()}
+            <div className="relative z-1">{renderFooter()}</div>
           </div>
         </div>
       </div>

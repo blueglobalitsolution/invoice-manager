@@ -13,13 +13,14 @@ import {
 } from 'lucide-react';
 
 interface EditorRailProps {
-  activeTab: 'filetree' | 'header_footer' | 'variables' | 'search' | 'code' | 'media' | 'chat' | 'ai' | 'settings';
-  setActiveTab: (tab: 'filetree' | 'header_footer' | 'variables' | 'search' | 'code' | 'media' | 'chat' | 'ai' | 'settings') => void;
+  activeTab: 'filetree' | 'variables' | 'search' | 'code' | 'media' | 'chat' | 'ai' | 'settings';
+  setActiveTab: (tab: 'filetree' | 'variables' | 'search' | 'code' | 'media' | 'chat' | 'ai' | 'settings') => void;
   onOpenSettings: () => void;
   onOpenGlobalVariables?: () => void;
   onOpenTemplates?: () => void;
   onOpenLatexCode?: () => void;
   onOpenAddSection?: () => void;
+  onOpenWatermark?: () => void;
   isInvoice?: boolean;
   onGoBackToDashboard: () => void;
 }
@@ -32,6 +33,7 @@ export const EditorRail: React.FC<EditorRailProps> = ({
   onOpenTemplates,
   onOpenLatexCode,
   onOpenAddSection,
+  onOpenWatermark,
   isInvoice = false,
 }) => {
   return (
@@ -64,18 +66,6 @@ export const EditorRail: React.FC<EditorRailProps> = ({
           </button>
         )}
 
-        {/* Dedicated Header & Footer Icon */}
-        <button
-          onClick={() => setActiveTab('header_footer')}
-          className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all relative cursor-pointer ${
-            activeTab === 'header_footer'
-              ? 'bg-white text-[#002057] shadow-md'
-              : 'text-white/70 hover:text-white hover:bg-white/10'
-          }`}
-          title="Header & Footer Configuration"
-        >
-          <LayoutTemplate className="w-5 h-5" />
-        </button>
 
         {/* LaTeX Code Viewer */}
         <button
@@ -96,15 +86,21 @@ export const EditorRail: React.FC<EditorRailProps> = ({
           <FileCode className="w-5 h-5" />
         </button>
 
-        {/* Media / Figures */}
+        {/* Media / Watermark / Logo */}
         <button
-          onClick={() => setActiveTab('media')}
+          onClick={() => {
+            if (onOpenWatermark) {
+              onOpenWatermark();
+            } else {
+              setActiveTab('media');
+            }
+          }}
           className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all cursor-pointer ${
             activeTab === 'media'
               ? 'bg-white text-[#002057] shadow-md'
               : 'text-white/70 hover:text-white hover:bg-white/10'
           }`}
-          title="Figures and Images"
+          title="Center Watermark & Logo Settings"
         >
           <ImageIcon className="w-5 h-5" />
         </button>
